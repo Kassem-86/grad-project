@@ -13,16 +13,20 @@ class AuthController extends Controller
     /**
      * Register a new user and return a token
      */
+    protected $primaryKey = 'user_id'; // عرفه إن الـ ID اسمه user_id
+public $incrementing = true;      // أكد له إنه Auto-increment
     public function register(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
         ]);
 
         $user = User::create([
-            'name' => $validated['name'],
+            'first_name' => $validated['first_name'],
+            'last_name' => $validated['last_name'],
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
         ]);
@@ -42,6 +46,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validated = $request->validate([
+
             'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
