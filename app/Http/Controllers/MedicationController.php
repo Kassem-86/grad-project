@@ -19,7 +19,8 @@ class MedicationController extends Controller
         $validated = $request->validate([
             'medication_name' => 'required|string|max:255',
             'dosage' => 'required|string',
-            'route' => 'required|in:Oral,Injection,Inhaler,Topical,IV',
+            // محدث ليتوافق مع Enum الداتابيز ويدعم الـ Capital/Small
+            'route' => 'required|in:Oral,Injection,Inhaler,Topical,IV,oral,injection,inhalation,topical,other',
             'unit' => 'required|string',
             'frequency' => 'required|string',
             'start_date' => 'required|date_format:Y-m-d',
@@ -30,12 +31,12 @@ class MedicationController extends Controller
 
         try {
             $medication = DB::transaction(function () use ($validated) {
-                // Create log entry first
+                // إنشاء سجل في جدول الـ logs أولاً لربطه باليوزر
                 $log = Log::create([
                     'user_id' => Auth::id(),
                 ]);
 
-                // Create medication record linked to the log
+                // إنشاء سجل الدواء وربطه بالـ log_id
                 $medication = Medication::create([
                     'log_id' => $log->log_id,
                     'medication_name' => $validated['medication_name'],
@@ -88,7 +89,10 @@ class MedicationController extends Controller
      */
     public function show(Medication $medication): JsonResponse
     {
-        $this->authorize('view', $medication);
+        // التأكد من الملكية يدوياً بدلاً من authorize
+        if ($medication->log->user_id !== Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
 
         return response()->json([
             'success' => true,
@@ -101,12 +105,15 @@ class MedicationController extends Controller
      */
     public function update(Request $request, Medication $medication): JsonResponse
     {
-        $this->authorize('update', $medication);
+        // التأكد من الملكية
+        if ($medication->log->user_id !== Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
 
         $validated = $request->validate([
             'medication_name' => 'sometimes|string|max:255',
             'dosage' => 'sometimes|string',
-            'route' => 'sometimes|in:Oral,Injection,Inhaler,Topical,IV',
+            'route' => 'sometimes|in:Oral,Injection,Inhaler,Topical,IV,oral,injection,inhalation,topical,other',
             'unit' => 'sometimes|string',
             'frequency' => 'sometimes|string',
             'start_date' => 'sometimes|date_format:Y-m-d',
@@ -129,12 +136,17 @@ class MedicationController extends Controller
      */
     public function destroy(Medication $medication): JsonResponse
     {
-        $this->authorize('delete', $medication);
+        // التأكد من الملكية
+        if ($medication->log->user_id !== Auth::id()) {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
 
         DB::transaction(function () use ($medication) {
             $log = $medication->log;
             $medication->delete();
-            $log->delete();
+            if ($log) {
+                $log->delete(); // مسح الـ log المرتبط لضمان نظافة البيانات
+            }
         });
 
         return response()->json([
