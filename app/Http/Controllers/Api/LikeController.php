@@ -15,10 +15,10 @@ class LikeController extends Controller
     /**
      * Instantiate the controller.
      */
-    public function __construct()
-    {
-        $this->middleware('auth:sanctum');
-    }
+    // public function __construct()
+    // {
+    //     $this->middleware('auth:sanctum');
+    // }
 
     /**
      * Toggle like on a post.

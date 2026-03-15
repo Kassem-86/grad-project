@@ -12,13 +12,6 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CommentController extends Controller
 {
-    /**
-     * Instantiate the controller.
-     */
-    public function __construct()
-    {
-        $this->middleware('auth:sanctum')->only(['store', 'destroy']);
-    }
 
     /**
      * Get all comments for a post.
@@ -36,25 +29,24 @@ class CommentController extends Controller
     /**
      * Store a newly created comment.
      */
-    public function store(Request $request, Post $post): JsonResponse
-    {
-        $validated = $request->validate([
-            'comment_text' => 'required|string',
-        ]);
+  public function store(Request $request, Post $post)
+{
+    // 1. Validate الـ data اللي جاية
+    $request->validate([
+        'comment_text' => 'required|string',
+    ]);
 
-        $comment = $post->comments()->create([
-            'user_id' => $request->user()->id,
-            'comment_text' => $validated['comment_text'],
-        ]);
+    // 2. سجل الكومنت واربطه بالـ User اللي عامل Login حالياً
+    $comment = $post->comments()->create([
+        'comment_text' => $request->comment_text,
+        'user_id' => auth()->id(), // ✅ ده السطر السحري اللي بيجيب ID صاحب الكومنت
+    ]);
 
-        $comment->load(['user', 'likes.user']);
-
-        return response()->json(
-            new CommentResource($comment),
-            201
-        );
-    }
-
+    return response()->json([
+        'message' => 'Comment added successfully',
+        'comment' => $comment
+    ], 201);
+}
     /**
      * Delete a comment.
      */
@@ -64,5 +56,31 @@ class CommentController extends Controller
         $comment->delete();
 
         return response()->json(['message' => 'Comment deleted successfully']);
+    }
+
+
+    /**
+     * Update the specified comment.
+     */
+    public function update(Request $request, Comment $comment): JsonResponse
+    {
+        // 1. تأكد إن اللي بيعدل هو صاحب الكومنت (لازم تكون عامل CommentPolicy)
+        $this->authorize('update', $comment);
+
+        // 2. عمل Validation للنص الجديد
+        $validated = $request->validate([
+            'comment_text' => 'required|string',
+        ]);
+
+        // 3. تحديث الكومنت
+        $comment->update($validated);
+
+        // 4. تحميل البيانات المرتبطة عشان الـ Resource يرجع كامل لـ لؤي
+        $comment->load(['user', 'likes.user']);
+
+        return response()->json([
+            'message' => 'Comment updated successfully',
+            'comment' => new CommentResource($comment)
+        ]);
     }
 }
