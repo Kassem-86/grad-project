@@ -140,4 +140,32 @@ class User extends Authenticatable
     {
         return $this->hasMany(Log::class, 'user_id', 'id');
     }
+
+    /**
+     * Users blocked by this user.
+     */
+    public function blockedUsers(): HasMany
+    {
+        return $this->hasMany(Block::class, 'user_id');
+    }
+
+    /**
+     * Users who blocked this user.
+     */
+    public function blockers(): HasMany
+    {
+        return $this->hasMany(Block::class, 'blocked_id');
+    }
+
+    /**
+     * Get a merged list of all user IDs that this user should be restricted from.
+     * Includes people I blocked and people who blocked me.
+     */
+    public function getRestrictedUserIds(): array
+    {
+        $blockedByMe = $this->blockedUsers()->pluck('blocked_id')->toArray();
+        $blockedMe = $this->blockers()->pluck('user_id')->toArray();
+
+        return array_unique(array_merge($blockedByMe, $blockedMe));
+    }
 }

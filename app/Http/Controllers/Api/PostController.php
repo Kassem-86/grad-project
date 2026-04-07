@@ -22,9 +22,12 @@ class PostController extends Controller
     /**
      * Display a listing of posts.
      */
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
+        $restrictedUserIds = $request->user()->getRestrictedUserIds();
+
         $posts = Post::with(['user', 'comments.user', 'likes.user'])
+            ->whereNotIn('user_id', $restrictedUserIds)
             ->latest()
             ->paginate(10);
 

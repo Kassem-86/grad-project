@@ -19,9 +19,7 @@ return new class extends Migration
         $table->string('password'); 
         $table->enum('gender', ['Male', 'Female'])->nullable();
         $table->string('phone', 11)->nullable();
-        $table->integer('year')->nullable();
-        $table->integer('month')->nullable();
-        $table->integer('day')->nullable();
+        $table->date('birthDate')->nullable();
         $table->enum('diabetes_type', ['Type1', 'Type2', 'LADA', 'MODY', 'Gestational', 'diabetes', 'other'])->nullable();
         $table->enum('insulin_therapy', ['Pen / Syringes', 'pump', 'No insulin'])->nullable();
         $table->dateTime('diagnose_date')->nullable();

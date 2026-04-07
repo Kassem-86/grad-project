@@ -19,8 +19,15 @@ class FriendshipController extends Controller
     {
         $user = $request->user();
 
+        // 1. ممنوع تبعت لنفسك
         if ($user->id === $id) {
             return response()->json(['message' => 'You cannot send a friend request to yourself.'], 403);
+        }
+
+        // 2. التأكد إن مفيش بلوك بين الطرفين (سواء هو حظرك أو أنت حظرته)
+        $restrictedIds = $user->getRestrictedUserIds();
+        if (in_array($id, $restrictedIds)) {
+            return response()->json(['message' => 'Action forbidden due to block settings.'], 403);
         }
 
         User::findOrFail($id);
@@ -48,8 +55,15 @@ class FriendshipController extends Controller
 
     public function acceptRequest(Request $request, int $id): JsonResponse
     {
+        $user = $request->user();
+
+        // تشيك سريع برضه عند القبول (زيادة أمان)
+        if (in_array($id, $user->getRestrictedUserIds())) {
+            return response()->json(['message' => 'Action forbidden due to block settings.'], 403);
+        }
+
         $friendship = Friendship::where('user_id', $id)
-            ->where('friend_id', $request->user()->id)
+            ->where('friend_id', $user->id)
             ->where('status', 'pending')
             ->first();
 
@@ -81,5 +95,24 @@ class FriendshipController extends Controller
         $friendship->delete();
 
         return response()->json(['message' => 'Friend removed successfully.']);
+    }
+
+    public function suggestions(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $restrictedUserIds = $user->getRestrictedUserIds();
+
+        // Get friend IDs
+        $friendIds = $user->friends()->pluck('id')->toArray();
+
+        // Exclude self, friends, and restricted users
+        $excludeIds = array_unique(array_merge([$user->id], $friendIds, $restrictedUserIds));
+
+        $suggestions = User::whereNotIn('id', $excludeIds)
+            ->inRandomOrder()
+            ->limit(10)
+            ->get(['id', 'first_name', 'last_name']);
+
+        return response()->json($suggestions);
     }
 }

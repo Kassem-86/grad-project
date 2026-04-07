@@ -64,18 +64,14 @@ class CommentController extends Controller
      */
     public function update(Request $request, Comment $comment): JsonResponse
     {
-        // 1. تأكد إن اللي بيعدل هو صاحب الكومنت (لازم تكون عامل CommentPolicy)
-        $this->authorize('update', $comment);
+       $this->authorize('update', $comment);
 
-        // 2. عمل Validation للنص الجديد
-        $validated = $request->validate([
+   $validated = $request->validate([
             'comment_text' => 'required|string',
         ]);
 
-        // 3. تحديث الكومنت
         $comment->update($validated);
 
-        // 4. تحميل البيانات المرتبطة عشان الـ Resource يرجع كامل لـ لؤي
         $comment->load(['user', 'likes.user']);
 
         return response()->json([

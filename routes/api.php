@@ -3,16 +3,19 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\{
     AuthController,
+    BlockController,
     PostController,
     CommentController,
     LikeController,
     FriendshipController
+    
 };
 use App\Http\Controllers\{
     GlucoseController,
     MealController,
     MedicationController,
     MedicationLogController
+
 };
 
 /*
@@ -57,6 +60,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/friends/{id}/request', [FriendshipController::class, 'sendRequest']);
     Route::post('/friends/{id}/accept', [FriendshipController::class, 'acceptRequest']);
     Route::delete('/friends/{id}', [FriendshipController::class, 'removeFriend']);
+      Route::post('/friends/{id}/block', [BlockController::class, 'block']);
+    Route::delete('/friends/{id}/unblock', [BlockController::class, 'unblock']);
 
     // --- Health Tracking (Resources) ---
     Route::apiResource('glucose', GlucoseController::class);
@@ -64,4 +69,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('medications', MedicationController::class);
     Route::apiResource('medication-logs', MedicationLogController::class)->only(['store', 'index', 'update', 'destroy']);
 
+    // ... الـ routes القديمة
+  
 });
