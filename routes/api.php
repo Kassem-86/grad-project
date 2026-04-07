@@ -5,7 +5,8 @@ use App\Http\Controllers\Api\{
     AuthController,
     PostController,
     CommentController,
-    LikeController
+    LikeController,
+    FriendshipController
 };
 use App\Http\Controllers\{
     GlucoseController,
@@ -51,6 +52,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- Community: Likes (Polymorphic) ---
     Route::post('/posts/{post}/like', [LikeController::class, 'togglePost']);
     Route::post('/comments/{comment}/like', [LikeController::class, 'toggleComment']);
+
+    // --- Community: Friendships ---
+    Route::post('/friends/{id}/request', [FriendshipController::class, 'sendRequest']);
+    Route::post('/friends/{id}/accept', [FriendshipController::class, 'acceptRequest']);
+    Route::delete('/friends/{id}', [FriendshipController::class, 'removeFriend']);
 
     // --- Health Tracking (Resources) ---
     Route::apiResource('glucose', GlucoseController::class);

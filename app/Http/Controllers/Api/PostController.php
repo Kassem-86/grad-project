@@ -26,7 +26,7 @@ class PostController extends Controller
     {
         $posts = Post::with(['user', 'comments.user', 'likes.user'])
             ->latest()
-            ->paginate(15);
+            ->paginate(10);
 
         return PostResource::collection($posts);
     }

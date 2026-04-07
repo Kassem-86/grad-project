@@ -32,7 +32,7 @@ return new class extends Migration
         $table->float('target_glucose_range')->nullable();
         $table->float('min_glucose')->nullable();
         $table->string('emergency_contact', 11)->nullable();
-        
+        $table->timestamp('email_verified_at')->nullable();
         $table->timestamps();
     });
 }

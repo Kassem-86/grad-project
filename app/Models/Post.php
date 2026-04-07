@@ -57,7 +57,7 @@ class Post extends Model
     /**
      * Get the likes for the post (polymorphic).
      */
-    public function likes(): MorphMany
+    public function likes()
     {
         return $this->morphMany(Like::class, 'likeable');
     }
