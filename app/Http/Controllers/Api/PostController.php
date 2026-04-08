@@ -19,24 +19,30 @@ class PostController extends Controller
     //     $this->middleware('auth:sanctum')->only(['store', 'update', 'destroy']);
     // }
 
-    /**
-     * Display a listing of posts.
-     */
-    public function index(Request $request): AnonymousResourceCollection
-    {
-        $restrictedUserIds = $request->user()->getRestrictedUserIds();
-
-        $posts = Post::with(['user', 'comments.user', 'likes.user'])
-            ->whereNotIn('user_id', $restrictedUserIds)
-            ->latest()
-            ->paginate(10);
-
-        return PostResource::collection($posts);
+    
+    public function index(Request $request)
+{
+    // 1. تشيك أمان: لو مفيش يوزر، رجع البوستات من غير فلتر البلوك (مؤقتاً عشان الأيرور يختفي)
+    if (!$request->user()) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'User not authenticated in request',
+            'posts' => Post::with('user')->latest()->paginate(10)
+        ]);
     }
 
-    /**
-     * Store a newly created post.
-     */
+    // 2. لو فيه يوزر، كمل الـ Logic بتاعنا عادي
+    $restrictedIds = $request->user()->getRestrictedUserIds();
+
+    $posts = Post::with('user')
+        ->whereNotIn('user_id', $restrictedIds)
+        ->latest()
+        ->paginate(10);
+
+    return response()->json($posts);
+}
+
+   
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([

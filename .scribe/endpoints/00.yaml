@@ -139,6 +139,153 @@ endpoints:
     custom: []
     httpMethods:
       - GET
+    uri: api/posts
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Display a listing of posts.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 500
+        content: |-
+          {
+              "message": "Server Error"
+          }
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/posts/{post_id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Display the specified post.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      post_id:
+        custom: []
+        name: post_id
+        description: 'The ID of the post.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      post_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":{"id":1,"user_id":1,"user":{"id":1,"first_name":"Ziad","last_name":"Kassem","email":"ziadkassem@example.com"},"title":"Laudantium rem nam praesentium reprehenderit ut odio.","content":"Sed magni blanditiis rerum earum quam. Quo alias aut cum. Accusamus amet quaerat repudiandae quod sed omnis. Accusantium ab eum ipsam asperiores voluptatem consequatur.\n\nUt aut odit debitis fugiat nobis incidunt. Sapiente officiis aut dolor molestiae sunt nulla. Quia dolor nemo cum aut. Minima et quasi officia sit. Sed modi cumque atque illum qui dignissimos ut id.\n\nConsequatur delectus quidem aperiam soluta neque eius nobis. Ut debitis cumque iure cupiditate. Veniam corporis totam ut est et.","post_media":null,"category":"General","likes_count":5,"comments_count":5,"comments":[{"id":1,"post_id":1,"user_id":12,"user":{"id":12,"first_name":"Virgie","last_name":"Parker","email":"stefanie.keeling@example.com"},"comment_text":"Qui dolorum magni eveniet.","likes_count":0,"created_at":"2026-04-07T16:20:31.000000Z","updated_at":"2026-04-07T16:20:31.000000Z"},{"id":2,"post_id":1,"user_id":12,"user":{"id":12,"first_name":"Virgie","last_name":"Parker","email":"stefanie.keeling@example.com"},"comment_text":"Et perspiciatis porro voluptas error ut odio.","likes_count":0,"created_at":"2026-04-07T16:20:31.000000Z","updated_at":"2026-04-07T16:20:31.000000Z"},{"id":3,"post_id":1,"user_id":12,"user":{"id":12,"first_name":"Virgie","last_name":"Parker","email":"stefanie.keeling@example.com"},"comment_text":"Perferendis illo a alias ut nobis quidem.","likes_count":0,"created_at":"2026-04-07T16:20:31.000000Z","updated_at":"2026-04-07T16:20:31.000000Z"},{"id":4,"post_id":1,"user_id":12,"user":{"id":12,"first_name":"Virgie","last_name":"Parker","email":"stefanie.keeling@example.com"},"comment_text":"Blanditiis dolor et omnis et repellendus esse unde.","likes_count":0,"created_at":"2026-04-07T16:20:31.000000Z","updated_at":"2026-04-07T16:20:31.000000Z"},{"id":5,"post_id":1,"user_id":12,"user":{"id":12,"first_name":"Virgie","last_name":"Parker","email":"stefanie.keeling@example.com"},"comment_text":"Ut non labore et non aut suscipit incidunt minus.","likes_count":0,"created_at":"2026-04-07T16:20:31.000000Z","updated_at":"2026-04-07T16:20:31.000000Z"}],"likes":[{"id":1,"user_id":4,"user":{"id":4,"first_name":"Ziad","last_name":"Kassem","email":"ziad@example.com"},"likeable_id":1,"likeable_type":"App\\Models\\Post","created_at":"2026-04-07T16:20:31.000000Z"},{"id":2,"user_id":13,"user":{"id":13,"first_name":"Ibrahim","last_name":"Herzog","email":"jaime.schroeder@example.org"},"likeable_id":1,"likeable_type":"App\\Models\\Post","created_at":"2026-04-07T16:20:31.000000Z"},{"id":3,"user_id":10,"user":{"id":10,"first_name":"Roscoe","last_name":"Schulist","email":"kmedhurst@example.org"},"likeable_id":1,"likeable_type":"App\\Models\\Post","created_at":"2026-04-07T16:20:31.000000Z"},{"id":4,"user_id":7,"user":{"id":7,"first_name":"Bertha","last_name":"Wintheiser","email":"torphy.lucienne@example.com"},"likeable_id":1,"likeable_type":"App\\Models\\Post","created_at":"2026-04-07T16:20:31.000000Z"},{"id":5,"user_id":9,"user":{"id":9,"first_name":"Viola","last_name":"Eichmann","email":"klocko.torey@example.org"},"likeable_id":1,"likeable_type":"App\\Models\\Post","created_at":"2026-04-07T16:20:31.000000Z"}],"created_at":"2026-04-07T16:20:31.000000Z","updated_at":"2026-04-07T16:20:31.000000Z"}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: 'api/posts/{post_id}/comments'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Get all comments for a post.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      post_id:
+        custom: []
+        name: post_id
+        description: 'The ID of the post.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      post_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: '{"data":[{"id":1,"post_id":1,"user_id":12,"user":{"id":12,"first_name":"Virgie","last_name":"Parker","email":"stefanie.keeling@example.com"},"comment_text":"Qui dolorum magni eveniet.","likes_count":0,"likes":[],"created_at":"2026-04-07T16:20:31.000000Z","updated_at":"2026-04-07T16:20:31.000000Z"},{"id":2,"post_id":1,"user_id":12,"user":{"id":12,"first_name":"Virgie","last_name":"Parker","email":"stefanie.keeling@example.com"},"comment_text":"Et perspiciatis porro voluptas error ut odio.","likes_count":0,"likes":[],"created_at":"2026-04-07T16:20:31.000000Z","updated_at":"2026-04-07T16:20:31.000000Z"},{"id":3,"post_id":1,"user_id":12,"user":{"id":12,"first_name":"Virgie","last_name":"Parker","email":"stefanie.keeling@example.com"},"comment_text":"Perferendis illo a alias ut nobis quidem.","likes_count":0,"likes":[],"created_at":"2026-04-07T16:20:31.000000Z","updated_at":"2026-04-07T16:20:31.000000Z"},{"id":4,"post_id":1,"user_id":12,"user":{"id":12,"first_name":"Virgie","last_name":"Parker","email":"stefanie.keeling@example.com"},"comment_text":"Blanditiis dolor et omnis et repellendus esse unde.","likes_count":0,"likes":[],"created_at":"2026-04-07T16:20:31.000000Z","updated_at":"2026-04-07T16:20:31.000000Z"},{"id":5,"post_id":1,"user_id":12,"user":{"id":12,"first_name":"Virgie","last_name":"Parker","email":"stefanie.keeling@example.com"},"comment_text":"Ut non labore et non aut suscipit incidunt minus.","likes_count":0,"likes":[],"created_at":"2026-04-07T16:20:31.000000Z","updated_at":"2026-04-07T16:20:31.000000Z"}],"links":{"first":"http:\/\/localhost\/api\/posts\/1\/comments?page=1","last":"http:\/\/localhost\/api\/posts\/1\/comments?page=1","prev":null,"next":null},"meta":{"current_page":1,"from":1,"last_page":1,"links":[{"url":null,"label":"&laquo; Previous","page":null,"active":false},{"url":"http:\/\/localhost\/api\/posts\/1\/comments?page=1","label":"1","page":1,"active":true},{"url":null,"label":"Next &raquo;","page":null,"active":false}],"path":"http:\/\/localhost\/api\/posts\/1\/comments","per_page":20,"to":5,"total":5}}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - GET
     uri: api/user
     metadata:
       custom: []
@@ -195,6 +342,684 @@ endpoints:
       Accept: application/json
     urlParameters: []
     cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: api/posts
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Store a newly created post.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      title:
+        custom: []
+        name: title
+        description: 'Must not be greater than 255 characters.'
+        required: true
+        example: vmqeopfuudtdsufvyvddq
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      content:
+        custom: []
+        name: content
+        description: ''
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      post_media:
+        custom: []
+        name: post_media
+        description: ''
+        required: false
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      category:
+        custom: []
+        name: category
+        description: ''
+        required: true
+        example: General
+        type: string
+        enumValues:
+          - General
+          - 'Type1 and LADA'
+          - Type2
+          - gestational
+          - advices
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      title: vmqeopfuudtdsufvyvddq
+      content: consequatur
+      post_media: consequatur
+      category: General
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+      - PATCH
+    uri: 'api/posts/{id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update the specified post.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the post.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      title:
+        custom: []
+        name: title
+        description: 'Must not be greater than 255 characters.'
+        required: false
+        example: vmqeopfuudtdsufvyvddq
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      content:
+        custom: []
+        name: content
+        description: ''
+        required: false
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      post_media:
+        custom: []
+        name: post_media
+        description: ''
+        required: false
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      category:
+        custom: []
+        name: category
+        description: ''
+        required: false
+        example: General
+        type: string
+        enumValues:
+          - General
+          - 'Type1 and LADA'
+          - Type2
+          - gestational
+          - advices
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      title: vmqeopfuudtdsufvyvddq
+      content: consequatur
+      post_media: consequatur
+      category: General
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/posts/{id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Remove the specified post.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the post.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/posts/{post_id}/comments'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Store a newly created comment.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      post_id:
+        custom: []
+        name: post_id
+        description: 'The ID of the post.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      post_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      comment_text:
+        custom: []
+        name: comment_text
+        description: ''
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      comment_text: consequatur
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - PUT
+    uri: 'api/comments/{comment_id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Update the specified comment.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      comment_id:
+        custom: []
+        name: comment_id
+        description: 'The ID of the comment.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      comment_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      comment_text:
+        custom: []
+        name: comment_text
+        description: ''
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      comment_text: consequatur
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/comments/{comment_id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Delete a comment.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      comment_id:
+        custom: []
+        name: comment_id
+        description: 'The ID of the comment.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      comment_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/posts/{post_id}/like'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Toggle like on a post.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      post_id:
+        custom: []
+        name: post_id
+        description: 'The ID of the post.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      post_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/comments/{comment_id}/like'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Toggle like on a comment.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      comment_id:
+        custom: []
+        name: comment_id
+        description: 'The ID of the comment.'
+        required: true
+        example: 1
+        type: integer
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      comment_id: 1
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/friends/{id}/request'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the friend.'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: consequatur
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/friends/{id}/accept'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the friend.'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: consequatur
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/friends/{id}'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the friend.'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: consequatur
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - POST
+    uri: 'api/friends/{id}/block'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the friend.'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: consequatur
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
+      - DELETE
+    uri: 'api/friends/{id}/unblock'
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: ''
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      id:
+        custom: []
+        name: id
+        description: 'The ID of the friend.'
+        required: true
+        example: consequatur
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      id: consequatur
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -285,7 +1110,7 @@ endpoints:
         name: reading_time
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-03-10 20:14:03'
+        example: '2026-04-08 11:24:58'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -296,7 +1121,7 @@ endpoints:
         name: reading_type
         description: ''
         required: true
-        example: 'Before Meal'
+        example: Random
         type: string
         enumValues:
           - Fasting
@@ -341,8 +1166,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       glucose_level: 73
-      reading_time: '2026-03-10 20:14:03'
-      reading_type: 'Before Meal'
+      reading_time: '2026-04-08 11:24:58'
+      reading_type: Random
       notes: consequatur
       a1c_estimation: 45
       average_glucose_level: 56
@@ -377,14 +1202,14 @@ endpoints:
         name: reading_id
         description: 'The ID of the reading.'
         required: true
-        example: 1
+        example: 17
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      reading_id: 1
+      reading_id: 17
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -430,14 +1255,14 @@ endpoints:
         name: reading_id
         description: 'The ID of the reading.'
         required: true
-        example: 1
+        example: 17
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      reading_id: 1
+      reading_id: 17
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -457,7 +1282,7 @@ endpoints:
         name: reading_time
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: false
-        example: '2026-03-10 20:14:03'
+        example: '2026-04-08 11:24:59'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -468,7 +1293,7 @@ endpoints:
         name: reading_type
         description: ''
         required: false
-        example: Fasting
+        example: 'Before Meal'
         type: string
         enumValues:
           - Fasting
@@ -513,8 +1338,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       glucose_level: 73
-      reading_time: '2026-03-10 20:14:03'
-      reading_type: Fasting
+      reading_time: '2026-04-08 11:24:59'
+      reading_type: 'Before Meal'
       notes: consequatur
       a1c_estimation: 45
       average_glucose_level: 56
@@ -549,14 +1374,14 @@ endpoints:
         name: reading_id
         description: 'The ID of the reading.'
         required: true
-        example: 1
+        example: 17
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      reading_id: 1
+      reading_id: 17
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -636,7 +1461,7 @@ endpoints:
         name: meal_time
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-03-10 20:14:03'
+        example: '2026-04-08 11:24:59'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -669,7 +1494,7 @@ endpoints:
         name: meal_type
         description: ''
         required: true
-        example: Dinner
+        example: Snack
         type: string
         enumValues:
           - Breakfast
@@ -769,10 +1594,10 @@ endpoints:
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      meal_time: '2026-03-10 20:14:03'
+      meal_time: '2026-04-08 11:24:59'
       total_carb: 73
       total_calories: 45
-      meal_type: Dinner
+      meal_type: Snack
       notes: consequatur
       food_items:
         -
@@ -882,7 +1707,7 @@ endpoints:
         name: meal_time
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: false
-        example: '2026-03-10 20:14:04'
+        example: '2026-04-08 11:24:59'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -915,7 +1740,7 @@ endpoints:
         name: meal_type
         description: ''
         required: false
-        example: Breakfast
+        example: Snack
         type: string
         enumValues:
           - Breakfast
@@ -1014,10 +1839,10 @@ endpoints:
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      meal_time: '2026-03-10 20:14:04'
+      meal_time: '2026-04-08 11:24:59'
       total_carb: 73
       total_calories: 45
-      meal_type: Breakfast
+      meal_type: Snack
       notes: consequatur
       food_items:
         -
@@ -1167,7 +1992,7 @@ endpoints:
         name: route
         description: 'محدث ليتوافق مع Enum الداتابيز ويدعم الـ Capital/Small.'
         required: true
-        example: Inhaler
+        example: oral
         type: string
         enumValues:
           - Oral
@@ -1210,7 +2035,7 @@ endpoints:
         name: start_date
         description: 'Must be a valid date in the format <code>Y-m-d</code>.'
         required: true
-        example: '2026-03-10'
+        example: '2026-04-08'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1221,7 +2046,7 @@ endpoints:
         name: end_date
         description: 'Must be a valid date in the format <code>Y-m-d</code>.'
         required: false
-        example: '2026-03-10'
+        example: '2026-04-08'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1232,7 +2057,7 @@ endpoints:
         name: reminder_time
         description: 'Must be a valid date in the format <code>H:i:s</code>.'
         required: false
-        example: '20:14:04'
+        example: '11:25:00'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1252,12 +2077,12 @@ endpoints:
     cleanBodyParameters:
       medication_name: vmqeopfuudtdsufvyvddq
       dosage: consequatur
-      route: Inhaler
+      route: oral
       unit: consequatur
       frequency: consequatur
-      start_date: '2026-03-10'
-      end_date: '2026-03-10'
-      reminder_time: '20:14:04'
+      start_date: '2026-04-08'
+      end_date: '2026-04-08'
+      reminder_time: '11:25:00'
       notes: consequatur
     fileParameters: []
     responses: []
@@ -1290,14 +2115,14 @@ endpoints:
         name: medication_id
         description: 'The ID of the medication.'
         required: true
-        example: 1
+        example: 17
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      medication_id: 1
+      medication_id: 17
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1343,14 +2168,14 @@ endpoints:
         name: medication_id
         description: 'The ID of the medication.'
         required: true
-        example: 1
+        example: 17
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      medication_id: 1
+      medication_id: 17
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters:
@@ -1381,7 +2206,7 @@ endpoints:
         name: route
         description: ''
         required: false
-        example: oral
+        example: IV
         type: string
         enumValues:
           - Oral
@@ -1424,7 +2249,7 @@ endpoints:
         name: start_date
         description: 'Must be a valid date in the format <code>Y-m-d</code>.'
         required: false
-        example: '2026-03-10'
+        example: '2026-04-08'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1435,7 +2260,7 @@ endpoints:
         name: end_date
         description: 'Must be a valid date in the format <code>Y-m-d</code>.'
         required: false
-        example: '2026-03-10'
+        example: '2026-04-08'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1446,7 +2271,7 @@ endpoints:
         name: reminder_time
         description: 'Must be a valid date in the format <code>H:i:s</code>.'
         required: false
-        example: '20:14:04'
+        example: '11:25:00'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1466,12 +2291,12 @@ endpoints:
     cleanBodyParameters:
       medication_name: vmqeopfuudtdsufvyvddq
       dosage: consequatur
-      route: oral
+      route: IV
       unit: consequatur
       frequency: consequatur
-      start_date: '2026-03-10'
-      end_date: '2026-03-10'
-      reminder_time: '20:14:04'
+      start_date: '2026-04-08'
+      end_date: '2026-04-08'
+      reminder_time: '11:25:00'
       notes: consequatur
     fileParameters: []
     responses: []
@@ -1504,14 +2329,14 @@ endpoints:
         name: medication_id
         description: 'The ID of the medication.'
         required: true
-        example: 1
+        example: 17
         type: integer
         enumValues: []
         exampleWasSpecified: false
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      medication_id: 1
+      medication_id: 17
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -1602,7 +2427,7 @@ endpoints:
         name: taken_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-03-10 20:14:04'
+        example: '2026-04-08 11:25:00'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1613,7 +2438,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: missed
+        example: skipped
         type: string
         enumValues:
           - taken
@@ -1624,8 +2449,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       medication_id: 17
-      taken_at: '2026-03-10 20:14:04'
-      status: missed
+      taken_at: '2026-04-08 11:25:00'
+      status: skipped
     fileParameters: []
     responses: []
     responseFields: []
@@ -1674,7 +2499,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: skipped
+        example: taken
         type: string
         enumValues:
           - taken
@@ -1684,7 +2509,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      status: skipped
+      status: taken
     fileParameters: []
     responses: []
     responseFields: []

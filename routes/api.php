@@ -45,7 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // --- Community: Posts ---
-    Route::apiResource('posts', PostController::class)->except(['index', 'show']);
+    Route::apiResource('posts', PostController::class);
 
     // --- Community: Comments ---
     Route::post('/posts/{post}/comments', [CommentController::class, 'store']);
