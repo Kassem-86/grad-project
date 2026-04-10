@@ -25,6 +25,7 @@ use App\Http\Controllers\{
 */
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/check-email', [AuthController::class, 'checkEmail']);
 
 // المشاهدة فقط (Posts & Comments)
 Route::get('/posts', [PostController::class, 'index']);

@@ -16,6 +16,20 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
+     * The primary key associated with the table.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'id';
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = true;
+
+    /**
      * Get the posts created by the user.
      */
     public function posts(): HasMany
@@ -104,10 +118,24 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
+        'id',
         'first_name',
         'last_name',
         'email',
         'password',
+        'gender',
+        'phone',
+        'birthDate',
+        'diabetes_type',
+        'insulin_therapy',
+        'diagnose_date',
+        'glucose',
+        'weight',
+        'height',
+        'max_glucose',
+        'target_glucose_range',
+        'min_glucose',
+        'emergency_contact',
     ];
 
     /**

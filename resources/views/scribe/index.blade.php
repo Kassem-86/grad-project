@@ -72,16 +72,19 @@
                 </li>
                                     <ul id="tocify-subheader-endpoints" class="tocify-subheader">
                                                     <li class="tocify-item level-2" data-unique="endpoints-POSTapi-register">
-                                <a href="#endpoints-POSTapi-register">POST api/register</a>
+                                <a href="#endpoints-POSTapi-register">Register a new user and return a token</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-login">
                                 <a href="#endpoints-POSTapi-login">Login an existing user and return a token</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-posts">
-                                <a href="#endpoints-GETapi-posts">Display a listing of posts.</a>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-POSTapi-check-email">
+                                <a href="#endpoints-POSTapi-check-email">Check if the email is already registered.</a>
                             </li>
-                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-posts--post_id-">
-                                <a href="#endpoints-GETapi-posts--post_id-">Display the specified post.</a>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-posts">
+                                <a href="#endpoints-GETapi-posts">Instantiate the controller.</a>
+                            </li>
+                                                                                <li class="tocify-item level-2" data-unique="endpoints-GETapi-posts--id-">
+                                <a href="#endpoints-GETapi-posts--id-">Display the specified post.</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-GETapi-posts--post_id--comments">
                                 <a href="#endpoints-GETapi-posts--post_id--comments">Get all comments for a post.</a>
@@ -93,7 +96,7 @@
                                 <a href="#endpoints-POSTapi-logout">Logout the authenticated user</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-POSTapi-posts">
-                                <a href="#endpoints-POSTapi-posts">Store a newly created post.</a>
+                                <a href="#endpoints-POSTapi-posts">POST api/posts</a>
                             </li>
                                                                                 <li class="tocify-item level-2" data-unique="endpoints-PUTapi-posts--id-">
                                 <a href="#endpoints-PUTapi-posts--id-">Update the specified post.</a>
@@ -199,7 +202,7 @@
     </ul>
 
     <ul class="toc-footer" id="last-updated">
-        <li>Last updated: April 8, 2026</li>
+        <li>Last updated: April 10, 2026</li>
     </ul>
 </div>
 
@@ -222,7 +225,7 @@ You can switch the language used with the tabs at the top right (or from the nav
 
     
 
-                                <h2 id="endpoints-POSTapi-register">POST api/register</h2>
+                                <h2 id="endpoints-POSTapi-register">Register a new user and return a token</h2>
 
 <p>
 </p>
@@ -242,7 +245,20 @@ You can switch the language used with the tabs at the top right (or from the nav
     \"first_name\": \"vmqeopfuudtdsufvyvddq\",
     \"last_name\": \"amniihfqcoynlazghdtqt\",
     \"email\": \"andreanne00@example.org\",
-    \"password\": \"\'YAKYLk4&gt;SJIrIV#lz.\"
+    \"password\": \"\'YAKYLk4&gt;SJIrIV#lz.\",
+    \"gender\": \"Female\",
+    \"phone\": \"lsmsjuryv\",
+    \"birthDate\": \"2026-04-10T14:56:43\",
+    \"diabetes_type\": \"Type2\",
+    \"insulin_therapy\": \"No insulin\",
+    \"diagnose_date\": \"2026-04-10 14:56:43\",
+    \"glucose\": \"mmol\\/L\",
+    \"weight\": 51,
+    \"height\": 32,
+    \"max_glucose\": 7,
+    \"target_glucose_range\": 86,
+    \"min_glucose\": 5,
+    \"emergency_contact\": \"zvrbyickz\"
 }"
 </code></pre></div>
 
@@ -261,7 +277,20 @@ let body = {
     "first_name": "vmqeopfuudtdsufvyvddq",
     "last_name": "amniihfqcoynlazghdtqt",
     "email": "andreanne00@example.org",
-    "password": "'YAKYLk4&gt;SJIrIV#lz."
+    "password": "'YAKYLk4&gt;SJIrIV#lz.",
+    "gender": "Female",
+    "phone": "lsmsjuryv",
+    "birthDate": "2026-04-10T14:56:43",
+    "diabetes_type": "Type2",
+    "insulin_therapy": "No insulin",
+    "diagnose_date": "2026-04-10 14:56:43",
+    "glucose": "mmol\/L",
+    "weight": 51,
+    "height": 32,
+    "max_glucose": 7,
+    "target_glucose_range": 86,
+    "min_glucose": 5,
+    "emergency_contact": "zvrbyickz"
 };
 
 fetch(url, {
@@ -356,7 +385,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value="vmqeopfuudtdsufvyvddq"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>vmqeopfuudtdsufvyvddq</code></p>
+<p>Must not be greater than 50 characters. Example: <code>vmqeopfuudtdsufvyvddq</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>last_name</code></b>&nbsp;&nbsp;
@@ -368,7 +397,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value="amniihfqcoynlazghdtqt"
                data-component="body">
     <br>
-<p>Must not be greater than 255 characters. Example: <code>amniihfqcoynlazghdtqt</code></p>
+<p>Must not be greater than 50 characters. Example: <code>amniihfqcoynlazghdtqt</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
@@ -380,7 +409,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
                value="andreanne00@example.org"
                data-component="body">
     <br>
-<p>Must be a valid email address. Must not be greater than 255 characters. Example: <code>andreanne00@example.org</code></p>
+<p>Must be a valid email address. Must not be greater than 50 characters. Example: <code>andreanne00@example.org</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>password</code></b>&nbsp;&nbsp;
@@ -393,6 +422,170 @@ You can check the Dev Tools console for debugging information.</code></pre>
                data-component="body">
     <br>
 <p>Must be at least 8 characters. Example: <code>'YAKYLk4&gt;SJIrIV#lz.</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>gender</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="gender"                data-endpoint="POSTapi-register"
+               value="Female"
+               data-component="body">
+    <br>
+<p>Example: <code>Female</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>Male</code></li> <li><code>Female</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>phone</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="phone"                data-endpoint="POSTapi-register"
+               value="lsmsjuryv"
+               data-component="body">
+    <br>
+<p>Must not be greater than 11 characters. Example: <code>lsmsjuryv</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>birthDate</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="birthDate"                data-endpoint="POSTapi-register"
+               value="2026-04-10T14:56:43"
+               data-component="body">
+    <br>
+<p>Must be a valid date. Example: <code>2026-04-10T14:56:43</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>diabetes_type</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="diabetes_type"                data-endpoint="POSTapi-register"
+               value="Type2"
+               data-component="body">
+    <br>
+<p>Example: <code>Type2</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>Type1</code></li> <li><code>Type2</code></li> <li><code>LADA</code></li> <li><code>MODY</code></li> <li><code>Gestational</code></li> <li><code>diabetes</code></li> <li><code>other</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>insulin_therapy</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="insulin_therapy"                data-endpoint="POSTapi-register"
+               value="No insulin"
+               data-component="body">
+    <br>
+<p>Example: <code>No insulin</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>Pen / Syringes</code></li> <li><code>pump</code></li> <li><code>No insulin</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>diagnose_date</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="diagnose_date"                data-endpoint="POSTapi-register"
+               value="2026-04-10 14:56:43"
+               data-component="body">
+    <br>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-04-10 14:56:43</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>glucose</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="glucose"                data-endpoint="POSTapi-register"
+               value="mmol/L"
+               data-component="body">
+    <br>
+<p>Example: <code>mmol/L</code></p>
+Must be one of:
+<ul style="list-style-type: square;"><li><code>mg/dl</code></li> <li><code>mmol/L</code></li></ul>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>weight</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="weight"                data-endpoint="POSTapi-register"
+               value="51"
+               data-component="body">
+    <br>
+<p>Must be at least 0. Example: <code>51</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>height</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="height"                data-endpoint="POSTapi-register"
+               value="32"
+               data-component="body">
+    <br>
+<p>Must be at least 0. Example: <code>32</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>max_glucose</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="max_glucose"                data-endpoint="POSTapi-register"
+               value="7"
+               data-component="body">
+    <br>
+<p>Must be at least 0. Example: <code>7</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>target_glucose_range</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="target_glucose_range"                data-endpoint="POSTapi-register"
+               value="86"
+               data-component="body">
+    <br>
+<p>Must be at least 0. Example: <code>86</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>min_glucose</code></b>&nbsp;&nbsp;
+<small>number</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="number" style="display: none"
+               step="any"               name="min_glucose"                data-endpoint="POSTapi-register"
+               value="5"
+               data-component="body">
+    <br>
+<p>Must be at least 0. Example: <code>5</code></p>
+        </div>
+                <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>emergency_contact</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+<i>optional</i> &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="emergency_contact"                data-endpoint="POSTapi-register"
+               value="zvrbyickz"
+               data-component="body">
+    <br>
+<p>Must not be greater than 11 characters. Example: <code>zvrbyickz</code></p>
         </div>
         </form>
 
@@ -542,7 +735,139 @@ You can check the Dev Tools console for debugging information.</code></pre>
         </div>
         </form>
 
-                    <h2 id="endpoints-GETapi-posts">Display a listing of posts.</h2>
+                    <h2 id="endpoints-POSTapi-check-email">Check if the email is already registered.</h2>
+
+<p>
+</p>
+
+
+
+<span id="example-requests-POSTapi-check-email">
+<blockquote>Example request:</blockquote>
+
+
+<div class="bash-example">
+    <pre><code class="language-bash">curl --request POST \
+    "http://localhost/api/check-email" \
+    --header "Content-Type: application/json" \
+    --header "Accept: application/json" \
+    --data "{
+    \"email\": \"qkunze@example.com\"
+}"
+</code></pre></div>
+
+
+<div class="javascript-example">
+    <pre><code class="language-javascript">const url = new URL(
+    "http://localhost/api/check-email"
+);
+
+const headers = {
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "email": "qkunze@example.com"
+};
+
+fetch(url, {
+    method: "POST",
+    headers,
+    body: JSON.stringify(body),
+}).then(response =&gt; response.json());</code></pre></div>
+
+</span>
+
+<span id="example-responses-POSTapi-check-email">
+</span>
+<span id="execution-results-POSTapi-check-email" hidden>
+    <blockquote>Received response<span
+                id="execution-response-status-POSTapi-check-email"></span>:
+    </blockquote>
+    <pre class="json"><code id="execution-response-content-POSTapi-check-email"
+      data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
+</span>
+<span id="execution-error-POSTapi-check-email" hidden>
+    <blockquote>Request failed with error:</blockquote>
+    <pre><code id="execution-error-message-POSTapi-check-email">
+
+Tip: Check that you&#039;re properly connected to the network.
+If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
+You can check the Dev Tools console for debugging information.</code></pre>
+</span>
+<form id="form-POSTapi-check-email" data-method="POST"
+      data-path="api/check-email"
+      data-authed="0"
+      data-hasfiles="0"
+      data-isarraybody="0"
+      autocomplete="off"
+      onsubmit="event.preventDefault(); executeTryOut('POSTapi-check-email', this);">
+    <h3>
+        Request&nbsp;&nbsp;&nbsp;
+                    <button type="button"
+                    style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-tryout-POSTapi-check-email"
+                    onclick="tryItOut('POSTapi-check-email');">Try it out ⚡
+            </button>
+            <button type="button"
+                    style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-canceltryout-POSTapi-check-email"
+                    onclick="cancelTryOut('POSTapi-check-email');" hidden>Cancel 🛑
+            </button>&nbsp;&nbsp;
+            <button type="submit"
+                    style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
+                    id="btn-executetryout-POSTapi-check-email"
+                    data-initial-text="Send Request 💥"
+                    data-loading-text="⏱ Sending..."
+                    hidden>Send Request 💥
+            </button>
+            </h3>
+            <p>
+            <small class="badge badge-black">POST</small>
+            <b><code>api/check-email</code></b>
+        </p>
+                <h4 class="fancy-heading-panel"><b>Headers</b></h4>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Content-Type</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Content-Type"                data-endpoint="POSTapi-check-email"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <div style="padding-left: 28px; clear: unset;">
+                <b style="line-height: 2;"><code>Accept</code></b>&nbsp;&nbsp;
+&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="Accept"                data-endpoint="POSTapi-check-email"
+               value="application/json"
+               data-component="header">
+    <br>
+<p>Example: <code>application/json</code></p>
+            </div>
+                                <h4 class="fancy-heading-panel"><b>Body Parameters</b></h4>
+        <div style=" padding-left: 28px;  clear: unset;">
+            <b style="line-height: 2;"><code>email</code></b>&nbsp;&nbsp;
+<small>string</small>&nbsp;
+ &nbsp;
+ &nbsp;
+                <input type="text" style="display: none"
+                              name="email"                data-endpoint="POSTapi-check-email"
+               value="qkunze@example.com"
+               data-component="body">
+    <br>
+<p>Must be a valid email address. Must not be greater than 50 characters. Example: <code>qkunze@example.com</code></p>
+        </div>
+        </form>
+
+                    <h2 id="endpoints-GETapi-posts">Instantiate the controller.</h2>
 
 <p>
 </p>
@@ -580,7 +905,7 @@ fetch(url, {
 
 <span id="example-responses-GETapi-posts">
             <blockquote>
-            <p>Example response (500):</p>
+            <p>Example response (401):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -592,7 +917,7 @@ access-control-allow-origin: *
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;message&quot;: &quot;Server Error&quot;
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
 }</code>
  </pre>
     </span>
@@ -669,14 +994,14 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         </form>
 
-                    <h2 id="endpoints-GETapi-posts--post_id-">Display the specified post.</h2>
+                    <h2 id="endpoints-GETapi-posts--id-">Display the specified post.</h2>
 
 <p>
 </p>
 
 
 
-<span id="example-requests-GETapi-posts--post_id-">
+<span id="example-requests-GETapi-posts--id-">
 <blockquote>Example request:</blockquote>
 
 
@@ -705,9 +1030,9 @@ fetch(url, {
 
 </span>
 
-<span id="example-responses-GETapi-posts--post_id-">
+<span id="example-responses-GETapi-posts--id-">
             <blockquote>
-            <p>Example response (200):</p>
+            <p>Example response (401):</p>
         </blockquote>
                 <details class="annotation">
             <summary style="cursor: pointer;">
@@ -719,208 +1044,47 @@ access-control-allow-origin: *
  </code></pre></details>         <pre>
 
 <code class="language-json" style="max-height: 300px;">{
-    &quot;data&quot;: {
-        &quot;id&quot;: 1,
-        &quot;user_id&quot;: 1,
-        &quot;user&quot;: {
-            &quot;id&quot;: 1,
-            &quot;first_name&quot;: &quot;Ziad&quot;,
-            &quot;last_name&quot;: &quot;Kassem&quot;,
-            &quot;email&quot;: &quot;ziadkassem@example.com&quot;
-        },
-        &quot;title&quot;: &quot;Laudantium rem nam praesentium reprehenderit ut odio.&quot;,
-        &quot;content&quot;: &quot;Sed magni blanditiis rerum earum quam. Quo alias aut cum. Accusamus amet quaerat repudiandae quod sed omnis. Accusantium ab eum ipsam asperiores voluptatem consequatur.\n\nUt aut odit debitis fugiat nobis incidunt. Sapiente officiis aut dolor molestiae sunt nulla. Quia dolor nemo cum aut. Minima et quasi officia sit. Sed modi cumque atque illum qui dignissimos ut id.\n\nConsequatur delectus quidem aperiam soluta neque eius nobis. Ut debitis cumque iure cupiditate. Veniam corporis totam ut est et.&quot;,
-        &quot;post_media&quot;: null,
-        &quot;category&quot;: &quot;General&quot;,
-        &quot;likes_count&quot;: 5,
-        &quot;comments_count&quot;: 5,
-        &quot;comments&quot;: [
-            {
-                &quot;id&quot;: 1,
-                &quot;post_id&quot;: 1,
-                &quot;user_id&quot;: 12,
-                &quot;user&quot;: {
-                    &quot;id&quot;: 12,
-                    &quot;first_name&quot;: &quot;Virgie&quot;,
-                    &quot;last_name&quot;: &quot;Parker&quot;,
-                    &quot;email&quot;: &quot;stefanie.keeling@example.com&quot;
-                },
-                &quot;comment_text&quot;: &quot;Qui dolorum magni eveniet.&quot;,
-                &quot;likes_count&quot;: 0,
-                &quot;created_at&quot;: &quot;2026-04-07T16:20:31.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2026-04-07T16:20:31.000000Z&quot;
-            },
-            {
-                &quot;id&quot;: 2,
-                &quot;post_id&quot;: 1,
-                &quot;user_id&quot;: 12,
-                &quot;user&quot;: {
-                    &quot;id&quot;: 12,
-                    &quot;first_name&quot;: &quot;Virgie&quot;,
-                    &quot;last_name&quot;: &quot;Parker&quot;,
-                    &quot;email&quot;: &quot;stefanie.keeling@example.com&quot;
-                },
-                &quot;comment_text&quot;: &quot;Et perspiciatis porro voluptas error ut odio.&quot;,
-                &quot;likes_count&quot;: 0,
-                &quot;created_at&quot;: &quot;2026-04-07T16:20:31.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2026-04-07T16:20:31.000000Z&quot;
-            },
-            {
-                &quot;id&quot;: 3,
-                &quot;post_id&quot;: 1,
-                &quot;user_id&quot;: 12,
-                &quot;user&quot;: {
-                    &quot;id&quot;: 12,
-                    &quot;first_name&quot;: &quot;Virgie&quot;,
-                    &quot;last_name&quot;: &quot;Parker&quot;,
-                    &quot;email&quot;: &quot;stefanie.keeling@example.com&quot;
-                },
-                &quot;comment_text&quot;: &quot;Perferendis illo a alias ut nobis quidem.&quot;,
-                &quot;likes_count&quot;: 0,
-                &quot;created_at&quot;: &quot;2026-04-07T16:20:31.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2026-04-07T16:20:31.000000Z&quot;
-            },
-            {
-                &quot;id&quot;: 4,
-                &quot;post_id&quot;: 1,
-                &quot;user_id&quot;: 12,
-                &quot;user&quot;: {
-                    &quot;id&quot;: 12,
-                    &quot;first_name&quot;: &quot;Virgie&quot;,
-                    &quot;last_name&quot;: &quot;Parker&quot;,
-                    &quot;email&quot;: &quot;stefanie.keeling@example.com&quot;
-                },
-                &quot;comment_text&quot;: &quot;Blanditiis dolor et omnis et repellendus esse unde.&quot;,
-                &quot;likes_count&quot;: 0,
-                &quot;created_at&quot;: &quot;2026-04-07T16:20:31.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2026-04-07T16:20:31.000000Z&quot;
-            },
-            {
-                &quot;id&quot;: 5,
-                &quot;post_id&quot;: 1,
-                &quot;user_id&quot;: 12,
-                &quot;user&quot;: {
-                    &quot;id&quot;: 12,
-                    &quot;first_name&quot;: &quot;Virgie&quot;,
-                    &quot;last_name&quot;: &quot;Parker&quot;,
-                    &quot;email&quot;: &quot;stefanie.keeling@example.com&quot;
-                },
-                &quot;comment_text&quot;: &quot;Ut non labore et non aut suscipit incidunt minus.&quot;,
-                &quot;likes_count&quot;: 0,
-                &quot;created_at&quot;: &quot;2026-04-07T16:20:31.000000Z&quot;,
-                &quot;updated_at&quot;: &quot;2026-04-07T16:20:31.000000Z&quot;
-            }
-        ],
-        &quot;likes&quot;: [
-            {
-                &quot;id&quot;: 1,
-                &quot;user_id&quot;: 4,
-                &quot;user&quot;: {
-                    &quot;id&quot;: 4,
-                    &quot;first_name&quot;: &quot;Ziad&quot;,
-                    &quot;last_name&quot;: &quot;Kassem&quot;,
-                    &quot;email&quot;: &quot;ziad@example.com&quot;
-                },
-                &quot;likeable_id&quot;: 1,
-                &quot;likeable_type&quot;: &quot;App\\Models\\Post&quot;,
-                &quot;created_at&quot;: &quot;2026-04-07T16:20:31.000000Z&quot;
-            },
-            {
-                &quot;id&quot;: 2,
-                &quot;user_id&quot;: 13,
-                &quot;user&quot;: {
-                    &quot;id&quot;: 13,
-                    &quot;first_name&quot;: &quot;Ibrahim&quot;,
-                    &quot;last_name&quot;: &quot;Herzog&quot;,
-                    &quot;email&quot;: &quot;jaime.schroeder@example.org&quot;
-                },
-                &quot;likeable_id&quot;: 1,
-                &quot;likeable_type&quot;: &quot;App\\Models\\Post&quot;,
-                &quot;created_at&quot;: &quot;2026-04-07T16:20:31.000000Z&quot;
-            },
-            {
-                &quot;id&quot;: 3,
-                &quot;user_id&quot;: 10,
-                &quot;user&quot;: {
-                    &quot;id&quot;: 10,
-                    &quot;first_name&quot;: &quot;Roscoe&quot;,
-                    &quot;last_name&quot;: &quot;Schulist&quot;,
-                    &quot;email&quot;: &quot;kmedhurst@example.org&quot;
-                },
-                &quot;likeable_id&quot;: 1,
-                &quot;likeable_type&quot;: &quot;App\\Models\\Post&quot;,
-                &quot;created_at&quot;: &quot;2026-04-07T16:20:31.000000Z&quot;
-            },
-            {
-                &quot;id&quot;: 4,
-                &quot;user_id&quot;: 7,
-                &quot;user&quot;: {
-                    &quot;id&quot;: 7,
-                    &quot;first_name&quot;: &quot;Bertha&quot;,
-                    &quot;last_name&quot;: &quot;Wintheiser&quot;,
-                    &quot;email&quot;: &quot;torphy.lucienne@example.com&quot;
-                },
-                &quot;likeable_id&quot;: 1,
-                &quot;likeable_type&quot;: &quot;App\\Models\\Post&quot;,
-                &quot;created_at&quot;: &quot;2026-04-07T16:20:31.000000Z&quot;
-            },
-            {
-                &quot;id&quot;: 5,
-                &quot;user_id&quot;: 9,
-                &quot;user&quot;: {
-                    &quot;id&quot;: 9,
-                    &quot;first_name&quot;: &quot;Viola&quot;,
-                    &quot;last_name&quot;: &quot;Eichmann&quot;,
-                    &quot;email&quot;: &quot;klocko.torey@example.org&quot;
-                },
-                &quot;likeable_id&quot;: 1,
-                &quot;likeable_type&quot;: &quot;App\\Models\\Post&quot;,
-                &quot;created_at&quot;: &quot;2026-04-07T16:20:31.000000Z&quot;
-            }
-        ],
-        &quot;created_at&quot;: &quot;2026-04-07T16:20:31.000000Z&quot;,
-        &quot;updated_at&quot;: &quot;2026-04-07T16:20:31.000000Z&quot;
-    }
+    &quot;message&quot;: &quot;Unauthenticated.&quot;
 }</code>
  </pre>
     </span>
-<span id="execution-results-GETapi-posts--post_id-" hidden>
+<span id="execution-results-GETapi-posts--id-" hidden>
     <blockquote>Received response<span
-                id="execution-response-status-GETapi-posts--post_id-"></span>:
+                id="execution-response-status-GETapi-posts--id-"></span>:
     </blockquote>
-    <pre class="json"><code id="execution-response-content-GETapi-posts--post_id-"
+    <pre class="json"><code id="execution-response-content-GETapi-posts--id-"
       data-empty-response-text="<Empty response>" style="max-height: 400px;"></code></pre>
 </span>
-<span id="execution-error-GETapi-posts--post_id-" hidden>
+<span id="execution-error-GETapi-posts--id-" hidden>
     <blockquote>Request failed with error:</blockquote>
-    <pre><code id="execution-error-message-GETapi-posts--post_id-">
+    <pre><code id="execution-error-message-GETapi-posts--id-">
 
 Tip: Check that you&#039;re properly connected to the network.
 If you&#039;re a maintainer of ths API, verify that your API is running and you&#039;ve enabled CORS.
 You can check the Dev Tools console for debugging information.</code></pre>
 </span>
-<form id="form-GETapi-posts--post_id-" data-method="GET"
-      data-path="api/posts/{post_id}"
+<form id="form-GETapi-posts--id-" data-method="GET"
+      data-path="api/posts/{id}"
       data-authed="0"
       data-hasfiles="0"
       data-isarraybody="0"
       autocomplete="off"
-      onsubmit="event.preventDefault(); executeTryOut('GETapi-posts--post_id-', this);">
+      onsubmit="event.preventDefault(); executeTryOut('GETapi-posts--id-', this);">
     <h3>
         Request&nbsp;&nbsp;&nbsp;
                     <button type="button"
                     style="background-color: #8fbcd4; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-tryout-GETapi-posts--post_id-"
-                    onclick="tryItOut('GETapi-posts--post_id-');">Try it out ⚡
+                    id="btn-tryout-GETapi-posts--id-"
+                    onclick="tryItOut('GETapi-posts--id-');">Try it out ⚡
             </button>
             <button type="button"
                     style="background-color: #c97a7e; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-canceltryout-GETapi-posts--post_id-"
-                    onclick="cancelTryOut('GETapi-posts--post_id-');" hidden>Cancel 🛑
+                    id="btn-canceltryout-GETapi-posts--id-"
+                    onclick="cancelTryOut('GETapi-posts--id-');" hidden>Cancel 🛑
             </button>&nbsp;&nbsp;
             <button type="submit"
                     style="background-color: #6ac174; padding: 5px 10px; border-radius: 5px; border-width: thin;"
-                    id="btn-executetryout-GETapi-posts--post_id-"
+                    id="btn-executetryout-GETapi-posts--id-"
                     data-initial-text="Send Request 💥"
                     data-loading-text="⏱ Sending..."
                     hidden>Send Request 💥
@@ -928,7 +1092,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </h3>
             <p>
             <small class="badge badge-green">GET</small>
-            <b><code>api/posts/{post_id}</code></b>
+            <b><code>api/posts/{id}</code></b>
         </p>
                 <h4 class="fancy-heading-panel"><b>Headers</b></h4>
                                 <div style="padding-left: 28px; clear: unset;">
@@ -937,7 +1101,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Content-Type"                data-endpoint="GETapi-posts--post_id-"
+                              name="Content-Type"                data-endpoint="GETapi-posts--id-"
                value="application/json"
                data-component="header">
     <br>
@@ -949,7 +1113,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
  &nbsp;
                 <input type="text" style="display: none"
-                              name="Accept"                data-endpoint="GETapi-posts--post_id-"
+                              name="Accept"                data-endpoint="GETapi-posts--id-"
                value="application/json"
                data-component="header">
     <br>
@@ -957,12 +1121,12 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         <h4 class="fancy-heading-panel"><b>URL Parameters</b></h4>
                     <div style="padding-left: 28px; clear: unset;">
-                <b style="line-height: 2;"><code>post_id</code></b>&nbsp;&nbsp;
+                <b style="line-height: 2;"><code>id</code></b>&nbsp;&nbsp;
 <small>integer</small>&nbsp;
  &nbsp;
  &nbsp;
                 <input type="number" style="display: none"
-               step="any"               name="post_id"                data-endpoint="GETapi-posts--post_id-"
+               step="any"               name="id"                data-endpoint="GETapi-posts--id-"
                value="1"
                data-component="url">
     <br>
@@ -1464,7 +1628,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
             </div>
                         </form>
 
-                    <h2 id="endpoints-POSTapi-posts">Store a newly created post.</h2>
+                    <h2 id="endpoints-POSTapi-posts">POST api/posts</h2>
 
 <p>
 </p>
@@ -1484,7 +1648,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"title\": \"vmqeopfuudtdsufvyvddq\",
     \"content\": \"consequatur\",
     \"post_media\": \"consequatur\",
-    \"category\": \"General\"
+    \"category\": \"gestational\"
 }"
 </code></pre></div>
 
@@ -1503,7 +1667,7 @@ let body = {
     "title": "vmqeopfuudtdsufvyvddq",
     "content": "consequatur",
     "post_media": "consequatur",
-    "category": "General"
+    "category": "gestational"
 };
 
 fetch(url, {
@@ -1631,10 +1795,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="category"                data-endpoint="POSTapi-posts"
-               value="General"
+               value="gestational"
                data-component="body">
     <br>
-<p>Example: <code>General</code></p>
+<p>Example: <code>gestational</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>General</code></li> <li><code>Type1 and LADA</code></li> <li><code>Type2</code></li> <li><code>gestational</code></li> <li><code>advices</code></li></ul>
         </div>
@@ -3384,8 +3548,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"glucose_level\": 73,
-    \"reading_time\": \"2026-04-08 11:24:58\",
-    \"reading_type\": \"Random\",
+    \"reading_time\": \"2026-04-10 14:56:48\",
+    \"reading_type\": \"Before Meal\",
     \"notes\": \"consequatur\",
     \"a1c_estimation\": 45,
     \"average_glucose_level\": 56
@@ -3405,8 +3569,8 @@ const headers = {
 
 let body = {
     "glucose_level": 73,
-    "reading_time": "2026-04-08 11:24:58",
-    "reading_type": "Random",
+    "reading_time": "2026-04-10 14:56:48",
+    "reading_type": "Before Meal",
     "notes": "consequatur",
     "a1c_estimation": 45,
     "average_glucose_level": 56
@@ -3513,10 +3677,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="reading_time"                data-endpoint="POSTapi-glucose"
-               value="2026-04-08 11:24:58"
+               value="2026-04-10 14:56:48"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-04-08 11:24:58</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-04-10 14:56:48</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>reading_type</code></b>&nbsp;&nbsp;
@@ -3525,10 +3689,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="reading_type"                data-endpoint="POSTapi-glucose"
-               value="Random"
+               value="Before Meal"
                data-component="body">
     <br>
-<p>Example: <code>Random</code></p>
+<p>Example: <code>Before Meal</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>Fasting</code></li> <li><code>Before Meal</code></li> <li><code>After Meal</code></li> <li><code>Random</code></li></ul>
         </div>
@@ -3728,8 +3892,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"glucose_level\": 73,
-    \"reading_time\": \"2026-04-08 11:24:59\",
-    \"reading_type\": \"Before Meal\",
+    \"reading_time\": \"2026-04-10 14:56:48\",
+    \"reading_type\": \"Fasting\",
     \"notes\": \"consequatur\",
     \"a1c_estimation\": 45,
     \"average_glucose_level\": 56
@@ -3749,8 +3913,8 @@ const headers = {
 
 let body = {
     "glucose_level": 73,
-    "reading_time": "2026-04-08 11:24:59",
-    "reading_type": "Before Meal",
+    "reading_time": "2026-04-10 14:56:48",
+    "reading_type": "Fasting",
     "notes": "consequatur",
     "a1c_estimation": 45,
     "average_glucose_level": 56
@@ -3874,10 +4038,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="reading_time"                data-endpoint="PUTapi-glucose--reading_id-"
-               value="2026-04-08 11:24:59"
+               value="2026-04-10 14:56:48"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-04-08 11:24:59</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-04-10 14:56:48</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>reading_type</code></b>&nbsp;&nbsp;
@@ -3886,10 +4050,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="reading_type"                data-endpoint="PUTapi-glucose--reading_id-"
-               value="Before Meal"
+               value="Fasting"
                data-component="body">
     <br>
-<p>Example: <code>Before Meal</code></p>
+<p>Example: <code>Fasting</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>Fasting</code></li> <li><code>Before Meal</code></li> <li><code>After Meal</code></li> <li><code>Random</code></li></ul>
         </div>
@@ -4199,10 +4363,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"meal_time\": \"2026-04-08 11:24:59\",
+    \"meal_time\": \"2026-04-10 14:56:49\",
     \"total_carb\": 73,
     \"total_calories\": 45,
-    \"meal_type\": \"Snack\",
+    \"meal_type\": \"Dinner\",
     \"notes\": \"consequatur\",
     \"food_items\": [
         {
@@ -4229,10 +4393,10 @@ const headers = {
 };
 
 let body = {
-    "meal_time": "2026-04-08 11:24:59",
+    "meal_time": "2026-04-10 14:56:49",
     "total_carb": 73,
     "total_calories": 45,
-    "meal_type": "Snack",
+    "meal_type": "Dinner",
     "notes": "consequatur",
     "food_items": [
         {
@@ -4335,10 +4499,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="meal_time"                data-endpoint="POSTapi-meals"
-               value="2026-04-08 11:24:59"
+               value="2026-04-10 14:56:49"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-04-08 11:24:59</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-04-10 14:56:49</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>total_carb</code></b>&nbsp;&nbsp;
@@ -4371,10 +4535,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="meal_type"                data-endpoint="POSTapi-meals"
-               value="Snack"
+               value="Dinner"
                data-component="body">
     <br>
-<p>Example: <code>Snack</code></p>
+<p>Example: <code>Dinner</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>Breakfast</code></li> <li><code>Lunch</code></li> <li><code>Dinner</code></li> <li><code>Snack</code></li></ul>
         </div>
@@ -4633,7 +4797,7 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"meal_time\": \"2026-04-08 11:24:59\",
+    \"meal_time\": \"2026-04-10 14:56:49\",
     \"total_carb\": 73,
     \"total_calories\": 45,
     \"meal_type\": \"Snack\",
@@ -4663,7 +4827,7 @@ const headers = {
 };
 
 let body = {
-    "meal_time": "2026-04-08 11:24:59",
+    "meal_time": "2026-04-10 14:56:49",
     "total_carb": 73,
     "total_calories": 45,
     "meal_type": "Snack",
@@ -4786,10 +4950,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="meal_time"                data-endpoint="PUTapi-meals--meal_id-"
-               value="2026-04-08 11:24:59"
+               value="2026-04-10 14:56:49"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-04-08 11:24:59</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-04-10 14:56:49</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>total_carb</code></b>&nbsp;&nbsp;
@@ -5197,12 +5361,12 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --data "{
     \"medication_name\": \"vmqeopfuudtdsufvyvddq\",
     \"dosage\": \"consequatur\",
-    \"route\": \"oral\",
+    \"route\": \"Inhaler\",
     \"unit\": \"consequatur\",
     \"frequency\": \"consequatur\",
-    \"start_date\": \"2026-04-08\",
-    \"end_date\": \"2026-04-08\",
-    \"reminder_time\": \"11:25:00\",
+    \"start_date\": \"2026-04-10\",
+    \"end_date\": \"2026-04-10\",
+    \"reminder_time\": \"14:56:49\",
     \"notes\": \"consequatur\"
 }"
 </code></pre></div>
@@ -5221,12 +5385,12 @@ const headers = {
 let body = {
     "medication_name": "vmqeopfuudtdsufvyvddq",
     "dosage": "consequatur",
-    "route": "oral",
+    "route": "Inhaler",
     "unit": "consequatur",
     "frequency": "consequatur",
-    "start_date": "2026-04-08",
-    "end_date": "2026-04-08",
-    "reminder_time": "11:25:00",
+    "start_date": "2026-04-10",
+    "end_date": "2026-04-10",
+    "reminder_time": "14:56:49",
     "notes": "consequatur"
 };
 
@@ -5343,10 +5507,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="route"                data-endpoint="POSTapi-medications"
-               value="oral"
+               value="Inhaler"
                data-component="body">
     <br>
-<p>محدث ليتوافق مع Enum الداتابيز ويدعم الـ Capital/Small. Example: <code>oral</code></p>
+<p>محدث ليتوافق مع Enum الداتابيز ويدعم الـ Capital/Small. Example: <code>Inhaler</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>Oral</code></li> <li><code>Injection</code></li> <li><code>Inhaler</code></li> <li><code>Topical</code></li> <li><code>IV</code></li> <li><code>oral</code></li> <li><code>injection</code></li> <li><code>inhalation</code></li> <li><code>topical</code></li> <li><code>other</code></li></ul>
         </div>
@@ -5381,10 +5545,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_date"                data-endpoint="POSTapi-medications"
-               value="2026-04-08"
+               value="2026-04-10"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d</code>. Example: <code>2026-04-08</code></p>
+<p>Must be a valid date in the format <code>Y-m-d</code>. Example: <code>2026-04-10</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_date</code></b>&nbsp;&nbsp;
@@ -5393,10 +5557,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_date"                data-endpoint="POSTapi-medications"
-               value="2026-04-08"
+               value="2026-04-10"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d</code>. Example: <code>2026-04-08</code></p>
+<p>Must be a valid date in the format <code>Y-m-d</code>. Example: <code>2026-04-10</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>reminder_time</code></b>&nbsp;&nbsp;
@@ -5405,10 +5569,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="reminder_time"                data-endpoint="POSTapi-medications"
-               value="11:25:00"
+               value="14:56:49"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>H:i:s</code>. Example: <code>11:25:00</code></p>
+<p>Must be a valid date in the format <code>H:i:s</code>. Example: <code>14:56:49</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>notes</code></b>&nbsp;&nbsp;
@@ -5586,9 +5750,9 @@ You can check the Dev Tools console for debugging information.</code></pre>
     \"route\": \"IV\",
     \"unit\": \"consequatur\",
     \"frequency\": \"consequatur\",
-    \"start_date\": \"2026-04-08\",
-    \"end_date\": \"2026-04-08\",
-    \"reminder_time\": \"11:25:00\",
+    \"start_date\": \"2026-04-10\",
+    \"end_date\": \"2026-04-10\",
+    \"reminder_time\": \"14:56:49\",
     \"notes\": \"consequatur\"
 }"
 </code></pre></div>
@@ -5610,9 +5774,9 @@ let body = {
     "route": "IV",
     "unit": "consequatur",
     "frequency": "consequatur",
-    "start_date": "2026-04-08",
-    "end_date": "2026-04-08",
-    "reminder_time": "11:25:00",
+    "start_date": "2026-04-10",
+    "end_date": "2026-04-10",
+    "reminder_time": "14:56:49",
     "notes": "consequatur"
 };
 
@@ -5784,10 +5948,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="start_date"                data-endpoint="PUTapi-medications--medication_id-"
-               value="2026-04-08"
+               value="2026-04-10"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d</code>. Example: <code>2026-04-08</code></p>
+<p>Must be a valid date in the format <code>Y-m-d</code>. Example: <code>2026-04-10</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>end_date</code></b>&nbsp;&nbsp;
@@ -5796,10 +5960,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="end_date"                data-endpoint="PUTapi-medications--medication_id-"
-               value="2026-04-08"
+               value="2026-04-10"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d</code>. Example: <code>2026-04-08</code></p>
+<p>Must be a valid date in the format <code>Y-m-d</code>. Example: <code>2026-04-10</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>reminder_time</code></b>&nbsp;&nbsp;
@@ -5808,10 +5972,10 @@ Must be one of:
  &nbsp;
                 <input type="text" style="display: none"
                               name="reminder_time"                data-endpoint="PUTapi-medications--medication_id-"
-               value="11:25:00"
+               value="14:56:49"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>H:i:s</code>. Example: <code>11:25:00</code></p>
+<p>Must be a valid date in the format <code>H:i:s</code>. Example: <code>14:56:49</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>notes</code></b>&nbsp;&nbsp;
@@ -6096,8 +6260,8 @@ You can check the Dev Tools console for debugging information.</code></pre>
     --header "Accept: application/json" \
     --data "{
     \"medication_id\": 17,
-    \"taken_at\": \"2026-04-08 11:25:00\",
-    \"status\": \"skipped\"
+    \"taken_at\": \"2026-04-10 14:56:50\",
+    \"status\": \"missed\"
 }"
 </code></pre></div>
 
@@ -6114,8 +6278,8 @@ const headers = {
 
 let body = {
     "medication_id": 17,
-    "taken_at": "2026-04-08 11:25:00",
-    "status": "skipped"
+    "taken_at": "2026-04-10 14:56:50",
+    "status": "missed"
 };
 
 fetch(url, {
@@ -6219,10 +6383,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="taken_at"                data-endpoint="POSTapi-medication-logs"
-               value="2026-04-08 11:25:00"
+               value="2026-04-10 14:56:50"
                data-component="body">
     <br>
-<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-04-08 11:25:00</code></p>
+<p>Must be a valid date in the format <code>Y-m-d H:i:s</code>. Example: <code>2026-04-10 14:56:50</code></p>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>status</code></b>&nbsp;&nbsp;
@@ -6231,10 +6395,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="POSTapi-medication-logs"
-               value="skipped"
+               value="missed"
                data-component="body">
     <br>
-<p>Example: <code>skipped</code></p>
+<p>Example: <code>missed</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>taken</code></li> <li><code>missed</code></li> <li><code>skipped</code></li></ul>
         </div>
@@ -6257,7 +6421,7 @@ Must be one of:
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"status\": \"taken\"
+    \"status\": \"skipped\"
 }"
 </code></pre></div>
 
@@ -6273,7 +6437,7 @@ const headers = {
 };
 
 let body = {
-    "status": "taken"
+    "status": "skipped"
 };
 
 fetch(url, {
@@ -6382,10 +6546,10 @@ You can check the Dev Tools console for debugging information.</code></pre>
  &nbsp;
                 <input type="text" style="display: none"
                               name="status"                data-endpoint="PUTapi-medication-logs--medlog_id-"
-               value="taken"
+               value="skipped"
                data-component="body">
     <br>
-<p>Example: <code>taken</code></p>
+<p>Example: <code>skipped</code></p>
 Must be one of:
 <ul style="list-style-type: square;"><li><code>taken</code></li> <li><code>missed</code></li> <li><code>skipped</code></li></ul>
         </div>

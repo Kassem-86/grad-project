@@ -14,7 +14,7 @@ endpoints:
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: ''
+      title: 'Register a new user and return a token'
       description: ''
       authenticated: false
       deprecated: false
@@ -29,7 +29,7 @@ endpoints:
       first_name:
         custom: []
         name: first_name
-        description: 'Must not be greater than 255 characters.'
+        description: 'Must not be greater than 50 characters.'
         required: true
         example: vmqeopfuudtdsufvyvddq
         type: string
@@ -40,7 +40,7 @@ endpoints:
       last_name:
         custom: []
         name: last_name
-        description: 'Must not be greater than 255 characters.'
+        description: 'Must not be greater than 50 characters.'
         required: true
         example: amniihfqcoynlazghdtqt
         type: string
@@ -51,7 +51,7 @@ endpoints:
       email:
         custom: []
         name: email
-        description: 'Must be a valid email address. Must not be greater than 255 characters.'
+        description: 'Must be a valid email address. Must not be greater than 50 characters.'
         required: true
         example: andreanne00@example.org
         type: string
@@ -70,11 +70,181 @@ endpoints:
         exampleWasSpecified: false
         nullable: false
         deprecated: false
+      gender:
+        custom: []
+        name: gender
+        description: ''
+        required: false
+        example: Female
+        type: string
+        enumValues:
+          - Male
+          - Female
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      phone:
+        custom: []
+        name: phone
+        description: 'Must not be greater than 11 characters.'
+        required: false
+        example: lsmsjuryv
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      birthDate:
+        custom: []
+        name: birthDate
+        description: 'Must be a valid date.'
+        required: false
+        example: '2026-04-10T14:56:43'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      diabetes_type:
+        custom: []
+        name: diabetes_type
+        description: ''
+        required: false
+        example: Type2
+        type: string
+        enumValues:
+          - Type1
+          - Type2
+          - LADA
+          - MODY
+          - Gestational
+          - diabetes
+          - other
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      insulin_therapy:
+        custom: []
+        name: insulin_therapy
+        description: ''
+        required: false
+        example: 'No insulin'
+        type: string
+        enumValues:
+          - 'Pen / Syringes'
+          - pump
+          - 'No insulin'
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      diagnose_date:
+        custom: []
+        name: diagnose_date
+        description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
+        required: false
+        example: '2026-04-10 14:56:43'
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      glucose:
+        custom: []
+        name: glucose
+        description: ''
+        required: false
+        example: mmol/L
+        type: string
+        enumValues:
+          - mg/dl
+          - mmol/L
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      weight:
+        custom: []
+        name: weight
+        description: 'Must be at least 0.'
+        required: false
+        example: 51
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      height:
+        custom: []
+        name: height
+        description: 'Must be at least 0.'
+        required: false
+        example: 32
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      max_glucose:
+        custom: []
+        name: max_glucose
+        description: 'Must be at least 0.'
+        required: false
+        example: 7
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      target_glucose_range:
+        custom: []
+        name: target_glucose_range
+        description: 'Must be at least 0.'
+        required: false
+        example: 86
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      min_glucose:
+        custom: []
+        name: min_glucose
+        description: 'Must be at least 0.'
+        required: false
+        example: 5
+        type: number
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
+      emergency_contact:
+        custom: []
+        name: emergency_contact
+        description: 'Must not be greater than 11 characters.'
+        required: false
+        example: zvrbyickz
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: true
+        deprecated: false
     cleanBodyParameters:
       first_name: vmqeopfuudtdsufvyvddq
       last_name: amniihfqcoynlazghdtqt
       email: andreanne00@example.org
       password: "'YAKYLk4>SJIrIV#lz."
+      gender: Female
+      phone: lsmsjuryv
+      birthDate: '2026-04-10T14:56:43'
+      diabetes_type: Type2
+      insulin_therapy: 'No insulin'
+      diagnose_date: '2026-04-10 14:56:43'
+      glucose: mmol/L
+      weight: 51
+      height: 32
+      max_glucose: 7
+      target_glucose_range: 86
+      min_glucose: 5
+      emergency_contact: zvrbyickz
     fileParameters: []
     responses: []
     responseFields: []
@@ -140,6 +310,49 @@ endpoints:
   -
     custom: []
     httpMethods:
+      - POST
+    uri: api/check-email
+    metadata:
+      custom: []
+      groupName: Endpoints
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'Check if the email is already registered.'
+      description: ''
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters:
+      email:
+        custom: []
+        name: email
+        description: 'Must be a valid email address. Must not be greater than 50 characters.'
+        required: true
+        example: qkunze@example.com
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanBodyParameters:
+      email: qkunze@example.com
+    fileParameters: []
+    responses: []
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
+  -
+    custom: []
+    httpMethods:
       - GET
     uri: api/posts
     metadata:
@@ -148,7 +361,7 @@ endpoints:
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Display a listing of posts.'
+      title: 'Instantiate the controller.'
       description: ''
       authenticated: false
       deprecated: false
@@ -165,11 +378,8 @@ endpoints:
     responses:
       -
         custom: []
-        status: 500
-        content: |-
-          {
-              "message": "Server Error"
-          }
+        status: 401
+        content: '{"message":"Unauthenticated."}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -184,7 +394,7 @@ endpoints:
     custom: []
     httpMethods:
       - GET
-    uri: 'api/posts/{post_id}'
+    uri: 'api/posts/{id}'
     metadata:
       custom: []
       groupName: Endpoints
@@ -199,9 +409,9 @@ endpoints:
       Content-Type: application/json
       Accept: application/json
     urlParameters:
-      post_id:
+      id:
         custom: []
-        name: post_id
+        name: id
         description: 'The ID of the post.'
         required: true
         example: 1
@@ -211,7 +421,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      post_id: 1
+      id: 1
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -220,8 +430,8 @@ endpoints:
     responses:
       -
         custom: []
-        status: 200
-        content: '{"data":{"id":1,"user_id":1,"user":{"id":1,"first_name":"Ziad","last_name":"Kassem","email":"ziadkassem@example.com"},"title":"Laudantium rem nam praesentium reprehenderit ut odio.","content":"Sed magni blanditiis rerum earum quam. Quo alias aut cum. Accusamus amet quaerat repudiandae quod sed omnis. Accusantium ab eum ipsam asperiores voluptatem consequatur.\n\nUt aut odit debitis fugiat nobis incidunt. Sapiente officiis aut dolor molestiae sunt nulla. Quia dolor nemo cum aut. Minima et quasi officia sit. Sed modi cumque atque illum qui dignissimos ut id.\n\nConsequatur delectus quidem aperiam soluta neque eius nobis. Ut debitis cumque iure cupiditate. Veniam corporis totam ut est et.","post_media":null,"category":"General","likes_count":5,"comments_count":5,"comments":[{"id":1,"post_id":1,"user_id":12,"user":{"id":12,"first_name":"Virgie","last_name":"Parker","email":"stefanie.keeling@example.com"},"comment_text":"Qui dolorum magni eveniet.","likes_count":0,"created_at":"2026-04-07T16:20:31.000000Z","updated_at":"2026-04-07T16:20:31.000000Z"},{"id":2,"post_id":1,"user_id":12,"user":{"id":12,"first_name":"Virgie","last_name":"Parker","email":"stefanie.keeling@example.com"},"comment_text":"Et perspiciatis porro voluptas error ut odio.","likes_count":0,"created_at":"2026-04-07T16:20:31.000000Z","updated_at":"2026-04-07T16:20:31.000000Z"},{"id":3,"post_id":1,"user_id":12,"user":{"id":12,"first_name":"Virgie","last_name":"Parker","email":"stefanie.keeling@example.com"},"comment_text":"Perferendis illo a alias ut nobis quidem.","likes_count":0,"created_at":"2026-04-07T16:20:31.000000Z","updated_at":"2026-04-07T16:20:31.000000Z"},{"id":4,"post_id":1,"user_id":12,"user":{"id":12,"first_name":"Virgie","last_name":"Parker","email":"stefanie.keeling@example.com"},"comment_text":"Blanditiis dolor et omnis et repellendus esse unde.","likes_count":0,"created_at":"2026-04-07T16:20:31.000000Z","updated_at":"2026-04-07T16:20:31.000000Z"},{"id":5,"post_id":1,"user_id":12,"user":{"id":12,"first_name":"Virgie","last_name":"Parker","email":"stefanie.keeling@example.com"},"comment_text":"Ut non labore et non aut suscipit incidunt minus.","likes_count":0,"created_at":"2026-04-07T16:20:31.000000Z","updated_at":"2026-04-07T16:20:31.000000Z"}],"likes":[{"id":1,"user_id":4,"user":{"id":4,"first_name":"Ziad","last_name":"Kassem","email":"ziad@example.com"},"likeable_id":1,"likeable_type":"App\\Models\\Post","created_at":"2026-04-07T16:20:31.000000Z"},{"id":2,"user_id":13,"user":{"id":13,"first_name":"Ibrahim","last_name":"Herzog","email":"jaime.schroeder@example.org"},"likeable_id":1,"likeable_type":"App\\Models\\Post","created_at":"2026-04-07T16:20:31.000000Z"},{"id":3,"user_id":10,"user":{"id":10,"first_name":"Roscoe","last_name":"Schulist","email":"kmedhurst@example.org"},"likeable_id":1,"likeable_type":"App\\Models\\Post","created_at":"2026-04-07T16:20:31.000000Z"},{"id":4,"user_id":7,"user":{"id":7,"first_name":"Bertha","last_name":"Wintheiser","email":"torphy.lucienne@example.com"},"likeable_id":1,"likeable_type":"App\\Models\\Post","created_at":"2026-04-07T16:20:31.000000Z"},{"id":5,"user_id":9,"user":{"id":9,"first_name":"Viola","last_name":"Eichmann","email":"klocko.torey@example.org"},"likeable_id":1,"likeable_type":"App\\Models\\Post","created_at":"2026-04-07T16:20:31.000000Z"}],"created_at":"2026-04-07T16:20:31.000000Z","updated_at":"2026-04-07T16:20:31.000000Z"}}'
+        status: 401
+        content: '{"message":"Unauthenticated."}'
         headers:
           cache-control: 'no-cache, private'
           content-type: application/json
@@ -366,7 +576,7 @@ endpoints:
       groupDescription: ''
       subgroup: ''
       subgroupDescription: ''
-      title: 'Store a newly created post.'
+      title: ''
       description: ''
       authenticated: false
       deprecated: false
@@ -416,7 +626,7 @@ endpoints:
         name: category
         description: ''
         required: true
-        example: General
+        example: gestational
         type: string
         enumValues:
           - General
@@ -431,7 +641,7 @@ endpoints:
       title: vmqeopfuudtdsufvyvddq
       content: consequatur
       post_media: consequatur
-      category: General
+      category: gestational
     fileParameters: []
     responses: []
     responseFields: []
@@ -1112,7 +1322,7 @@ endpoints:
         name: reading_time
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-04-08 11:24:58'
+        example: '2026-04-10 14:56:48'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1123,7 +1333,7 @@ endpoints:
         name: reading_type
         description: ''
         required: true
-        example: Random
+        example: 'Before Meal'
         type: string
         enumValues:
           - Fasting
@@ -1168,8 +1378,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       glucose_level: 73
-      reading_time: '2026-04-08 11:24:58'
-      reading_type: Random
+      reading_time: '2026-04-10 14:56:48'
+      reading_type: 'Before Meal'
       notes: consequatur
       a1c_estimation: 45
       average_glucose_level: 56
@@ -1284,7 +1494,7 @@ endpoints:
         name: reading_time
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: false
-        example: '2026-04-08 11:24:59'
+        example: '2026-04-10 14:56:48'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1295,7 +1505,7 @@ endpoints:
         name: reading_type
         description: ''
         required: false
-        example: 'Before Meal'
+        example: Fasting
         type: string
         enumValues:
           - Fasting
@@ -1340,8 +1550,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       glucose_level: 73
-      reading_time: '2026-04-08 11:24:59'
-      reading_type: 'Before Meal'
+      reading_time: '2026-04-10 14:56:48'
+      reading_type: Fasting
       notes: consequatur
       a1c_estimation: 45
       average_glucose_level: 56
@@ -1463,7 +1673,7 @@ endpoints:
         name: meal_time
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-04-08 11:24:59'
+        example: '2026-04-10 14:56:49'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1496,7 +1706,7 @@ endpoints:
         name: meal_type
         description: ''
         required: true
-        example: Snack
+        example: Dinner
         type: string
         enumValues:
           - Breakfast
@@ -1596,10 +1806,10 @@ endpoints:
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      meal_time: '2026-04-08 11:24:59'
+      meal_time: '2026-04-10 14:56:49'
       total_carb: 73
       total_calories: 45
-      meal_type: Snack
+      meal_type: Dinner
       notes: consequatur
       food_items:
         -
@@ -1709,7 +1919,7 @@ endpoints:
         name: meal_time
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: false
-        example: '2026-04-08 11:24:59'
+        example: '2026-04-10 14:56:49'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -1841,7 +2051,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      meal_time: '2026-04-08 11:24:59'
+      meal_time: '2026-04-10 14:56:49'
       total_carb: 73
       total_calories: 45
       meal_type: Snack
@@ -1994,7 +2204,7 @@ endpoints:
         name: route
         description: 'محدث ليتوافق مع Enum الداتابيز ويدعم الـ Capital/Small.'
         required: true
-        example: oral
+        example: Inhaler
         type: string
         enumValues:
           - Oral
@@ -2037,7 +2247,7 @@ endpoints:
         name: start_date
         description: 'Must be a valid date in the format <code>Y-m-d</code>.'
         required: true
-        example: '2026-04-08'
+        example: '2026-04-10'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2048,7 +2258,7 @@ endpoints:
         name: end_date
         description: 'Must be a valid date in the format <code>Y-m-d</code>.'
         required: false
-        example: '2026-04-08'
+        example: '2026-04-10'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2059,7 +2269,7 @@ endpoints:
         name: reminder_time
         description: 'Must be a valid date in the format <code>H:i:s</code>.'
         required: false
-        example: '11:25:00'
+        example: '14:56:49'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2079,12 +2289,12 @@ endpoints:
     cleanBodyParameters:
       medication_name: vmqeopfuudtdsufvyvddq
       dosage: consequatur
-      route: oral
+      route: Inhaler
       unit: consequatur
       frequency: consequatur
-      start_date: '2026-04-08'
-      end_date: '2026-04-08'
-      reminder_time: '11:25:00'
+      start_date: '2026-04-10'
+      end_date: '2026-04-10'
+      reminder_time: '14:56:49'
       notes: consequatur
     fileParameters: []
     responses: []
@@ -2251,7 +2461,7 @@ endpoints:
         name: start_date
         description: 'Must be a valid date in the format <code>Y-m-d</code>.'
         required: false
-        example: '2026-04-08'
+        example: '2026-04-10'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2262,7 +2472,7 @@ endpoints:
         name: end_date
         description: 'Must be a valid date in the format <code>Y-m-d</code>.'
         required: false
-        example: '2026-04-08'
+        example: '2026-04-10'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2273,7 +2483,7 @@ endpoints:
         name: reminder_time
         description: 'Must be a valid date in the format <code>H:i:s</code>.'
         required: false
-        example: '11:25:00'
+        example: '14:56:49'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2296,9 +2506,9 @@ endpoints:
       route: IV
       unit: consequatur
       frequency: consequatur
-      start_date: '2026-04-08'
-      end_date: '2026-04-08'
-      reminder_time: '11:25:00'
+      start_date: '2026-04-10'
+      end_date: '2026-04-10'
+      reminder_time: '14:56:49'
       notes: consequatur
     fileParameters: []
     responses: []
@@ -2429,7 +2639,7 @@ endpoints:
         name: taken_at
         description: 'Must be a valid date in the format <code>Y-m-d H:i:s</code>.'
         required: true
-        example: '2026-04-08 11:25:00'
+        example: '2026-04-10 14:56:50'
         type: string
         enumValues: []
         exampleWasSpecified: false
@@ -2440,7 +2650,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: skipped
+        example: missed
         type: string
         enumValues:
           - taken
@@ -2451,8 +2661,8 @@ endpoints:
         deprecated: false
     cleanBodyParameters:
       medication_id: 17
-      taken_at: '2026-04-08 11:25:00'
-      status: skipped
+      taken_at: '2026-04-10 14:56:50'
+      status: missed
     fileParameters: []
     responses: []
     responseFields: []
@@ -2501,7 +2711,7 @@ endpoints:
         name: status
         description: ''
         required: true
-        example: taken
+        example: skipped
         type: string
         enumValues:
           - taken
@@ -2511,7 +2721,7 @@ endpoints:
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      status: taken
+      status: skipped
     fileParameters: []
     responses: []
     responseFields: []
