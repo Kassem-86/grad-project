@@ -32,6 +32,7 @@ Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{post}', [PostController::class, 'show']);
 Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
 
+
 /*
 |--------------------------------------------------------------------------
 | Protected Routes (Sanctum)
@@ -43,10 +44,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
     });
+    // Preferred standardized endpoint for retrieving the authenticated user
+    Route::get('/me', [AuthController::class, 'me']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // --- Community: Posts ---
     Route::apiResource('posts', PostController::class);
+    Route::get('/my-posts', [PostController::class, 'myPosts']);
+
 
     // --- Community: Comments ---
     Route::post('/posts/{post}/comments', [CommentController::class, 'store']);

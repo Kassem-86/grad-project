@@ -22,24 +22,32 @@ class PostController extends Controller
     
     public function index(Request $request)
 {
-    // 1. تشيك أمان: لو مفيش يوزر، رجع البوستات من غير فلتر البلوك (مؤقتاً عشان الأيرور يختفي)
+    $category = $request->query('category');
+
+    // If no authenticated user, return public posts (still allow optional category filter)
     if (!$request->user()) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'User not authenticated in request',
-            'posts' => Post::with('user')->latest()->paginate(10)
-        ]);
+        $posts = Post::with('user')
+            ->when($category, function ($query, $category) {
+                return $query->where('category', $category);
+            })
+            ->latest()
+            ->paginate(10);
+
+        return PostResource::collection($posts);
     }
 
-    // 2. لو فيه يوزر، كمل الـ Logic بتاعنا عادي
+    // Authenticated: apply blocked-user restrictions and optional category filter
     $restrictedIds = $request->user()->getRestrictedUserIds();
 
     $posts = Post::with('user')
+        ->when($category, function ($query, $category) {
+            return $query->where('category', $category);
+        })
         ->whereNotIn('user_id', $restrictedIds)
         ->latest()
         ->paginate(10);
 
-    return response()->json($posts);
+    return PostResource::collection($posts);
 }
 
    
@@ -99,5 +107,20 @@ class PostController extends Controller
         $post->delete();
 
         return response()->json(['message' => 'Post deleted successfully']);
+    }
+
+    /**
+     * Return posts belonging to the authenticated user.
+     */
+    public function myPosts(Request $request)
+    {
+        $user = $request->user();
+
+        $posts = Post::with('user')
+            ->where('user_id', $user->id)
+            ->latest()
+            ->paginate(10);
+
+        return PostResource::collection($posts);
     }
 }
