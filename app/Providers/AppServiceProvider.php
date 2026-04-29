@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use App\Models\Glucose;
 use App\Policies\GlucosePolicy;
 use App\Models\Meal;
@@ -33,6 +34,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        URL::forceScheme('https');
+
         // Register policies
         Gate::policy(Glucose::class, GlucosePolicy::class);
         Gate::policy(Meal::class, MealPolicy::class);
