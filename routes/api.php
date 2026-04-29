@@ -81,6 +81,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/history/{receiver_id}', [ChatController::class, 'getMessages']);
         Route::put('/message/{id}', [ChatController::class, 'updateMessage']);
         Route::delete('/message/{id}', [ChatController::class, 'deleteMessage']);
+        Route::post('/mark-as-read', [ChatController::class, 'markAsRead']);
     });
 
     // ... الـ routes القديمة

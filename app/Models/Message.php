@@ -14,6 +14,13 @@ class Message extends Model
         'image_url',
         'voice_url',
         'video_url',
+        'is_read',
+        'read_at',
+    ];
+
+    protected $casts = [
+        'is_read' => 'boolean',
+        'read_at' => 'datetime',
     ];
 
     public function sender(): BelongsTo

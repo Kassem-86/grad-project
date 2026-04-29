@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Events\DeleteMessageEvent;
+use App\Events\MessageSeen;
 use App\Events\MessageSent;
 use App\Events\UpdateMessageEvent;
 use App\Http\Controllers\Controller;
@@ -15,6 +16,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 
 class ChatController extends Controller
 {
@@ -23,24 +25,40 @@ class ChatController extends Controller
      */
     public function sendMessage(Request $request): JsonResponse
     {
-        $request->validate([
-            'receiver_id' => 'required|exists:users,id',
+        // Robust validation with custom rules
+        $validator = Validator::make($request->all(), [
+            'receiver_id' => [
+                'required',
+                'exists:users,id',
+                function ($attribute, $value, $fail) {
+                    if ((int)$value === Auth::id()) {
+                        $fail('You cannot send a message to yourself.');
+                    }
+                }
+            ],
             'message' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
             'voice' => 'nullable|file|mimes:mp3,wav,m4a|max:10240',
             'video' => 'nullable|file|mimes:mp4,avi,mov,mkv,flv,wmv,webm,m4v,3gp,mpg,mpeg,ts,m3u8,mts,m2ts,mxf,ogv,vob,f4v,asf,rm,rmvb,divx,dv,m2v,mts,mpeg1,mpeg2|max:102400',
         ]);
 
-        if (!$request->filled('message') && !$request->hasFile('image') && !$request->hasFile('voice') && !$request->hasFile('video')) {
-            return response()->json(['message' => 'Message, image, voice, or video is required.'], 422);
+        // Custom validation: message is required unless an image, voice, or video is sent
+        $validator->after(function ($validator) use ($request) {
+            if (!$request->filled('message') && !$request->hasFile('image') && !$request->hasFile('voice') && !$request->hasFile('video')) {
+                $validator->errors()->add('content', 'At least one of the following is required: message, image, voice, or video.');
+            }
+        });
+
+        // Return clean JSON error response if validation fails (422 Unprocessable Entity)
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
         }
 
         $sender = Auth::user();
         $receiverId = $request->receiver_id;
-
-        if ($sender->id == $receiverId) {
-            return response()->json(['message' => 'You cannot send a message to yourself.'], 403);
-        }
 
         // Check Block
         $restrictedIds = $sender->getRestrictedUserIds();
@@ -181,5 +199,37 @@ class ChatController extends Controller
         broadcast(new DeleteMessageEvent($messageId, $senderId, $receiverId))->toOthers();
 
         return response()->json(['message' => 'Message deleted successfully.'], 200);
+    }
+
+    /**
+     * Mark all unread messages from a specific sender as read.
+     */
+    public function markAsRead(Request $request): JsonResponse
+    {
+        $request->validate([
+            'sender_id' => 'required|exists:users,id',
+        ]);
+
+        $senderId = $request->sender_id;
+        $receiverId = Auth::id();
+
+        // Update all unread messages from the sender
+        $messageCount = Message::where('sender_id', $senderId)
+            ->where('receiver_id', $receiverId)
+            ->where('is_read', false)
+            ->update([
+                'is_read' => true,
+                'read_at' => now(),
+            ]);
+
+        // Broadcast MessageSeen event so the sender gets real-time notification
+        if ($messageCount > 0) {
+            broadcast(new MessageSeen($senderId, $receiverId, $messageCount))->toOthers();
+        }
+
+        return response()->json([
+            'message' => 'Messages marked as read',
+            'read_count' => $messageCount,
+        ], 200);
     }
 }
