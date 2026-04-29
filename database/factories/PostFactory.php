@@ -53,8 +53,9 @@ class PostFactory extends Factory
             
             'category' => fake()->randomElement([
                 'General', 
-                'Type1 and LADA', 
-                'Type2', 
+                'Type 1',
+                'LADA', 
+                'Type 2', 
                 'gestational', 
                 'advices'
             ]),

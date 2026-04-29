@@ -57,7 +57,7 @@ class PostController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'required|string',
             'post_media' => 'nullable|string',
-            'category' => 'required|in:General,Type1 and LADA,Type2,gestational,advices',
+            'category' => 'required|in:General,Type 1,LADA,Type 2,gestational,advices',
         ]);
 
         $post = $request->user()->posts()->create($validated);
@@ -89,7 +89,7 @@ class PostController extends Controller
             'title' => 'sometimes|required|string|max:255',
             'content' => 'sometimes|required|string',
             'post_media' => 'nullable|string',
-            'category' => 'sometimes|required|in:General,Type1 and LADA,Type2,gestational,advices',
+            'category' => 'sometimes|required|in:General,Type 1,LADA,Type 2,gestational,advices',
         ]);
 
         $post->update($validated);

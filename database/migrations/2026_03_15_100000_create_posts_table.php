@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('content');
             $table->string('post_media')->nullable()->comment('File path to post media');
-            $table->enum('category', ['General', 'Type1 and LADA',"Type2", 'gestational', 'advices'])->default('General');
+            $table->enum('category', ['General', 'Type 1', 'LADA', 'Type 2', 'gestational', 'advices'])->default('General');
             $table->integer('likes_count')->default(0);
             $table->integer('comments_count')->default(0);
             $table->timestamps();
