@@ -7,8 +7,8 @@ use App\Http\Controllers\Api\{
     PostController,
     CommentController,
     LikeController,
-    FriendshipController
-    
+    FriendshipController,
+    ChatController
 };
 use App\Http\Controllers\{
     GlucoseController,
@@ -75,6 +75,21 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('medications', MedicationController::class);
     Route::apiResource('medication-logs', MedicationLogController::class)->only(['store', 'index', 'update', 'destroy']);
 
+    // --- Real-time Chat (Reverb) ---
+    Route::prefix('chat')->group(function () {
+        Route::post('/send', [ChatController::class, 'sendMessage']);
+        Route::get('/history/{receiver_id}', [ChatController::class, 'getMessages']);
+        Route::put('/message/{id}', [ChatController::class, 'updateMessage']);
+        Route::delete('/message/{id}', [ChatController::class, 'deleteMessage']);
+    });
+
     // ... الـ routes القديمة
   
 });
+
+/*
+|--------------------------------------------------------------------------
+| Broadcasting Routes (Reverb)
+|--------------------------------------------------------------------------
+*/
+Broadcast::routes(['middleware' => ['auth:sanctum']]);

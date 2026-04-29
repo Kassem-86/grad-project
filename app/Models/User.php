@@ -196,4 +196,20 @@ class User extends Authenticatable
 
         return array_unique(array_merge($blockedByMe, $blockedMe));
     }
+
+    /**
+     * Messages sent by the user.
+     */
+    public function sentMessages(): HasMany
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    /**
+     * Messages received by the user.
+     */
+    public function receivedMessages(): HasMany
+    {
+        return $this->hasMany(Message::class, 'receiver_id');
+    }
 }
