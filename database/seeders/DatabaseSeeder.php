@@ -11,44 +11,69 @@ use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-  public function run(): void
+    public function run(): void
     {
-        // 1. كرييت يوزر أساسي ليك (Ziad)
-        $me = User::factory()->create([
-            'first_name' => 'Ziad',
-            'last_name' => 'Kassem',
-            'email' => 'ziad@example.com',
-            'password' => Hash::make('12345678'),
-        ]);
+        // 1. Create a main user (Ziad)
+        $me = User::where('email', 'ziad@example.com')->first();
+        if (!$me) {
+            $me = User::factory()->create([
+                'first_name' => 'Ziad',
+                'last_name' => 'Kassem',
+                'email' => 'ziad@example.com',
+                'password' => Hash::make('12345678'),
+            ]);
+        }
 
-        // 2. كرييت 10 يوزرز كمان
-        User::factory(10)->create();
+        // 2. Create 10 additional users
+        $users = User::factory(10)->create();
 
-        // نجمع كل اليوزرز في Collection واحدة
+        // Add the main user to the collection
         $allUsers = User::all();
 
-        // 3. لكل يوزر (بما فيهم إنت)، هنعمل 3 بوستات
+        // 3. For each user, create 3 posts with comments and likes
         $allUsers->each(function (User $user) use ($allUsers) {
-            $posts = Post::factory(3)->create(['user_id' => $user->id]);
+            // Create 3 posts per user using has() relationship method
+            $user->posts()->createMany(
+                Post::factory(3)->make()->toArray()
+            );
 
-            // 4. لكل بوست، هنعمل كومنتات ولايكات
-            $posts->each(function (Post $post) use ($allUsers) {
+            // Get the posts created for this user
+            $userPosts = $user->posts;
+
+            $userPosts->each(function (Post $post) use ($allUsers) {
+                // 4a. Add 3 to 5 random comments per post
+                $commentCount = fake()->numberBetween(3, 5);
                 
-                // عمل 5 كومنتات عشوائية
-                Comment::factory(5)->create([
-                    'post_id' => $post->id,
-                    'user_id' => $allUsers->random()->id,
-                ]);
-
-                // --- الحل الأكيد لمشكلة الـ Duplicate Entry ---
-                // بنلخبط اليوزرز وناخد أول 5 "فريدين" يعملوا لايك للبوست ده
-                $randomLikers = $allUsers->shuffle()->take(5); 
-
-                foreach ($randomLikers as $liker) {
-                    $post->likes()->create([
-                        'user_id' => $liker->id,
+                for ($i = 0; $i < $commentCount; $i++) {
+                    $randomUser = $allUsers->random();
+                    
+                    $post->comments()->create([
+                        'user_id' => $randomUser->id,
+                        'comment_text' => Comment::factory()->make()->comment_text,
                     ]);
                 }
+
+                // 4b. Add 5 to 10 likes from different users (ensure uniqueness)
+                $likeCount = fake()->numberBetween(5, 10);
+                
+                // Shuffle users and take unique likers
+                $likers = $allUsers->shuffle()->take($likeCount);
+
+                $likers->each(function (User $liker) use ($post) {
+                    // Check if this user already liked this post to avoid duplicates
+                    if (!$post->likes()->where('user_id', $liker->id)->exists()) {
+                        $post->likes()->create([
+                            'user_id' => $liker->id,
+                            'likeable_type' => Post::class,
+                        ]);
+                    }
+                });
+
+                // Update like and comment counts
+                $post->update([
+                    'likes_count' => $post->likes()->count(),
+                    'comments_count' => $post->comments()->count(),
+                ]);
             });
         });
     }
