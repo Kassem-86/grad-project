@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
@@ -19,6 +20,7 @@ class AuthController extends Controller
             'id' => 'sometimes|integer|unique:users',
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'email' => 'required|string|email|max:50|unique:users',
             'password' => 'required|string|min:8',          
             'gender' => 'nullable|in:Male,Female',
@@ -37,10 +39,16 @@ class AuthController extends Controller
         ]);
 
 
+        $profilePicturePath = null;
+        if ($request->hasFile('profile_picture')) {
+            $profilePicturePath = $request->file('profile_picture')->store('profiles', 'public');
+        }
+
         $user = User::create([
             'id' => $validated['id'] ?? null,
             'first_name' => $validated['first_name'],
             'last_name' => $validated['last_name'],
+            'profile_picture' => $profilePicturePath,
             'email' => $validated['email'],
             'password' => Hash::make($validated['password']),
             'gender' => $validated['gender'] ?? null,

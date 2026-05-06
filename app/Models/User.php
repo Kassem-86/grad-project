@@ -121,6 +121,7 @@ class User extends Authenticatable
         'id',
         'first_name',
         'last_name',
+        'profile_picture',
         'email',
         'password',
         'gender',
@@ -205,5 +206,15 @@ class User extends Authenticatable
         return Conversation::where('user1_id', $this->id)
             ->orWhere('user2_id', $this->id)
             ->orderByDesc('last_updated');
+    }
+
+    /**
+     * Get the profile picture URL.
+     */
+    public function getProfilePictureAttribute(): string
+    {
+        return $this->attributes['profile_picture']
+            ? asset('storage/profiles/' . $this->attributes['profile_picture'])
+            : asset('storage/profiles/default.png');
     }
 }
