@@ -8,7 +8,8 @@ use App\Http\Controllers\Api\{
     CommentController,
     LikeController,
     FriendshipController,
-    ChatController
+    ChatController,
+    ConversationController
 };
 use App\Http\Controllers\{
     GlucoseController,
@@ -80,13 +81,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('medication-logs', MedicationLogController::class)->only(['store', 'index', 'update', 'destroy']);
 
     // --- Real-time Chat (Reverb) ---
-    Route::prefix('chat')->group(function () {
-        Route::post('/send', [ChatController::class, 'sendMessage']);
-        Route::get('/history/{receiver_id}', [ChatController::class, 'getMessages']);
-        Route::put('/message/{id}', [ChatController::class, 'updateMessage']);
-        Route::delete('/message/{id}', [ChatController::class, 'deleteMessage']);
-        Route::post('/mark-as-read', [ChatController::class, 'markAsRead']);
+    Route::prefix('conversations')->group(function () {
+        Route::get('/', [ConversationController::class, 'index']);
+        Route::get('/{conversation_id}', [ConversationController::class, 'show']);
     });
+
+    Route::prefix('messages')->group(function () {
+        Route::post('/', [ChatController::class, 'store']);
+        Route::put('/{id}', [ChatController::class, 'updateMessage']);
+        Route::delete('/{id}', [ChatController::class, 'deleteMessage']);
+    });
+
+    Route::post('/conversations/{conversation_id}/mark-as-read', [ChatController::class, 'markAsRead']);
 
     // ... الـ routes القديمة
   

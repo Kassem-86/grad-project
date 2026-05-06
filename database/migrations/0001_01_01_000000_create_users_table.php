@@ -17,11 +17,11 @@ return new class extends Migration
         $table->string('last_name', 50); 
         $table->string('email', 50)->unique(); 
         $table->string('password'); 
-        $table->enum('gender', ['Male', 'Female'])->default('Male');
-        $table->string('phone', 11);
-        $table->date('birthDate');
-        $table->enum('diabetes_type', ['Type1', 'Type2', 'LADA', 'MODY', 'Gestational', 'other']);
-        $table->enum('insulin_therapy', ['Pen / Syringes', 'pump', 'No insulin']);
+        $table->enum('gender', ['Male', 'Female'])->default('Male')->nullable();
+        $table->string('phone', 11)->nullable();
+        $table->date('birthDate')->nullable();
+        $table->enum('diabetes_type', ['Type1', 'Type2', 'LADA', 'MODY', 'Gestational', 'other'])->nullable();
+        $table->enum('insulin_therapy', ['Pen / Syringes', 'pump', 'No insulin'])->nullable();
         $table->dateTime('diagnose_date')->nullable();
         $table->enum('glucose', ['mg/dl', 'mmol/L'])->nullable();
         $table->float('weight')->nullable();

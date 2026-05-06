@@ -198,18 +198,12 @@ class User extends Authenticatable
     }
 
     /**
-     * Messages sent by the user.
+     * Get the user's conversations.
      */
-    public function sentMessages(): HasMany
+    public function conversations()
     {
-        return $this->hasMany(Message::class, 'sender_id');
-    }
-
-    /**
-     * Messages received by the user.
-     */
-    public function receivedMessages(): HasMany
-    {
-        return $this->hasMany(Message::class, 'receiver_id');
+        return Conversation::where('user1_id', $this->id)
+            ->orWhere('user2_id', $this->id)
+            ->orderByDesc('last_updated');
     }
 }

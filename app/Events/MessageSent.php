@@ -2,7 +2,7 @@
 
 namespace App\Events;
 
-use App\Models\Message;
+use App\Models\ChatMessage;
 use App\Http\Resources\MessageResource;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
@@ -17,11 +17,12 @@ class MessageSent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $message;
+    public $receiverId;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(Message $message)
+    function __construct(ChatMessage $message)
     {
         $this->message = $message;
     }
@@ -33,8 +34,16 @@ class MessageSent implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
+        // determine the receiving user id from conversation
+        $conversation = $this->message->conversation ?? null;
+        $receiverId = null;
+        if ($conversation) {
+            $receiverId = $conversation->user1_id === $this->message->sender_id ? $conversation->user2_id : $conversation->user1_id;
+        }
+        $this->receiverId = $receiverId;
+
         return [
-            new Channel('chat.' . $this->message->receiver_id),
+            new Channel('chat.' . $receiverId),
         ];
     }
 

@@ -8,8 +8,9 @@ use App\Events\MessageSent;
 use App\Events\UpdateMessageEvent;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\MessageResource;
+use App\Models\Conversation;
+use App\Models\ChatMessage;
 use App\Models\Friendship;
-use App\Models\Message;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
@@ -21,9 +22,9 @@ use Illuminate\Support\Facades\Validator;
 class ChatController extends Controller
 {
     /**
-     * Send a new message.
+     * Store a new message in a conversation.
      */
-    public function sendMessage(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse
     {
         // Robust validation with custom rules
         $validator = Validator::make($request->all(), [
@@ -92,47 +93,36 @@ class ChatController extends Controller
             $videoUrl = $request->file('video')->store('chats/videos', 'public');
         }
 
-        $message = Message::create([
-            'sender_id' => $sender->id,
-            'receiver_id' => $receiverId,
-            'message' => $request->message,
-            'image_url' => $imageUrl,
-            'voice_url' => $voiceUrl,
-            'video_url' => $videoUrl,
+        // Find or create conversation symmetrically
+        $user1Id = min($sender->id, $receiverId);
+        $user2Id = max($sender->id, $receiverId);
+
+        $conversation = Conversation::firstOrCreate(
+            ['user1_id' => $user1Id, 'user2_id' => $user2Id],
+            ['last_updated' => now()]
+        );
+        
+        $conversation->update(['last_updated' => now()]);
+
+        $message = ChatMessage::create([
+            'conversation_id' => $conversation->id,
+            'sender_id'       => $sender->id,
+            'message'         => $request->message,
+            'image_url'       => $imageUrl,
+            'voice_url'       => $voiceUrl,
+            'video_url'       => $videoUrl,
+            'is_read'         => false,
         ]);
 
-        // Broadcast Event
         broadcast(new MessageSent($message))->toOthers();
 
         return response()->json([
             'message' => 'Message sent successfully',
-            'data' => new MessageResource($message)
+            'data' => clone $message->load('sender')
         ], 201);
     }
 
-    /**
-     * Get paginated chat history.
-     */
-    public function getMessages(Request $request, $receiverId): JsonResponse
-    {
-        $sender = Auth::user();
 
-        // Check Block
-        $restrictedIds = $sender->getRestrictedUserIds();
-        if (in_array($receiverId, $restrictedIds)) {
-            return response()->json(['message' => 'Access denied due to block restrictions.'], 403);
-        }
-
-        $messages = Message::where(function ($query) use ($sender, $receiverId) {
-            $query->where('sender_id', $sender->id)->where('receiver_id', $receiverId);
-        })->orWhere(function ($query) use ($sender, $receiverId) {
-            $query->where('sender_id', $receiverId)->where('receiver_id', $sender->id);
-        })->orderBy('created_at', 'desc')->paginate(20);
-
-        return response()->json([
-            'data' => MessageResource::collection($messages)->response()->getData(true)
-        ], 200);
-    }
 
     /**
      * Update an existing message within 10 minutes.
@@ -143,7 +133,7 @@ class ChatController extends Controller
             'message' => 'required|string',
         ]);
 
-        $message = Message::findOrFail($id);
+        $message = ChatMessage::findOrFail($id);
 
         if ($message->sender_id !== Auth::id()) {
             return response()->json(['message' => 'Unauthorized.'], 403);
@@ -161,7 +151,7 @@ class ChatController extends Controller
 
         return response()->json([
             'message' => 'Message updated successfully',
-            'data' => new MessageResource($message)
+            'data' => $message
         ], 200);
     }
 
@@ -170,7 +160,7 @@ class ChatController extends Controller
      */
     public function deleteMessage($id): JsonResponse
     {
-        $message = Message::findOrFail($id);
+        $message = ChatMessage::findOrFail($id);
 
         if ($message->sender_id !== Auth::id()) {
             return response()->json(['message' => 'Unauthorized.'], 403);
@@ -182,7 +172,10 @@ class ChatController extends Controller
 
         $messageId = $message->id;
         $senderId = $message->sender_id;
-        $receiverId = $message->receiver_id;
+        
+        // Receiver ID can be derived from conversation
+        $conversation = $message->conversation;
+        $receiverId = $conversation->user1_id === $senderId ? $conversation->user2_id : $conversation->user1_id;
 
         if ($message->image_url) {
             Storage::disk('public')->delete($message->image_url);
@@ -202,29 +195,29 @@ class ChatController extends Controller
     }
 
     /**
-     * Mark all unread messages from a specific sender as read.
+     * Mark all unread messages in a conversation as read.
      */
-    public function markAsRead(Request $request): JsonResponse
+    public function markAsRead(Request $request, $conversationId): JsonResponse
     {
-        $request->validate([
-            'sender_id' => 'required|exists:users,id',
-        ]);
+        $conversation = Conversation::findOrFail($conversationId);
+        $userId = Auth::id();
 
-        $senderId = $request->sender_id;
-        $receiverId = Auth::id();
+        if ($conversation->user1_id !== $userId && $conversation->user2_id !== $userId) {
+            return response()->json(['message' => 'Unauthorized.'], 403);
+        }
+        
+        $otherUserId = $conversation->user1_id === $userId ? $conversation->user2_id : $conversation->user1_id;
 
-        // Update all unread messages from the sender
-        $messageCount = Message::where('sender_id', $senderId)
-            ->where('receiver_id', $receiverId)
+        $messageCount = ChatMessage::where('conversation_id', $conversationId)
+            ->where('sender_id', '!=', $userId)
             ->where('is_read', false)
             ->update([
                 'is_read' => true,
-                'read_at' => now(),
+                // we dropped read_at in ChatMessage, we just use is_read
             ]);
 
-        // Broadcast MessageSeen event so the sender gets real-time notification
         if ($messageCount > 0) {
-            broadcast(new MessageSeen($senderId, $receiverId, $messageCount))->toOthers();
+            broadcast(new MessageSeen($userId, $otherUserId, $messageCount))->toOthers();
         }
 
         return response()->json([
