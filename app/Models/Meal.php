@@ -4,26 +4,26 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Meal extends Model
 {
     protected $table = 'record_meals';
     protected $primaryKey = 'meal_id';
+    public $timestamps = false;
 
     protected $fillable = [
         'log_id',
-        'meal_time',
+        'user_id',
         'total_carb',
         'total_calories',
         'meal_type',
+        'meal_description',
         'notes',
     ];
 
     protected $casts = [
         'total_carb' => 'float',
         'total_calories' => 'float',
-        'meal_time' => 'datetime',
     ];
 
     /**
@@ -35,10 +35,11 @@ class Meal extends Model
     }
 
     /**
-     * Get the food items associated with this meal.
+     * Get the user associated with this meal.
      */
-    public function foodItems(): HasMany
+    public function user(): BelongsTo
     {
-        return $this->hasMany(RecordMealFoodItem::class, 'meal_id', 'meal_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
+

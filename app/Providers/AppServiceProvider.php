@@ -9,12 +9,14 @@ use App\Models\Glucose;
 use App\Policies\GlucosePolicy;
 use App\Models\Meal;
 use App\Policies\MealPolicy;
-use App\Models\Medication;
-use App\Policies\MedicationPolicy;
 use App\Models\Post;
 use App\Policies\PostPolicy;
 use App\Models\Comment;
 use App\Policies\CommentPolicy;
+use App\Models\RecordMedication;
+use App\Policies\RecordMedicationPolicy;
+use App\Models\SelectedMedication;
+use App\Policies\SelectedMedicationPolicy;
 use App\Models\Like;
 use App\Observers\LikeObserver;
 use App\Observers\CommentObserver;
@@ -39,9 +41,10 @@ class AppServiceProvider extends ServiceProvider
         // Register policies
         Gate::policy(Glucose::class, GlucosePolicy::class);
         Gate::policy(Meal::class, MealPolicy::class);
-        Gate::policy(Medication::class, MedicationPolicy::class);
         Gate::policy(Post::class, PostPolicy::class);
         Gate::policy(Comment::class, CommentPolicy::class);
+        Gate::policy(RecordMedication::class, RecordMedicationPolicy::class);
+        Gate::policy(SelectedMedication::class, SelectedMedicationPolicy::class);
 
         // Register observers
         Like::observe(LikeObserver::class);

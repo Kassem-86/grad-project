@@ -75,5 +75,8 @@ class DatabaseSeeder extends Seeder
                 ]);
             });
         });
+
+        // 5. Seed logs and health tracking data
+        $this->call(LogSeeder::class);
     }
 }

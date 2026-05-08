@@ -170,6 +170,26 @@ class User extends Authenticatable
         return $this->hasMany(Log::class, 'user_id', 'id');
     }
 
+    public function recordGlucoses(): HasMany
+    {
+        return $this->hasMany(Glucose::class, 'user_id', 'id');
+    }
+
+    public function recordMeals(): HasMany
+    {
+        return $this->hasMany(Meal::class, 'user_id', 'id');
+    }
+
+    public function recordMedications(): HasMany
+    {
+        return $this->hasMany(RecordMedication::class, 'user_id', 'id');
+    }
+
+    public function selectedMedications(): HasMany
+    {
+        return $this->hasMany(SelectedMedication::class, 'user_id', 'id');
+    }
+
     /**
      * Users blocked by this user.
      */

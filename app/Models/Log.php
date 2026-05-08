@@ -10,33 +10,41 @@ class Log extends Model
 {
     protected $table = 'logs';
     protected $primaryKey = 'log_id';
+    public $timestamps = false;
 
     protected $fillable = [
         'user_id',
+        'log_title',
+        'log_description',
+        'logged_at',
+    ];
+
+    protected $casts = [
+        'logged_at' => 'datetime',
     ];
 
     /**
-     * Get the glucose reading associated with this log.
+     * Get the glucose readings associated with this log.
      */
-    public function glucose(): HasOne
+    public function recordGlucoses(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasOne(Glucose::class, 'log_id', 'log_id');
+        return $this->hasMany(Glucose::class, 'log_id', 'log_id');
     }
 
     /**
-     * Get the meal associated with this log.
+     * Get the meals associated with this log.
      */
-    public function meal(): HasOne
+    public function recordMeals(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasOne(Meal::class, 'log_id', 'log_id');
+        return $this->hasMany(Meal::class, 'log_id', 'log_id');
     }
 
     /**
-     * Get the medication associated with this log.
+     * Get the medications associated with this log.
      */
-    public function medication(): HasOne
+    public function recordMedications(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
-        return $this->hasOne(Medication::class, 'log_id', 'log_id');
+        return $this->hasMany(RecordMedication::class, 'log_id', 'log_id');
     }
 
     /**

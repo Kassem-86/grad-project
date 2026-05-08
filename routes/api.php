@@ -14,9 +14,8 @@ use App\Http\Controllers\Api\{
 use App\Http\Controllers\{
     GlucoseController,
     MealController,
-    MedicationController,
-    MedicationLogController
-
+    RecordMedicationController,
+    SelectedMedicationController
 };
 
 /*
@@ -51,6 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     // Preferred standardized endpoint for retrieving the authenticated user
     Route::get('/me', [AuthController::class, 'me']);
+    Route::delete('/delete-me', [AuthController::class, 'deleteUser']);
     Route::post('/logout', [AuthController::class, 'logout']);
 
     // --- Community: Posts ---
@@ -77,8 +77,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- Health Tracking (Resources) ---
     Route::apiResource('glucose', GlucoseController::class);
     Route::apiResource('meals', MealController::class);
-    Route::apiResource('medications', MedicationController::class);
-    Route::apiResource('medication-logs', MedicationLogController::class)->only(['store', 'index', 'update', 'destroy']);
+    Route::apiResource('record-medications', RecordMedicationController::class);
+    Route::apiResource('selected-medications', SelectedMedicationController::class, [
+        'only' => ['index', 'show', 'update', 'destroy']
+    ]);
 
     // --- Real-time Chat (Reverb) ---
     Route::prefix('conversations')->group(function () {

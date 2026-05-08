@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Conversation;
+use App\Models\ChatMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
@@ -182,6 +184,66 @@ public function checkEmail(Request $request)
         return response()->json([
             'message' => 'User retrieved successfully',
             'user' => $request->user(),
+        ], 200);
+    }
+
+    /**
+     * Delete the authenticated user's account and all related data
+     */
+    public function deleteUser(Request $request)
+    {
+        $user = $request->user();
+
+        // Delete profile picture if it exists
+        if ($user->profile_picture) {
+            Storage::disk('public')->delete($user->profile_picture);
+        }
+
+        // Delete all user's posts and associated images
+        foreach ($user->posts as $post) {
+            foreach ($post->images as $image) {
+                Storage::disk('public')->delete($image->image_path);
+                $image->delete();
+            }
+            $post->delete();
+        }
+
+        // Delete all user's comments
+        $user->comments()->delete();
+
+        // Delete all user's likes
+        $user->likes()->delete();
+
+        // Delete all conversations where user is involved and their messages
+        Conversation::where('user1_id', $user->id)
+            ->orWhere('user2_id', $user->id)
+            ->each(function ($conversation) {
+                $conversation->messages()->delete();
+                $conversation->delete();
+            });
+
+        // Delete all messages sent by this user
+        ChatMessage::where('sender_id', $user->id)->delete();
+
+        // Delete all friendships (both sent and received requests)
+        $user->sentFriendRequests()->delete();
+        $user->receivedFriendRequests()->delete();
+
+        // Delete all blocks (both blocked by user and blocking user)
+        $user->blockedUsers()->delete();
+        $user->blockers()->delete();
+
+        // Delete all health tracking logs (Glucose, Meals, Medications cascade through Log)
+        $user->logs()->delete();
+
+        // Revoke all tokens
+        $user->tokens()->delete();
+
+        // Delete the user
+        $user->delete();
+
+        return response()->json([
+            'message' => 'User account deleted successfully',
         ], 200);
     }
 }  
