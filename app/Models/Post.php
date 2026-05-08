@@ -22,7 +22,6 @@ class Post extends Model
         'user_id',
         'title',
         'content',
-        'post_media',
         'category',
         'likes_count',
         'comments_count',
@@ -60,5 +59,13 @@ class Post extends Model
     public function likes()
     {
         return $this->morphMany(Like::class, 'likeable');
+    }
+
+    /**
+     * Get the images for this post.
+     */
+    public function images(): HasMany
+    {
+        return $this->hasMany(PostImage::class);
     }
 }

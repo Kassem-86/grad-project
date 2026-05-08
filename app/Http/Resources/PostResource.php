@@ -20,7 +20,7 @@ class PostResource extends JsonResource
             'user' => new UserResource($this->whenLoaded('user')),
             'title' => $this->title,
             'content' => $this->content,
-            'post_media' => $this->post_media,
+            'images' => PostImageResource::collection($this->whenLoaded('images')),
             'category' => $this->category,
             'likes_count' => $this->likes_count,
             'comments_count' => $this->comments_count,

@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\PostResource;
 use App\Models\Post;
+use App\Models\PostImage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Storage;
 
 class PostController extends Controller
 {
@@ -21,34 +23,34 @@ class PostController extends Controller
 
     
     public function index(Request $request)
-{
-    $category = $request->query('category');
+    {
+        $category = $request->query('category');
 
-    // If no authenticated user, return public posts (still allow optional category filter)
-    if (!$request->user()) {
-        $posts = Post::with('user')
+        // If no authenticated user, return public posts (still allow optional category filter)
+        if (!$request->user()) {
+            $posts = Post::with('user', 'images')
+                ->when($category, function ($query, $category) {
+                    return $query->where('category', $category);
+                })
+                ->latest()
+                ->paginate(10);
+
+            return PostResource::collection($posts);
+        }
+
+        // Authenticated: apply blocked-user restrictions and optional category filter
+        $restrictedIds = $request->user()->getRestrictedUserIds();
+
+        $posts = Post::with('user', 'images')
             ->when($category, function ($query, $category) {
                 return $query->where('category', $category);
             })
+            ->whereNotIn('user_id', $restrictedIds)
             ->latest()
             ->paginate(10);
 
         return PostResource::collection($posts);
     }
-
-    // Authenticated: apply blocked-user restrictions and optional category filter
-    $restrictedIds = $request->user()->getRestrictedUserIds();
-
-    $posts = Post::with('user')
-        ->when($category, function ($query, $category) {
-            return $query->where('category', $category);
-        })
-        ->whereNotIn('user_id', $restrictedIds)
-        ->latest()
-        ->paginate(10);
-
-    return PostResource::collection($posts);
-}
 
    
     public function store(Request $request): JsonResponse
@@ -56,12 +58,29 @@ class PostController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'post_media' => 'nullable|string',
-            'category' => 'required|in:General,Type 1,LADA,Type 2,gestational,advices',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
+            'category' => 'required|in:General,Type1 and LADA,Type2,gestational,advices',
         ]);
 
-        $post = $request->user()->posts()->create($validated);
-        $post->load(['user', 'comments.user', 'likes.user']);
+        $post = $request->user()->posts()->create([
+            'title' => $validated['title'],
+            'content' => $validated['content'],
+            'category' => $validated['category'],
+        ]);
+
+        // Handle image uploads
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $image) {
+                $path = $image->store('posts', 'public');
+                PostImage::create([
+                    'post_id' => $post->id,
+                    'image_path' => $path,
+                ]);
+            }
+        }
+
+        $post->load(['user', 'images', 'comments.user', 'likes.user']);
 
         return response()->json(
             new PostResource($post),
@@ -74,7 +93,7 @@ class PostController extends Controller
      */
     public function show(Post $post): PostResource
     {
-        $post->load(['user', 'comments.user', 'likes.user']);
+        $post->load(['user', 'images', 'comments.user', 'likes.user']);
         return new PostResource($post);
     }
 
@@ -88,12 +107,11 @@ class PostController extends Controller
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
             'content' => 'sometimes|required|string',
-            'post_media' => 'nullable|string',
-            'category' => 'sometimes|required|in:General,Type 1,LADA,Type 2,gestational,advices',
+            'category' => 'sometimes|required|in:General,Type1 and LADA,Type2,gestational,advices',
         ]);
 
         $post->update($validated);
-        $post->load(['user', 'comments.user', 'likes.user']);
+        $post->load(['user', 'images', 'comments.user', 'likes.user']);
 
         return response()->json(new PostResource($post));
     }
@@ -116,7 +134,7 @@ class PostController extends Controller
     {
         $user = $request->user();
 
-        $posts = Post::with('user')
+        $posts = Post::with('user', 'images')
             ->where('user_id', $user->id)
             ->latest()
             ->paginate(10);
