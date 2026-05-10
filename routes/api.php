@@ -9,7 +9,8 @@ use App\Http\Controllers\Api\{
     LikeController,
     FriendshipController,
     ChatController,
-    ConversationController
+    ConversationController,
+    SearchController
 };
 use App\Http\Controllers\{
     GlucoseController,
@@ -28,13 +29,16 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/check-email', [AuthController::class, 'checkEmail']);
 
 // Google Socialite Auth
-Route::get('/auth/google', [\App\Http\Controllers\AuthController::class, 'redirectToGoogle'])->name('google.login');
-Route::get('/auth/google/callback', [\App\Http\Controllers\AuthController::class, 'handleGoogleCallback'])->name('google.callback');
+Route::get('/auth/google', [\App\Http\Controllers\GoogleAuthController::class, 'redirectToGoogle'])->name('google.login');
+Route::get('/auth/google/callback', [\App\Http\Controllers\GoogleAuthController::class, 'handleGoogleCallback'])->name('google.callback');
 
 // المشاهدة فقط (Posts & Comments)
 Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{post}', [PostController::class, 'show']);
 Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
+
+// Search (Public & Protected)
+Route::get('/search', [SearchController::class, 'index']);
 
 
 /*

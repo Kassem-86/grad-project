@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class PostImage extends Model
 {
-    protected $fillable = ['post_id', 'image_path'];
+    protected $fillable = ['post_id', 'image_path', 'user_id'];
 
-    /**
+/**
      * Get the post that owns this image.
-     */
+     */    
     public function post(): BelongsTo
     {
         return $this->belongsTo(Post::class);
