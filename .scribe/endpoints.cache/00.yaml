@@ -113,9 +113,8 @@ endpoints:
         example: Type2
         type: string
         enumValues:
-          - Type1
+          - Type1 and LADA
           - Type2
-          - LADA
           - MODY
           - Gestational
           - diabetes

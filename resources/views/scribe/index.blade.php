@@ -473,7 +473,8 @@ Must be one of:
     <br>
 <p>Example: <code>Type2</code></p>
 Must be one of:
-<ul style="list-style-type: square;"><li><code>Type1</code></li> <li><code>Type2</code></li> <li><code>LADA</code></li> <li><code>MODY</code></li> <li><code>Gestational</code></li> <li><code>diabetes</code></li> <li><code>other</code></li></ul>
+<ul style="list-style-type: square;"><li><code>Type1 and LADA</code></li> <li><code>Type2</code></li>  
+    <li><code>MODY</code></li> <li><code>Gestational</code></li> <li><code>diabetes</code></li> <li><code>other</code></li></ul>
         </div>
                 <div style=" padding-left: 28px;  clear: unset;">
             <b style="line-height: 2;"><code>insulin_therapy</code></b>&nbsp;&nbsp;
