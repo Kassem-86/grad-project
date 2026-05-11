@@ -122,11 +122,10 @@ class LogSeeder extends Seeder
         // Select random medications for this log
         $selectedMeds = array_slice($medications, 0, rand(2, 4));
         
-        // Create RecordMedication with array of medications
+        // Create RecordMedication entry
         $recordMed = RecordMedication::create([
             'log_id' => $log->log_id,
             'user_id' => $user->id,
-            'medications' => $selectedMeds,
             'notes' => 'Daily medication routine',
         ]);
 

@@ -16,6 +16,11 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
+     * Diabetes type constants
+     */
+    public const DIABETES_TYPES = ['Type1', 'LADA', 'Type2', 'MODY', 'Gestational'];
+
+    /**
      * The primary key associated with the table.
      *
      * @var string

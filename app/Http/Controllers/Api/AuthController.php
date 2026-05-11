@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Validation\Rule;
 
 class AuthController extends Controller
 {
@@ -28,7 +29,7 @@ class AuthController extends Controller
             'gender' => 'nullable|in:Male,Female',
             'phone' => 'nullable|string|max:11',
             'birthDate' => 'nullable|date',
-            'diabetes_type' => 'nullable|in:Type1 and LADA,Type2,MODY,Gestational,other',
+            'diabetes_type' => ['nullable', Rule::in(User::DIABETES_TYPES)],
             'insulin_therapy' => 'nullable|in:Pen / Syringes,pump,No insulin',
             'diagnose_date' => 'nullable|date_format:Y-m-d H:i:s',
             'glucose' => 'nullable|in:mg/dl,mmol/L',
@@ -134,7 +135,7 @@ class AuthController extends Controller
             'gender' => 'nullable|in:Male,Female',
             'phone' => 'nullable|string|max:11',
             'birthDate' => 'nullable|date',
-            'diabetes_type' => 'nullable|in:Type1 and LADA,Type2,MODY,Gestational,other',
+            'diabetes_type' => ['nullable', Rule::in(User::DIABETES_TYPES)],
             'insulin_therapy' => 'nullable|in:Pen / Syringes,pump,No insulin',
             'diagnose_date' => 'nullable|date_format:Y-m-d H:i:s',
             'glucose' => 'nullable|in:mg/dl,mmol/L',

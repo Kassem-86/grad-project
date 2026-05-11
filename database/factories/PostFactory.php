@@ -51,13 +51,7 @@ class PostFactory extends Factory
             'title' => fake()->randomElement($healthTitles),
             'content' => fake()->randomElement($healthContent),
             
-            'category' => fake()->randomElement([
-                'General', 
-                'Type 1 and LADA',
-                'Type 2', 
-                'gestational', 
-                'advices'
-            ]),
+            'category' => fake()->randomElement(Post::CATEGORIES),
             
             'likes_count' => 0,
             'comments_count' => 0,

@@ -61,7 +61,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('posts', PostController::class);
     Route::get('/my-posts', [PostController::class, 'myPosts']);
 
-
     // --- Community: Comments ---
     Route::post('/posts/{post}/comments', [CommentController::class, 'store']);
     Route::put('/comments/{comment}', [CommentController::class, 'update']); // ✅ مكانها الصح

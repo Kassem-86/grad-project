@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class PostController extends Controller
 {
@@ -60,7 +61,7 @@ class PostController extends Controller
             'content' => 'required|string',
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:5120',
-            'category' => 'required|in:General,Type1 and LADA,Type2,gestational,advices',
+            'category' => ['required', Rule::in(Post::CATEGORIES)],
         ]);
 
         $post = $request->user()->posts()->create([
@@ -107,7 +108,7 @@ class PostController extends Controller
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
             'content' => 'sometimes|required|string',
-            'category' => 'sometimes|required|in:General,Type1 and LADA,Type2,gestational,advices',
+            'category' => ['sometimes', 'required', Rule::in(Post::CATEGORIES)],
         ]);
 
         $post->update($validated);

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -30,7 +31,7 @@ class UserFactory extends Factory
         'phone' => fake()->numerify('01#########'),
         'gender' => fake()->randomElement(['Male', 'Female']),
         'birthDate' => fake()->dateTimeBetween('-60 years', '-10 years')->format('Y-m-d'),
-        'diabetes_type' => fake()->randomElement(['Type1 and LADA', 'Type2', 'MODY', 'Gestational', 'other']),
+        'diabetes_type' => fake()->randomElement(User::DIABETES_TYPES),
         'insulin_therapy' => fake()->randomElement(['Pen / Syringes', 'pump', 'No insulin']),
         'weight' => fake()->randomFloat(2, 50, 120),
         'height' => fake()->randomFloat(2, 140, 200),

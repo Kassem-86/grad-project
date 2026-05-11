@@ -12,7 +12,6 @@ return new class extends Migration
             $table->id('medication_id');
             $table->unsignedBigInteger('log_id');
             $table->unsignedBigInteger('user_id');
-            $table->text('medications')->nullable();
             $table->text('notes')->nullable();
 
             $table->foreign('log_id')->references('log_id')->on('logs')->onDelete('cascade');
@@ -21,7 +20,7 @@ return new class extends Migration
             // if you need created_at / updated_at
             $table->timestamps();
         });
-    }
+    }  
 
     public function down(): void
     {

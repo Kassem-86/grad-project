@@ -14,13 +14,10 @@ class RecordMedication extends Model
     protected $fillable = [
         'log_id',
         'user_id',
-        'medications',
         'notes',
     ];
 
-    protected $casts = [
-        'medications' => 'array',
-    ];
+    protected $casts = [];
 
     public function log(): BelongsTo
     {

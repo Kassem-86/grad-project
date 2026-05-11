@@ -14,6 +14,11 @@ class Post extends Model
     use HasFactory;
 
     /**
+     * Post category constants
+     */
+    public const CATEGORIES = ['General', 'Type1 / LADA', 'Type2', 'MODY', 'Gestational', 'Advices'];
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>

@@ -20,7 +20,7 @@ return new class extends Migration
         $table->enum('gender', ['Male', 'Female'])->default('Male')->nullable();
         $table->string('phone', 11)->nullable();
         $table->date('birthDate')->nullable();
-        $table->enum('diabetes_type', ['Type1 and LADA', 'Type2' , 'MODY', 'Gestational', 'other'])->nullable();
+        $table->enum('diabetes_type', ['Type1','LADA', 'Type2' , 'MODY', 'Gestational'])->nullable();
         $table->enum('insulin_therapy', ['Pen / Syringes', 'pump', 'No insulin'])->nullable();
         $table->dateTime('diagnose_date')->nullable();
         $table->enum('glucose', ['mg/dl', 'mmol/L'])->nullable();
