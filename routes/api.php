@@ -36,6 +36,8 @@ Route::get('/auth/google/callback', [\App\Http\Controllers\GoogleAuthController:
 Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{post}', [PostController::class, 'show']);
 Route::get('/posts/{post}/comments', [CommentController::class, 'index']);
+Route::get('/users/{user}/posts', [PostController::class, 'userPosts']);// Route عشان تجيب بوستات يوزر معين عن طريق الـ ID بتاعه
+
 
 // Search (Public & Protected)
 Route::get('/search', [SearchController::class, 'index']);
@@ -60,6 +62,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- Community: Posts ---
     Route::apiResource('posts', PostController::class);
     Route::get('/my-posts', [PostController::class, 'myPosts']);
+
 
     // --- Community: Comments ---
     Route::post('/posts/{post}/comments', [CommentController::class, 'store']);

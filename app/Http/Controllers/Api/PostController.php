@@ -7,6 +7,7 @@ use App\Http\Resources\PostResource;
 use App\Models\Post;
 use App\Models\PostImage;
 use Illuminate\Http\JsonResponse;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\Storage;
@@ -142,4 +143,14 @@ class PostController extends Controller
 
         return PostResource::collection($posts);
     }
+
+    public function userPosts(User $user)
+{
+    $posts = Post::with('user', 'images')
+        ->where('user_id', $user->id)
+        ->latest()
+        ->paginate(10);
+
+    return PostResource::collection($posts);
+}
 }
