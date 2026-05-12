@@ -19,9 +19,11 @@ class UserResource extends JsonResource
         'first_name' => $this->first_name,
         'last_name' => $this->last_name,
         'full_name' => $this->first_name . ' ' . $this->last_name, // حركة جدعنة منك للـ UI        
-        'profile_picture' => $this->profile_picture 
-            ? asset('storage/' . $this->profile_picture) 
-            : asset('images/default-avatar.png'), 
+       'profile_picture' => $this->profile_picture 
+    ? (str_starts_with($this->profile_picture, 'http') 
+        ? $this->profile_picture 
+        : asset('storage/' . $this->profile_picture))
+    : asset('images/default-avatar.png'),
 
         'created_at' => $this->created_at->format('Y-m-d'),
     ];
