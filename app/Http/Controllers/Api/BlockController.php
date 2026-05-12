@@ -36,3 +36,7 @@ class BlockController extends Controller
     return response()->json(['message' => 'Block record not found'], 404);
 }
 }
+
+
+
+

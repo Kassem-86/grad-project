@@ -34,7 +34,7 @@ class PostController extends Controller
                 ->when($category, function ($query, $category) {
                     return $query->where('category', $category);
                 })
-                ->latest()
+                ->inRandomOrder()
                 ->paginate(10);
 
             return PostResource::collection($posts);
@@ -48,7 +48,7 @@ class PostController extends Controller
                 return $query->where('category', $category);
             })
             ->whereNotIn('user_id', $restrictedIds)
-            ->latest()
+            ->inRandomOrder()
             ->paginate(10);
 
         return PostResource::collection($posts);
@@ -77,6 +77,7 @@ class PostController extends Controller
                 $path = $image->store('posts', 'public');
                 PostImage::create([
                     'post_id' => $post->id,
+                    'user_id' => $request->user()->id,
                     'image_path' => $path,
                 ]);
             }
@@ -167,4 +168,4 @@ class PostController extends Controller
 
     return PostResource::collection($posts);
 }
->
+}
