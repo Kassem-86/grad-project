@@ -82,7 +82,7 @@ class PostController extends Controller
             }
         }
 
-        $post->load(['user', 'images', 'comments.user', 'likes.user']);
+        $post->refresh()->load(['user', 'images', 'comments.user', 'likes.user']);
 
         return response()->json(
             new PostResource($post),
@@ -144,13 +144,27 @@ class PostController extends Controller
         return PostResource::collection($posts);
     }
 
-    public function userPosts(User $user)
+   public function userPosts(Request $request, User $user)
 {
-    $posts = Post::with('user', 'images')
-        ->where('user_id', $user->id)
+    // 1. لو اليوزر عامل Login، نتاكد من حوار البلوك
+    if ($request->user()) {
+        $restrictedIds = $request->user()->getRestrictedUserIds();
+        
+        // لو الشخص اللي بفتح بروفايله "صلاح" موجود في قايمة البلوك عندي أو أنا عنده
+        if (in_array($user->id, $restrictedIds)) {
+            return response()->json([
+                'message' => 'This profile is not available.'
+            ], 403);
+        }
+    }
+
+    // 2. نجيب البوستات بتاعة الشخص ده بس
+    $posts = Post::with(['user', 'images'])
+        ->withCount(['comments', 'likes']) // عشان الموبايل يعرض الأرقام بس في البروفايل
+        ->where('user_id', $user->id) // لازم دي تكون where بس
         ->latest()
         ->paginate(10);
 
     return PostResource::collection($posts);
 }
-}
+>
