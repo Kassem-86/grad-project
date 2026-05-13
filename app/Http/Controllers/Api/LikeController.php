@@ -77,4 +77,38 @@ class LikeController extends Controller
             ], 201);
         }
     }
+
+
+
+
+
+/**
+ * Get all users who liked a post.
+ */
+public function getPostLikes(Post $post): JsonResponse
+{
+    // بنسحب اليوزرز من خلال علاقة الـ likes
+    $users = $post->likes()->with('user')->get()->pluck('user');
+    
+    return response()->json([
+        'post_id' => $post->id,
+        'total_likes' => $users->count(),
+        'users' => $users // ممكن تستخدم UserResource هنا عشان الداتا تبقى أنظف
+    ]);
 }
+
+/**
+ * Get all users who liked a comment.
+ */
+public function getCommentLikes(Comment $comment): JsonResponse
+{
+    $users = $comment->likes()->with('user')->get()->pluck('user');
+
+    return response()->json([
+        'comment_id' => $comment->id,
+        'total_likes' => $users->count(),
+        'users' => $users
+    ]);
+}    }
+
+

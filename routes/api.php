@@ -72,6 +72,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- Community: Likes (Polymorphic) ---
     Route::post('/posts/{post}/like', [LikeController::class, 'togglePost']);
     Route::post('/comments/{comment}/like', [LikeController::class, 'toggleComment']);
+    Route::get('/posts/{post}/likes', [LikeController::class, 'getPostLikes']);
+    Route::get('/comments/{comment}/likes', [LikeController::class, 'getCommentLikes']);
 
     // --- Community: Friendships ---
     Route::post('/friends/{id}/request', [FriendshipController::class, 'sendRequest']);
