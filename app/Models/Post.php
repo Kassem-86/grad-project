@@ -90,6 +90,6 @@ class Post extends Model
         }
 
         // Otherwise return false (not authenticated or not loaded)
-        return false;
+        return false  ;
     }
 }
