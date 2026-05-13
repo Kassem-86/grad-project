@@ -14,24 +14,19 @@ return [
     | To learn more: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
     |
     */
-
-    'paths' => ['api/*', 'sanctum/csrf-cookie'],
-
-    'allowed_methods' => ['*'],
-
-    'allowed_origins' => ['*'],
-
-    'allowed_origins_patterns' => [],
-
-    'allowed_headers' => ['*'],
-
-    'exposed_headers' => [],
-
-    'max_age' => 0,
-
-    'supports_credentials' => false,
-
+'paths' => ['api/*', 'sanctum/csrf-cookie'],
+'allowed_methods' => ['*'],
+'allowed_origins' => [
+    'http://localhost:5173', 
+    'http://localhost:3000', 
+    'https://seen-lime.vercel.app',
+    'https://inquisitorial-elba-undistractedly.ngrok-free.dev'
+],
+'allowed_origins_patterns' => [],
+'allowed_headers' => ['*'],
+'exposed_headers' => [],
+'max_age' => 0,
+'supports_credentials' => true, // لازم تكون true طالما فيه Login
     
-    // 'allowed_origins' => ['https://seen-lime.vercel.app'],
 
 ];
