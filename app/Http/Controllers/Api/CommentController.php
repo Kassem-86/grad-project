@@ -14,16 +14,50 @@ class CommentController extends Controller
 {
 
     /**
-     * Get all comments for a post.
+     * Get all comments for a post and include the parent post's like status.
      */
-    public function index(Post $post): AnonymousResourceCollection
+    public function index(Request $request, Post $post)
     {
-        $comments = $post->comments()
-            ->with(['user', 'likes.user'])
-            ->latest()
-            ->paginate(20);
+        $user = $request->user();
 
-        return CommentResource::collection($comments);
+        $query = $post->comments()
+            ->with(['user', 'likes.user']);
+
+        // Add per-comment like status when user is authenticated
+        if ($user) {
+            $query->withExists(['likes as is_liked' => function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            }]);
+        } else {
+            $query->selectRaw('comments.*, false as is_liked');
+        }
+
+        $comments = $query->latest()->paginate(20);
+
+        // Determine parent post like status for the current user
+        if ($user) {
+            $post->is_liked = (bool) $post->likes()->where('user_id', $user->id)->exists();
+        } else {
+            $post->is_liked = false;
+        }
+
+        // Build response: include paginated comments data and pagination meta/links
+        $commentsData = CommentResource::collection($comments)->response()->getData(true);
+
+        $response = [
+            'post_id' => $post->id,
+            'is_liked' => (bool) $post->is_liked,
+            'comments' => $commentsData['data'],
+        ];
+
+        if (isset($commentsData['links'])) {
+            $response['links'] = $commentsData['links'];
+        }
+        if (isset($commentsData['meta'])) {
+            $response['meta'] = $commentsData['meta'];
+        }
+
+        return response()->json($response);
     }
 
     /**

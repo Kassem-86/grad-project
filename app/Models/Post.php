@@ -84,12 +84,17 @@ class Post extends Model
      */
     public function getIsLikedAttribute(): bool
     {
-        // If the attribute was set via withExists(), use it
-        if ($this->attributes['is_liked'] ?? false) {
-            return true;
+        // If the attribute was set via withExists() or selected on the query, use it
+        if (array_key_exists('is_liked', $this->attributes) && $this->attributes['is_liked'] !== null) {
+            return (bool) $this->attributes['is_liked'];
         }
 
-        // Otherwise return false (not authenticated or not loaded)
-        return false  ;
+        // Fallback: check the current authenticated user
+        $userId = auth()->id();
+        if (!$userId) {
+            return false;
+        }
+
+        return (bool) $this->likes()->where('user_id', $userId)->exists();
     }
 }
