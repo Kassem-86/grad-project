@@ -27,29 +27,27 @@ class PostController extends Controller
     public function index(Request $request)
     {
         $category = $request->query('category');
+        $user = $request->user();
 
-        // If no authenticated user, return public posts (still allow optional category filter)
-        if (!$request->user()) {
-            $posts = Post::with('user', 'images')
-                ->when($category, function ($query, $category) {
-                    return $query->where('category', $category);
-                })
-                ->inRandomOrder()
-                ->paginate(10);
-
-            return PostResource::collection($posts);
-        }
-
-        // Authenticated: apply blocked-user restrictions and optional category filter
-        $restrictedIds = $request->user()->getRestrictedUserIds();
-
-        $posts = Post::with('user', 'images')
+        $query = Post::with('user', 'images')
             ->when($category, function ($query, $category) {
                 return $query->where('category', $category);
-            })
-            ->whereNotIn('user_id', $restrictedIds)
-            ->inRandomOrder()
-            ->paginate(10);
+            });
+
+        // For authenticated users: add like status and blocked user restrictions
+        if ($user) {
+            $restrictedIds = $user->getRestrictedUserIds();
+            
+            $query->whereNotIn('user_id', $restrictedIds)
+                ->withExists(['likes as is_liked' => function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                }]);
+        } else {
+            // For unauthenticated users: set is_liked to false by default
+            $query->selectRaw('posts.*, false as is_liked');
+        }
+
+        $posts = $query->inRandomOrder()->paginate(10);
 
         return PostResource::collection($posts);
     }
@@ -93,10 +91,20 @@ class PostController extends Controller
     /**
      * Display the specified post.
      */
-    public function show(Post $post): PostResource
+    public function show(Request $request, Post $post): PostResource
     {
         $post->load(['user', 'images', 'comments.user', 'likes.user']);
-        return new PostResource ($post);
+        
+        // Add is_liked for authenticated users
+        if ($request->user()) {
+            $post->is_liked = $post->likes()
+                ->where('user_id', $request->user()->id)
+                ->exists();
+        } else {
+            $post->is_liked = false;
+        }
+        
+        return new PostResource($post);
     }
 
     /**
@@ -138,33 +146,44 @@ class PostController extends Controller
 
         $posts = Post::with('user', 'images')
             ->where('user_id', $user->id)
+            ->withExists(['likes as is_liked' => function ($query) use ($user) {
+                $query->where('user_id', $user->id);
+            }])
             ->latest()
             ->paginate(10);
 
         return PostResource::collection($posts);
     }
 
-   public function userPosts(Request $request, User $user)
-{
-    // 1. لو اليوزر عامل Login، نتاكد من حوار البلوك
-    if ($request->user()) {
-        $restrictedIds = $request->user()->getRestrictedUserIds();
-        
-        // لو الشخص اللي بفتح بروفايله "صلاح" موجود في قايمة البلوك عندي أو أنا عنده
-        if (in_array($user->id, $restrictedIds)) {
-            return response()->json([
-                'message' => 'This profile is not available.'
-            ], 403);
+    public function userPosts(Request $request, User $user)
+    {
+        // Check block restrictions for authenticated users
+        if ($request->user()) {
+            $restrictedIds = $request->user()->getRestrictedUserIds();
+            
+            if (in_array($user->id, $restrictedIds)) {
+                return response()->json([
+                    'message' => 'This profile is not available.'
+                ], 403);
+            }
         }
+
+        // Fetch user's posts with like status
+        $query = Post::with(['user', 'images'])
+            ->withCount(['comments', 'likes'])
+            ->where('user_id', $user->id);
+        
+        // Add like status for authenticated users
+        if ($request->user()) {
+            $query->withExists(['likes as is_liked' => function ($query) use ($request) {
+                $query->where('user_id', $request->user()->id);
+            }]);
+        } else {
+            $query->selectRaw('posts.*, false as is_liked');
+        }
+
+        $posts = $query->latest()->paginate(10);
+
+        return PostResource::collection($posts);
     }
-
-    // 2. نجيب البوستات بتاعة الشخص ده بس
-    $posts = Post::with(['user', 'images'])
-        ->withCount(['comments', 'likes']) // عشان الموبايل يعرض الأرقام بس في البروفايل
-        ->where('user_id', $user->id) // لازم دي تكون where بس
-        ->latest()
-        ->paginate(10);
-
-    return PostResource::collection($posts);
-}
 }

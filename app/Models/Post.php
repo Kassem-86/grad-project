@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Auth;
 
 class Post extends Model
 {
@@ -72,5 +73,23 @@ class Post extends Model
     public function images(): HasMany
     {
         return $this->hasMany(PostImage::class);
+    }
+
+
+    /**
+     * Get whether the authenticated user likes this post.
+     * 
+     * Uses the 'is_liked' attribute set by withExists() in queries.
+     * Falls back to false if not set (unauthenticated or not eager-loaded).
+     */
+    public function getIsLikedAttribute(): bool
+    {
+        // If the attribute was set via withExists(), use it
+        if ($this->attributes['is_liked'] ?? false) {
+            return true;
+        }
+
+        // Otherwise return false (not authenticated or not loaded)
+        return false;
     }
 }

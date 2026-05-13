@@ -25,6 +25,7 @@ class PostResource extends JsonResource
             'comments_count' => $this->comments_count,
             'comments' => CommentResource::collection($this->whenLoaded('comments')),
             'likes' => LikeResource::collection($this->whenLoaded('likes')),
+            'is_liked' => $this->is_liked,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
