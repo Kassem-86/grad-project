@@ -20,9 +20,13 @@ return [
     'http://localhost:5173', 
     'http://localhost:3000', 
     'https://seen-lime.vercel.app',
-    'https://inquisitorial-elba-undistractedly.ngrok-free.dev'
+    'https://inquisitorial-elba-undistractedly.ngrok-free.dev',
 ],
-'allowed_origins_patterns' => [],
+
+'allowed_origins_patterns' => [
+    '#^android://.*#', // ده الـ Regex الصح اللي لارفيل بتفهمه للموبايل
+    '#^capacitor://.*#',
+],
 'allowed_headers' => ['*'],
 'exposed_headers' => [],
 'max_age' => 0,

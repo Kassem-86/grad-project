@@ -20,12 +20,11 @@ class UserResource extends JsonResource
         'last_name' => $this->last_name,
         'diabetes_type' => $this->diabetes_type,
         'full_name' => $this->first_name . ' ' . $this->last_name, // حركة جدعنة منك للـ UI        
-       'profile_picture' => $this->profile_picture 
+    'profile_picture' => $this->profile_picture 
     ? (str_starts_with($this->profile_picture, 'http') 
         ? $this->profile_picture 
-        : asset('storage/' . $this->profile_picture))
+        : asset('storage/' . str_replace('profiles/profiles/', 'profiles/', $this->profile_picture))) 
     : asset('images/default-avatar.png'),
-
         'created_at' => $this->created_at->format('Y-m-d'),
     ];
 }}

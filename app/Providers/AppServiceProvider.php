@@ -49,9 +49,14 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(SelectedMedication::class, SelectedMedicationPolicy::class);
         Gate::policy(Reminder::class, ReminderPolicy::class);
 
+
         // Register observers
         Like::observe(LikeObserver::class);
         Comment::observe(CommentObserver::class);
+
+        if (config('app.env') !== 'local') {
+        URL::forceScheme('https');
+    }
     }
 }
 
