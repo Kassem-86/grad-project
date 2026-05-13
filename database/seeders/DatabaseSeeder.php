@@ -86,5 +86,8 @@ class DatabaseSeeder extends Seeder
 
         // 5. Seed logs and health tracking data
         $this->call(LogSeeder::class);
+
+        // 6. Seed reminders for testing the reminders:check command
+        $this->call(ReminderSeeder::class);
     }
 }
