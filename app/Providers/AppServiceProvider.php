@@ -20,6 +20,8 @@ use App\Policies\SelectedMedicationPolicy;
 use App\Models\Like;
 use App\Observers\LikeObserver;
 use App\Observers\CommentObserver;
+use App\Models\Reminder;
+use App\Policies\ReminderPolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -45,6 +47,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Comment::class, CommentPolicy::class);
         Gate::policy(RecordMedication::class, RecordMedicationPolicy::class);
         Gate::policy(SelectedMedication::class, SelectedMedicationPolicy::class);
+        Gate::policy(Reminder::class, ReminderPolicy::class);
 
         // Register observers
         Like::observe(LikeObserver::class);

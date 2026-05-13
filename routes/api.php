@@ -10,7 +10,8 @@ use App\Http\Controllers\Api\{
     FriendshipController,
     ChatController,
     ConversationController,
-    SearchController
+    SearchController,
+    ReminderController
 };
 use App\Http\Controllers\{
     GlucoseController,
@@ -103,6 +104,10 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::post('/conversations/{conversation_id}/mark-as-read', [ChatController::class, 'markAsRead']);
+
+    // --- Reminders ---
+    Route::apiResource('reminders', ReminderController::class, ['only' => ['index', 'store']]);
+    Route::put('/reminders/{reminder}/status', [ReminderController::class, 'updateStatus']);
 
     // ... الـ routes القديمة
   

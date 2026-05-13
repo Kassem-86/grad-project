@@ -208,7 +208,15 @@ class User extends Authenticatable
      */
     public function blockers(): HasMany
     {
-        return $this->hasMany(Block::class, 'blocked_id');
+        return $this->hasMany(UserBlock::class, 'blocked_id');
+    }
+
+    /**
+     * Get the reminders for this user.
+     */
+    public function reminders(): HasMany
+    {
+        return $this->hasMany(Reminder::class);
     }
 
     /**

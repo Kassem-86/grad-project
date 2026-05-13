@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class CommentResource extends JsonResource
+class ReminderResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,13 +16,10 @@ class CommentResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'post_id' => $this->post_id,
             'user_id' => $this->user_id,
-            'user' => new UserResource($this->whenLoaded('user')),
-            'comment_text' => $this->comment_text,
-            'likes_count' => $this->likes_count ?? 0,
-            'likes' => LikeResource::collection($this->whenLoaded('likes')),
-            'is_liked' => (bool) ($this->is_liked ?? false),
+            'message_type' => $this->message_type,
+            'time' => $this->time->format('Y-m-d H:i:s'),
+            'status' => $this->status,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];
