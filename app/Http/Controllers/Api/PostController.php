@@ -47,7 +47,7 @@ class PostController extends Controller
             $query->selectRaw('posts.*, false as is_liked');
         }
 
-        $posts = $query->inRandomOrder()->paginate(10);
+        $posts = $query->latest()->paginate(10);
 
         return PostResource::collection($posts);
     }
