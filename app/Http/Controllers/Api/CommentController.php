@@ -18,7 +18,8 @@ class CommentController extends Controller
      */
     public function index(Request $request, Post $post)
     {
-        $user = $request->user();
+        // Explicitly use Sanctum guard to retrieve authenticated user from token
+        $user = auth('sanctum')->user();
 
         $query = $post->comments()
             ->with(['user', 'likes.user']);
@@ -29,6 +30,7 @@ class CommentController extends Controller
                 $q->where('user_id', $user->id);
             }]);
         } else {
+            // For guests, set is_liked to false
             $query->selectRaw('comments.*, false as is_liked');
         }
 
@@ -63,25 +65,26 @@ class CommentController extends Controller
     /**
      * Store a newly created comment.
      */
-  public function store(Request $request, Post $post)
-{
-    // 1. Validate الـ data اللي جاية
-    $request->validate([
-        'comment_text' => 'required|string',
-    ]);
+    public function store(Request $request, Post $post)
+    {
+        $request->validate([
+            'comment_text' => 'required|string',
+        ]);
 
-    // 2. سجل الكومنت واربطه بالـ User اللي عامل Login حالياً
-    $comment = $post->comments()->create([
-        'comment_text' => $request->comment_text,
-        'user_id' => auth()->id(), // ✅ ده السطر السحري اللي بيجيب ID صاحب الكومنت
-    ]);
-    $comment->load('user');
+        $comment = $post->comments()->create([
+            'comment_text' => $request->comment_text,
+            'user_id' => auth()->id(),
+        ]);
+        $comment->load(['user', 'likes.user']);
+        
+        // Set is_liked to false since it's a new comment
+        $comment->is_liked = false;
 
-    return response()->json([
-        'message' => 'Comment added successfully',
-        'comment' => $comment
-    ], 201);
-}
+        return response()->json([
+            'message' => 'Comment added successfully',
+            'comment' => new CommentResource($comment)
+        ], 201);
+    }
     /**
      * Delete a comment.
      */
@@ -99,15 +102,19 @@ class CommentController extends Controller
      */
     public function update(Request $request, Comment $comment): JsonResponse
     {
-       $this->authorize('update', $comment);
+        $this->authorize('update', $comment);
 
-   $validated = $request->validate([
+        $validated = $request->validate([
             'comment_text' => 'required|string',
         ]);
 
         $comment->update($validated);
 
         $comment->load(['user', 'likes.user']);
+        
+        // Calculate is_liked based on whether the authenticated user has liked the comment
+        $user = $request->user();
+        $comment->is_liked = $user ? (bool) $comment->likes()->where('user_id', $user->id)->exists() : false;
 
         return response()->json([
             'message' => 'Comment updated successfully',
