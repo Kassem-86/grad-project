@@ -75,6 +75,7 @@ class CommentController extends Controller
         'comment_text' => $request->comment_text,
         'user_id' => auth()->id(), // ✅ ده السطر السحري اللي بيجيب ID صاحب الكومنت
     ]);
+    $comment->load('user');
 
     return response()->json([
         'message' => 'Comment added successfully',
