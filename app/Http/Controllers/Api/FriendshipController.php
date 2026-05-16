@@ -115,4 +115,50 @@ class FriendshipController extends Controller
 
         return response()->json($suggestions);
     }
+
+
+    public function sendFriendRequest(Request $request)
+{
+    $sender = auth()->user();
+    $receiverId = $request->receiver_id;
+
+    // 1. كود إرسال طلب الصداقة العادي بتاعك في الداتابيز
+    $friendship = Friendship::create([
+        'user_id' => $sender->id,
+        'friend_id' => $receiverId,
+        'status' => 'pending'
+    ]);
+
+    // 2. سطر الإشعار السحري لطلب الصداقة 🚀
+    \App\Models\Notification::create([
+        'user_id' => $receiverId, // المستلم: الشخص اللي جاله طلب الصداقة
+        'title' => 'New Friend Request 👥',
+        'message' => $sender->first_name . ' sent you a friend request.',
+        'type' => 'friend_request',
+        'reference_id' => $sender->id, // الـ reference هنا هو الـ ID بتاع اللي بعت، عشان لما يضغط عليه يفتح بروفايله علطول
+    ]);
+
+    return response()->json(['message' => 'Friend request sent successfully']);
+}
+
+public function acceptFriendRequest(Request $request, $senderId)
+{
+    $receiver = auth()->user();
+
+    // 1. كود تحديث الحالة لـ accepted عندك في الداتابيز
+    $friendship = Friendship::where('user_id', $senderId)
+                            ->where('friend_id', $receiver->id)
+                            ->update(['status' => 'accepted']);
+
+    // 2. إشعار لليوزر الأولاني إن تامر وافق على طلبك 🚀
+    \App\Models\Notification::create([
+        'user_id' => $senderId, // المستقبل: الشخص اللي كان باعت الطلب في الأول
+        'title' => 'تم قبول طلب الصداقة ✨',
+        'message' => $receiver->first_name . ' وافق على طلب الصداقة الخاص بك.',
+        'type' => 'friend_request', // بتفضل نفس النوع عشان الأندرويد يفتح البروفايل برضه
+        'reference_id' => $receiver->id, // بيوديه لبروفايل الشخص اللي وافق
+    ]);
+
+    return response()->json(['message' => 'Friend request accepted']);
+}
 }
