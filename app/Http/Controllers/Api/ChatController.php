@@ -23,8 +23,7 @@ class ChatController extends Controller
 {
     /**
      * Store a new message in a conversation.
-     */
-    public function store(Request $request): JsonResponse
+     */public function store(Request $request): JsonResponse
     {
         // Robust validation with custom rules
         $validator = Validator::make($request->all(), [
@@ -68,7 +67,8 @@ class ChatController extends Controller
         }
 
         // Check Friendship
-        $isFriend = Friendship::where(function ($query) use ($sender, $receiverId) {
+        // ملحوظة: تأكد من عمل import لموديل الـ Friendship فوق لو مش معمول
+        $isFriend = \App\Models\Friendship::where(function ($query) use ($sender, $receiverId) {
             $query->where('user_id', $sender->id)->where('friend_id', $receiverId);
         })->orWhere(function ($query) use ($sender, $receiverId) {
             $query->where('user_id', $receiverId)->where('friend_id', $sender->id);
@@ -94,17 +94,19 @@ class ChatController extends Controller
         }
 
         // Find or create conversation symmetrically
+        // ملحوظة: تأكد من عمل import لموديل الـ Conversation فوق لو مش معمول
         $user1Id = min($sender->id, $receiverId);
         $user2Id = max($sender->id, $receiverId);
 
-        $conversation = Conversation::firstOrCreate(
+        $conversation = \App\Models\Conversation::firstOrCreate(
             ['user1_id' => $user1Id, 'user2_id' => $user2Id],
             ['last_updated' => now()]
         );
         
         $conversation->update(['last_updated' => now()]);
 
-        $message = ChatMessage::create([
+        // ملحوظة: تأكد من عمل import لموديل الـ ChatMessage فوق لو مش معمول
+        $message = \App\Models\ChatMessage::create([
             'conversation_id' => $conversation->id,
             'sender_id'       => $sender->id,
             'message'         => $request->message,
@@ -114,16 +116,36 @@ class ChatController extends Controller
             'is_read'         => false,
         ]);
 
-        broadcast(new MessageSent($message))->toOthers();
+        broadcast(new \App\Events\MessageSent($message))->toOthers();
+
+        // 🚀 بداية كود إطلاق إشعار الشات الذكي 🚀
+        // بنحدد نص الرسالة بناءً على المدخلات عشان الإشعار يظهر واضح
+        $notificationBody = '';
+        if ($request->filled('message')) {
+            $notificationBody = \Illuminate\Support\Str::limit($request->message, 50);
+        } elseif ($request->hasFile('image')) {
+            $notificationBody = 'sent an image 📷';
+        } elseif ($request->hasFile('voice')) {
+            $notificationBody = 'sent a voice message 🎵';
+        } elseif ($request->hasFile('video')) {
+            $notificationBody = 'sent a video 🎥';
+        }
+
+        // حفظ الإشعار بنوع chat والـ reference_id هو رقم المحادثة (conversation_id)
+        \App\Models\Notification::create([
+            'user_id' => $receiverId, // المستلم
+            'title' => 'New Message from ' . $sender->first_name,
+            'message' => $notificationBody,
+            'type' => 'chat',
+            'reference_id' => $conversation->id, // الأندرويد والرياكت هيفتحوا الـ Conversation ID ده علطول
+        ]);
+        // 🚀 نهاية كود الإشعار 🚀
 
         return response()->json([
             'message' => 'Message sent successfully',
             'data' => clone $message->load('sender')
         ], 201);
     }
-
-
-
     /**
      * Update an existing message within 10 minutes.
      */
@@ -225,4 +247,22 @@ class ChatController extends Controller
             'read_count' => $messageCount,
         ], 200);
     }
+
+
+    /**
+ * Trigger notification for the message receiver.
+ */
+public function triggerChatNotification($receiverId, $senderName, $chatRoomId, $messageText): void
+{
+    // تأكيد عشان اليوزر ميبعتش إشعار لنفسه لو باصى الداتا غلط
+    if ((int) $receiverId !== (int) auth('sanctum')->id()) {
+        \App\Models\Notification::create([
+            'user_id' => $receiverId, // المستلم اللي هيجيله الإشعار
+            'title' => 'رسالة جديدة 💬',
+            'message' => $senderName . ': ' . \Illuminate\Support\Str::limit($messageText, 50), // عشان يظهر أول جزء من الرسالة
+            'type' => 'chat',
+            'reference_id' => $chatRoomId, // الـ ID بتاع أوضة الشات عشان الأندرويد يفتحها علطول
+        ]);
+    }
+}
 }

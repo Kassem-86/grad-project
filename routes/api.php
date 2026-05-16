@@ -14,12 +14,8 @@ use App\Http\Controllers\Api\{
     SearchController,
     ReminderController
 };
-use App\Http\Controllers\{
-    GlucoseController,
-    MealController,
-    RecordMedicationController,
-    SelectedMedicationController
-};
+
+use Illuminate\Support\Facades\Broadcast;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,6 +101,11 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- Reminders ---
     Route::apiResource('reminders', ReminderController::class, ['only' => ['index', 'store']]);
     Route::put('/reminders/{reminder}/status', [ReminderController::class, 'updateStatus']);
+
+    // --- Notifications ---
+    Route::get('/notifications', [\App\Http\Controllers\Api\NotificationController::class, 'index']);
+    Route::patch('/notifications/read-all', [\App\Http\Controllers\Api\NotificationController::class, 'markAllAsRead']);
+    Route::patch('/notifications/{id}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markAsRead']);
 
     // ... الـ routes القديمة
   

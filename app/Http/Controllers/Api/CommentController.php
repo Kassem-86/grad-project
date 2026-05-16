@@ -80,6 +80,17 @@ class CommentController extends Controller
         // Set is_liked to false since it's a new comment
         $comment->is_liked = false;
 
+        // Trigger notification for post owner (only if commenter is not the post owner)
+        if ((int) $post->user_id !== (int) auth('sanctum')->id()) {
+            \App\Models\Notification::create([
+                'user_id' => $post->user_id,
+                'title' => 'New Comment',
+                'message' => auth()->user()->first_name . ' commented on your post.',
+                'type' => 'community',
+                'reference_id' => $post->id,
+            ]);
+        }
+
         return response()->json([
             'message' => 'Comment added successfully',
             'comment' => new CommentResource($comment)

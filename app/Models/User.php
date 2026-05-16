@@ -43,6 +43,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the notifications for the user.
+     */
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class, 'user_id');
+    }
+
+    /**
      * Get the comments created by the user.
      */
     public function comments(): HasMany
