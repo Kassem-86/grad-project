@@ -9,7 +9,7 @@ class BlockController extends Controller
 {
     public function block($id)
     {
-        $user = auth()->user();
+        $user = auth('sanctum')->user();
 
         // سجل البلوك في الجدول اللي كوبايلوت كريته
         Block::updateOrCreate([
@@ -22,7 +22,7 @@ class BlockController extends Controller
 
    public function unblock($id)
 {
-    $user = auth()->user();
+    $user = auth('sanctum')->user();
 
     // هنمسح السطر اللي فيه الـ user_id بتاعي والـ blocked_id بتاع الشخص التاني
     $deleted = \App\Models\Block::where('user_id', $user->id)

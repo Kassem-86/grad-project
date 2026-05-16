@@ -14,4 +14,9 @@ class CommentPolicy
     {
         return $user->id === $comment->user_id;
     }
+    public function update(User $user, Comment $comment): bool
+{
+    // لازم يتأكد إن الـ user_id اللي في الكومنت هو هو الـ id بتاع اليوزر اللي عامل login
+    return $user->id === $comment->user_id;
+}
 }
