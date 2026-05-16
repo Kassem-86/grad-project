@@ -85,13 +85,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/friends/{id}/unblock', [BlockController::class, 'unblock']);
 
     // --- Health Tracking (Resources) ---
-    Route::apiResource('glucose', GlucoseController::class);
-    Route::apiResource('meals', MealController::class);
-    Route::apiResource('record-medications', RecordMedicationController::class);
-    Route::apiResource('selected-medications', SelectedMedicationController::class, [
-        'only' => ['index', 'show', 'update', 'destroy']
-    ]);
-    Route::post('/logs', [CombinedLogController::class, 'store']);
+
+    Route::apiResource('logs', CombinedLogController::class);
 
     // --- Real-time Chat (Reverb) ---
     Route::prefix('conversations')->group(function () {
