@@ -10,7 +10,24 @@ class Log extends Model
 {
     protected $table = 'logs';
     protected $primaryKey = 'log_id';
-    public $timestamps = false;
+    
+    /**
+     * Indicates if the primary key is auto-incrementing.
+     * Set to false because we're using UUIDs.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+
+    /**
+     * The data type of the primary key.
+     * Set to string because UUIDs are strings.
+     *
+     * @var string
+     */
+    protected $keyType = 'string';
+    
+    public $timestamps = true;
 
     protected $fillable = [
         'user_id',

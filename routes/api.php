@@ -84,6 +84,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- Health Tracking (Resources) ---
 
     Route::apiResource('logs', CombinedLogController::class);
+    Route::post('/logs/android/', [CombinedLogController::class, 'storeWithAndroidId']);
 
     // --- Real-time Chat (Reverb) ---
     Route::prefix('conversations')->group(function () {
@@ -108,11 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/notifications/read-all', [\App\Http\Controllers\Api\NotificationController::class, 'markAllAsRead']);
     Route::patch('/notifications/{id}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markAsRead']);
 
-    // ... الـ routes القديمة
-  
-});Route::middleware('auth:sanctum')->group(function () {
-    
-    // راوت حفظ توكن الموبايل للإشعارات 🚀
+     // راوت حفظ توكن الموبايل للإشعارات 🚀
     Route::post('/user/save-device-token', function (Request $request) {
         $request->validate([
             'device_token' => 'required|string',
@@ -128,7 +125,8 @@ Route::middleware('auth:sanctum')->group(function () {
             'message' => 'Device token updated successfully.'
         ]);
     });
-
+    // ... الـ routes القديمة
+  
 });
 /*
 |--------------------------------------------------------------------------
