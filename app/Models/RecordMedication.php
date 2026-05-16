@@ -15,9 +15,12 @@ class RecordMedication extends Model
         'log_id',
         'user_id',
         'notes',
+        'medications',
     ];
 
-    protected $casts = [];
+    protected $casts = [
+        'medications' => 'array',
+    ];
 
     public function log(): BelongsTo
     {

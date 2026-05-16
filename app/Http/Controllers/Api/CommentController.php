@@ -73,7 +73,7 @@ class CommentController extends Controller
 
         $comment = $post->comments()->create([
             'comment_text' => $request->comment_text,
-            'user_id' => auth()->id(),
+            'user_id' => auth('sanctum')->id(),
         ]);
         $comment->load(['user', 'likes.user']);
         

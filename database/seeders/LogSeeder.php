@@ -25,39 +25,41 @@ class LogSeeder extends Seeder
             return;
         }
 
-        // Create test data for each user
-        foreach ($users->take(3) as $user) {
-            // Create 3 logs per user with different dates
-            for ($i = 0; $i < 3; $i++) {
-                $this->createLogWithRelations($user, $i);
+        // Create unified health logs for each user
+        foreach ($users as $user) {
+            // Create 5-10 unified logs per user with different dates
+            $logsPerUser = rand(5, 10);
+            for ($i = 0; $i < $logsPerUser; $i++) {
+                $this->createUnifiedLogWithRelations($user, $i);
             }
         }
 
-        $this->command->info('Logs and related health records seeded successfully!');
+        $this->command->info('Unified logs and related health records seeded successfully!');
     }
 
     /**
-     * Create a log with all related health records
+     * Create a unified log with all related health records (Glucose, Meal, Medication)
+     * All records are linked via the same log_id to represent a single unified health event
      */
-    private function createLogWithRelations(User $user, int $dayOffset): void
+    private function createUnifiedLogWithRelations(User $user, int $dayOffset): void
     {
         $loggedDate = now()->subDays($dayOffset);
 
-        // Create a log entry
+        // Create a parent log entry
         $log = Log::create([
             'user_id' => $user->id,
             'log_title' => 'Daily Health Log - ' . $loggedDate->format('M d, Y'),
-            'log_description' => 'Health tracking for ' . $loggedDate->format('l'),
+            'log_description' => 'Unified health tracking for ' . $loggedDate->format('l'),
             'logged_at' => $loggedDate,
         ]);
 
-        // Create Glucose readings
+        // Create a Glucose record linked to this specific log
         $this->createGlucoseRecords($log, $user, $loggedDate);
 
-        // Create Meal records
+        // Create a Meal record linked to this specific log
         $this->createMealRecords($log, $user, $loggedDate);
 
-        // Create Medication records
+        // Create a Medication record linked to this specific log
         $this->createMedicationRecords($log, $user, $loggedDate);
     }
 
@@ -82,6 +84,7 @@ class LogSeeder extends Seeder
 
     /**
      * Create meal records for a log
+     * Creates 1-2 meal records per unified log entry
      */
     private function createMealRecords(Log $log, User $user, $loggedDate): void
     {
@@ -91,9 +94,13 @@ class LogSeeder extends Seeder
             'Grilled chicken with brown rice and vegetables',
             'Whole wheat bread with salmon and salad',
             'Yogurt with granola and almonds',
+            'Pasta with tomato sauce and vegetables',
+            'Smoothie with banana and spinach',
         ];
 
-        for ($i = 0; $i < 2; $i++) {
+        // Create 1-2 meals per log (representing multiple meals in a single health log)
+        $mealCount = rand(1, 2);
+        for ($i = 0; $i < $mealCount; $i++) {
             Meal::create([
                 'log_id' => $log->log_id,
                 'user_id' => $user->id,
@@ -101,42 +108,50 @@ class LogSeeder extends Seeder
                 'total_calories' => rand(300, 800),
                 'meal_type' => $mealTypes[array_rand($mealTypes)],
                 'meal_description' => $descriptions[array_rand($descriptions)],
-                'notes' => 'Test meal record ' . ($i + 1),
+                'notes' => 'Meal record ' . ($i + 1) . ' for ' . $loggedDate->format('Y-m-d'),
             ]);
         }
     }
 
     /**
-     * Create medication records with selected medications for a log
+     * Create medication records with medications array for a log
+     * Stores medications as a JSON array in the RecordMedication model
      */
     private function createMedicationRecords(Log $log, User $user, $loggedDate): void
     {
-        $medications = [
+        $medicationOptions = [
             ['name' => 'Metformin', 'dosage' => '500mg', 'frequency' => 'Twice Daily'],
             ['name' => 'Lisinopril', 'dosage' => '10mg', 'frequency' => 'Once Daily'],
             ['name' => 'Atorvastatin', 'dosage' => '20mg', 'frequency' => 'Once Daily'],
             ['name' => 'Aspirin', 'dosage' => '81mg', 'frequency' => 'Once Daily'],
             ['name' => 'Vitamin D3', 'dosage' => '2000IU', 'frequency' => 'Once Daily'],
+            ['name' => 'Amlodipine', 'dosage' => '5mg', 'frequency' => 'Once Daily'],
+            ['name' => 'Omeprazole', 'dosage' => '20mg', 'frequency' => 'Once Daily'],
         ];
 
-        // Select random medications for this log
-        $selectedMeds = array_slice($medications, 0, rand(2, 4));
+        // Randomly select 2-5 medications for this log
+        $selectedMedications = [];
+        $medicationCount = rand(2, 5);
+        $randomMeds = array_rand($medicationOptions, $medicationCount);
         
-        // Create RecordMedication entry
-        $recordMed = RecordMedication::create([
+        // Handle case where array_rand returns a single value
+        if (!is_array($randomMeds)) {
+            $randomMeds = [$randomMeds];
+        }
+        
+        foreach ($randomMeds as $index) {
+            $selectedMedications[] = array_merge(
+                $medicationOptions[$index],
+                ['notes' => 'Regularly taken']
+            );
+        }
+
+        // Create a single RecordMedication entry with all medications as a JSON array
+        RecordMedication::create([
             'log_id' => $log->log_id,
             'user_id' => $user->id,
-            'notes' => 'Daily medication routine',
+            'medications' => $selectedMedications,
+            'notes' => 'Daily medication routine for ' . $loggedDate->format('Y-m-d'),
         ]);
-
-        // Create SelectedMedication entries for each medication
-        foreach ($selectedMeds as $med) {
-            SelectedMedication::create([
-                'medication_id' => $recordMed->medication_id,
-                'log_id' => $log->log_id,
-                'user_id' => $user->id,
-                'medication_name' => $med['name'],
-            ]);
-        }
     }
 }

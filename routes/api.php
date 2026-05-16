@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\{
     LikeController,
     FriendshipController,
     ChatController,
+    CombinedLogController,
     ConversationController,
     SearchController,
     ReminderController
@@ -90,6 +91,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('selected-medications', SelectedMedicationController::class, [
         'only' => ['index', 'show', 'update', 'destroy']
     ]);
+    Route::post('/logs', [CombinedLogController::class, 'store']);
 
     // --- Real-time Chat (Reverb) ---
     Route::prefix('conversations')->group(function () {
