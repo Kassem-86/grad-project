@@ -23,7 +23,6 @@ class PostController extends Controller
     //     $this->middleware('auth:sanctum')->only(['store', 'update', 'destroy']);
     // }
 
-    
     public function index(Request $request)
     {
         $category = $request->query('category');
@@ -49,7 +48,19 @@ class PostController extends Controller
 
         $posts = $query->latest()->paginate(10);
 
-        return PostResource::collection($posts);
+        // Build the response with category metadata
+        $resourceCollection = PostResource::collection($posts)->response()->getData(true);
+        
+        $response = $resourceCollection;
+        
+        // Add category post count to response metadata if category is specified
+        if ($category) {
+            $categoryPostCount = Post::where('category', $category)->count();
+            $response['meta']['category'] = $category;
+            $response['meta']['category_posts_count'] = $categoryPostCount;
+        }
+
+        return response()->json($response);
     }
 
    
