@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class UserController extends Controller
+class UserSearchController extends Controller
 {
     public function __construct()
     {

@@ -14,7 +14,8 @@ use App\Http\Controllers\Api\{
     SearchController,
     ReminderController
 };
-
+use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -109,8 +110,26 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // ... الـ routes القديمة
   
-});
+});Route::middleware('auth:sanctum')->group(function () {
+    
+    // راوت حفظ توكن الموبايل للإشعارات 🚀
+    Route::post('/user/save-device-token', function (Request $request) {
+        $request->validate([
+            'device_token' => 'required|string',
+        ]);
 
+        // بنحدث التوكن لليوزر اللي عامل تسجيل دخول حالياً
+        auth('sanctum')->user()->update([
+            'device_token' => $request->device_token
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Device token updated successfully.'
+        ]);
+    });
+
+});
 /*
 |--------------------------------------------------------------------------
 | Broadcasting Routes (Reverb)
