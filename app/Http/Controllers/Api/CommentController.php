@@ -90,36 +90,54 @@ class CommentController extends Controller
      */
     public function destroy(Comment $comment): JsonResponse
     {
-        $this->authorize('delete', $comment);
+        // Get the authenticated user using the request
+        $user = auth()->user();
+        
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        // Authorize using explicit integer casting comparison
+        $userId = (int) $user->id;
+        $commentUserId = (int) $comment->user_id;
+        
+        if ($userId !== $commentUserId) {
+            return response()->json(['message' => 'This action is unauthorized.'], 403);
+        }
+
         $comment->delete();
 
         return response()->json(['message' => 'Comment deleted successfully']);
     }
 
-
-
     /**
      * Update the specified comment.
      */
-    public function update(Request $request, Comment $comment): JsonResponse
-    {
-        $this->authorize('update', $comment);
-
-        $validated = $request->validate([
-            'comment_text' => 'required|string',
-        ]);
-
-        $comment->update($validated);
-
-        $comment->load(['user', 'likes.user']);
-        
-        // Calculate is_liked based on whether the authenticated user has liked the comment
-        $user = $request->user();
-        $comment->is_liked = $user ? (bool) $comment->likes()->where('user_id', $user->id)->exists() : false;
-
+   public function update(Request $request, Comment $comment): JsonResponse
+{
+    // 1. شيلنا الـ authorize القديمة وعملنا التيك يدوي عشان نهرب من حوار الـ 403
+    if ((int) $request->user()->id !== (int) $comment->user_id) {
         return response()->json([
-            'message' => 'Comment updated successfully',
-            'comment' => new CommentResource($comment)
-        ]);
+            'message' => 'This action is unauthorized.'
+        ], 403);
     }
-}
+
+    // 2. الـ Validation بتاعك عادي جداً
+    $validated = $request->validate([
+        'comment_text' => 'required|string',
+    ]);
+
+    // 3. تحديث الكومنت
+    $comment->update($validated);
+
+    // 4. تحميل البيانات عشان الـ React
+    $comment->load(['user', 'likes']);
+    
+    $user = $request->user();
+    $comment->is_liked = $user ? (bool) $comment->likes->contains('user_id', $user->id) : false;
+
+    return response()->json([
+        'message' => 'Comment updated successfully',
+        'comment' => new CommentResource($comment)
+    ]);
+}}
