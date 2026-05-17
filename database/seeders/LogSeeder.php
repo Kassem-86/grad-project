@@ -9,6 +9,7 @@ use App\Models\Meal;
 use App\Models\RecordMedication;
 use App\Models\SelectedMedication;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class LogSeeder extends Seeder
 {
@@ -47,6 +48,7 @@ class LogSeeder extends Seeder
 
         // Create a parent log entry
         $log = Log::create([
+            'log_id' => (string) Str::uuid(),
             'user_id' => $user->id,
             'log_title' => 'Daily Health Log - ' . $loggedDate->format('M d, Y'),
             'log_description' => 'Unified health tracking for ' . $loggedDate->format('l'),

@@ -30,6 +30,7 @@ class Log extends Model
     public $timestamps = true;
 
     protected $fillable = [
+        'log_id',   
         'user_id',
         'log_title',
         'log_description',

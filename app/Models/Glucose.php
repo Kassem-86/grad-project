@@ -9,7 +9,7 @@ class Glucose extends Model
 {
     protected $table = 'record_glucose';
     protected $primaryKey = 'reading_id';
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected $fillable = [
         'log_id',

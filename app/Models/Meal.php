@@ -9,7 +9,7 @@ class Meal extends Model
 {
     protected $table = 'record_meals';
     protected $primaryKey = 'meal_id';
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected $fillable = [
         'log_id',

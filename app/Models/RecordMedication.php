@@ -10,7 +10,7 @@ class RecordMedication extends Model
 {
     protected $table = 'record_medications';
     protected $primaryKey = 'medication_id';
-    public $timestamps = true;
+    public $timestamps = false;
 
     protected $fillable = [
         'log_id',

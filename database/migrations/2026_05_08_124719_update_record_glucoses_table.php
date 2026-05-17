@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::table('record_glucose', function (Blueprint $table) {
             $table->unsignedBigInteger('user_id')->nullable()->after('log_id');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            
+
             $table->dropColumn(['reading_time', 'created_at', 'updated_at']);
         });
     }

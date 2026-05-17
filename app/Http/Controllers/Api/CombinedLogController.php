@@ -205,14 +205,15 @@ class CombinedLogController extends Controller
             // 3. Response
             return response()->json([
                 'success' => true,
-                'message' => 'Combined log saved successfully with Android UUID',
+                'message' => ' log saved successfully with Android ',
                 'data' => $result
             ], 201);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString() // زود السطر ده مؤقتاً عشان يبان الكراش فين بالظبط
             ], 500);
         }
     }
