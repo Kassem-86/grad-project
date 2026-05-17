@@ -82,10 +82,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/friends/{id}/unblock', [BlockController::class, 'unblock']);
 
     // --- Health Tracking (Resources) ---
-    Route::post('/logs/android/', [CombinedLogController::class, 'storeWithAndroidId']);
-    Route::get('/logs/user', [CombinedLogController::class, 'show']);
 
+    Route::get('/logs/user', [CombinedLogController::class, 'show']);
     Route::apiResource('logs', CombinedLogController::class);
+    Route::post('/logs/android/', [CombinedLogController::class, 'storeWithAndroidId']);
 
     // --- Real-time Chat (Reverb) ---
     Route::prefix('conversations')->group(function () {
