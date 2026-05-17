@@ -50,6 +50,7 @@ class CombinedLogController extends Controller
 
                 // Create the parent Log record
                 $log = Log::create([
+                    'log_id'          => (string) \Illuminate\Support\Str::uuid(), 
                     'user_id' => $userId,
                     'log_title' => $validated['log_title'] ?? null,
                     'log_description' => $validated['log_description'] ?? null,
@@ -136,8 +137,8 @@ class CombinedLogController extends Controller
             'recordMeal' => 'nullable|array',
             'recordMeal.meal_type' => 'nullable|in:Breakfast,Lunch,Dinner,Snack',
             'recordMeal.meal_description' => 'nullable|string',
-            'recordMeal.total_calories' => 'required_with:recordMeal.meal_type|numeric',
-            'recordMeal.total_carb' => 'required_with:recordMeal.meal_type|numeric',
+            'recordMeal.total_calories' => 'nullable|numeric',
+            'recordMeal.total_carb' => 'nullable|numeric',
             'recordMeal.notes' => 'nullable|string',
 
             'recordMedication' => 'nullable|array',
@@ -250,7 +251,7 @@ class CombinedLogController extends Controller
                 // Update the parent Log record
                 $log->update([
                     'log_title' => $validated['log_title'] ?? $log->log_title,
-                    'log_description' => $validated['log_description'] ?? $log->log_description,
+                    'log_descri9-ption' => $validated['log_description'] ?? $log->log_description,
                 ]);
 
                 // Handle Glucose record
