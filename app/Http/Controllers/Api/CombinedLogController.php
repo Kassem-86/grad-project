@@ -361,4 +361,48 @@ class CombinedLogController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get all combined logs for the authenticated user.
+     */
+    
+
+    /**
+     * Get a specific combined log with all associated records.
+     */
+ public function show(Request $request)
+{
+    try {
+        $userId = Auth::id();
+        
+        // 1. ابدأ بـ Query بتجيب لوجز اليوزر الحالي فقط (مأمنة 100%)
+        $query = Log::where('user_id', $userId)
+            ->with(['recordGlucoses', 'recordMeals', 'recordMedications']);
+
+        // 2. فلترة بالتاريخ لو مبعوت في الـ Request (مثال: ?date=2026-05-18)
+        if ($request->has('date')) {
+            $date = $request->query('date');
+            // بنستخدم whereDate عشان يقارن التاريخ بس ويتجاهل الوقت (H:i:s)
+            $query->whereDate('logged_at', $date);
+        }
+
+        // 3. جلب البيانات بترتيب أحدث اللوجز أولاً
+        $logs = $query->orderBy('logged_at', 'desc')->get();
+
+        // 4. الـ Response
+        return response()->json([
+            'success' => true,
+            'message' => $request->has('date') 
+                ? "Logs retrieved successfully for date: " . $request->query('date')
+                : 'All user logs retrieved successfully',
+            'data' => $logs
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
 }
