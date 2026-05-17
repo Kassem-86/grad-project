@@ -369,33 +369,35 @@ class CombinedLogController extends Controller
 
     /**
      * Get a specific combined log with all associated records.
-     */
- public function show(Request $request)
+     */public function show(Request $request)
 {
     try {
         $userId = Auth::id();
         
-        // 1. ابدأ بـ Query بتجيب لوجز اليوزر الحالي فقط (مأمنة 100%)
+        // بنعمل eager load للعلاقات الجديدة المفرد
         $query = Log::where('user_id', $userId)
-            ->with(['recordGlucoses', 'recordMeals', 'recordMedications']);
+            ->with(['recordGlucose', 'recordMeal', 'recordMedication']);
 
-        // 2. فلترة بالتاريخ لو مبعوت في الـ Request (مثال: ?date=2026-05-18)
         if ($request->has('date')) {
             $date = $request->query('date');
-            // بنستخدم whereDate عشان يقارن التاريخ بس ويتجاهل الوقت (H:i:s)
             $query->whereDate('logged_at', $date);
         }
 
-        // 3. جلب البيانات بترتيب أحدث اللوجز أولاً
-        $logs = $query->orderBy('logged_at', 'desc')->get();
+        $log = $query->orderBy('logged_at', 'desc')->first();
 
-        // 4. الـ Response
+        if (!$log) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No logs found',
+                'data' => null
+            ], 404);
+        }
+
+        // هنا الـ $log هينزل بالـ relations كـ Objects علطول أوتوماتيك!
         return response()->json([
             'success' => true,
-            'message' => $request->has('date') 
-                ? "Logs retrieved successfully for date: " . $request->query('date')
-                : 'All user logs retrieved successfully',
-            'data' => $logs
+            'message' => 'Log retrieved successfully',
+            'data' => $log 
         ], 200);
 
     } catch (\Exception $e) {

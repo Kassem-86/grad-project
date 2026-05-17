@@ -11,22 +11,8 @@ class Log extends Model
     protected $table = 'logs';
     protected $primaryKey = 'log_id';
     
-    /**
-     * Indicates if the primary key is auto-incrementing.
-     * Set to false because we're using UUIDs.
-     *
-     * @var bool
-     */
     public $incrementing = false;
-
-    /**
-     * The data type of the primary key.
-     * Set to string because UUIDs are strings.
-     *
-     * @var string
-     */
     protected $keyType = 'string';
-    
     public $timestamps = true;
 
     protected $fillable = [
@@ -42,27 +28,27 @@ class Log extends Model
     ];
 
     /**
-     * Get the glucose readings associated with this log.
+     * تعديل: قراءة سكر واحدة فقط لكل لوج
      */
-    public function recordGlucoses(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function recordGlucose(): HasOne
     {
-        return $this->hasMany(Glucose::class, 'log_id', 'log_id');
+        return $this->hasOne(Glucose::class, 'log_id', 'log_id');
     }
 
     /**
-     * Get the meals associated with this log.
+     * تعديل: وجبة واحدة فقط لكل لوج
      */
-    public function recordMeals(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function recordMeal(): HasOne
     {
-        return $this->hasMany(Meal::class, 'log_id', 'log_id');
+        return $this->hasOne(Meal::class, 'log_id', 'log_id');
     }
 
     /**
-     * Get the medications associated with this log.
+     * تعديل: دواء واحد فقط لكل لوج
      */
-    public function recordMedications(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function recordMedication(): HasOne
     {
-        return $this->hasMany(RecordMedication::class, 'log_id', 'log_id');
+        return $this->hasOne(RecordMedication::class, 'log_id', 'log_id');
     }
 
     /**
