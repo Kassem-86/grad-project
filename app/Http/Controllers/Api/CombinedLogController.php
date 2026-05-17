@@ -374,30 +374,27 @@ class CombinedLogController extends Controller
     try {
         $userId = Auth::id();
         
-        // بنعمل eager load للعلاقات الجديدة المفرد
+        // 1. بنعمل eager load للعلاقات الجديدة (المفرد والجمع حسب تعديل الموديل)
+        // ملحوظة: لو سبت الـ medication كـ hasMany سيب اسمها بالجمع recordMedications
         $query = Log::where('user_id', $userId)
             ->with(['recordGlucose', 'recordMeal', 'recordMedication']);
 
+        // 2. فلترة بالتاريخ لو مبعوت في الـ Request
         if ($request->has('date')) {
             $date = $request->query('date');
             $query->whereDate('logged_at', $date);
         }
 
-        $log = $query->orderBy('logged_at', 'desc')->first();
+        // 3. بنستخدم ->get() عشان يرجع "كل اللوجز" كـ مصفوفة (Array) بناءً على طلبه
+        $logs = $query->orderBy('logged_at', 'desc')->get();
 
-        if (!$log) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No logs found',
-                'data' => null
-            ], 404);
-        }
-
-        // هنا الـ $log هينزل بالـ relations كـ Objects علطول أوتوماتيك!
+        // 4. الـ Response النهائي
         return response()->json([
             'success' => true,
-            'message' => 'Log retrieved successfully',
-            'data' => $log 
+            'message' => $request->has('date') 
+                ? "Logs retrieved successfully for date: " . $request->query('date')
+                : 'All user logs retrieved successfully',
+            'data' => $logs // دي هترجع Array (لأنها مجموعة لوجز)، وجواها العلاقات objects
         ], 200);
 
     } catch (\Exception $e) {
