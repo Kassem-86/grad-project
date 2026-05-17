@@ -61,6 +61,8 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- Community: Posts ---
     Route::apiResource('posts', PostController::class);
     Route::get('/my-posts', [PostController::class, 'myPosts']);
+    Route::get('/users/{user}/posts', [PostController::class, 'userPosts']);// Route عشان تجيب بوستات يوزر معين عن طريق الـ ID بتاعه
+
 
 
     // --- Community: Comments ---
