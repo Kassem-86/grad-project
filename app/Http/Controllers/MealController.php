@@ -94,10 +94,10 @@ class MealController extends Controller
         $this->authorize('update', $meal);
 
         $validated = $request->validate([
-            'total_carb' => 'sometimes|numeric|min:0',
-            'total_calories' => 'sometimes|numeric|min:0',
-            'meal_type' => 'sometimes|in:Breakfast,Lunch,Dinner,Snack',
-            'meal_description' => 'sometimes|string|max:50|nullable',
+            'total_carb' => 'sometimes|numeric|min:0|nullable',
+            'total_calories' => ' sometimes|numeric|min:0 |nullable',
+            'meal_type' => 'sometimes|in:Breakfast,Lunch,Dinner,Snack|nullable',
+            'meal_description' => 'sometimes|string|max:50|nullable|nullable',
             'notes' => 'sometimes|string|nullable',
         ]);
 
