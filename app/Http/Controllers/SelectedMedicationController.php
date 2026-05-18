@@ -46,10 +46,8 @@ class SelectedMedicationController extends Controller
         $this->authorize('update', $selectedMedication);
 
         $validated = $request->validate([
-            'name' => 'sometimes|string|max:100',
-            'dosage' => 'sometimes|string|max:50',
-            'frequency' => 'sometimes|in:Once Daily,Twice Daily,Thrice Daily,As Needed',
-            'notes' => 'sometimes|nullable|string',
+            'medication_name' => 'sometimes|string|max:100',
+   
         ]);
 
         try {
