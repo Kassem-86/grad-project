@@ -96,22 +96,36 @@ class SelectedMedicationController extends Controller
  * Store a newly created selected medication.
  *//**
  * Store a newly created custom medication from the Add Box.
- */
-public function store(Request $request): JsonResponse
+ */public function store(Request $request): JsonResponse
 {
-    // بنعمل validate على الاسم بس لأن المريض بيكتبه في الـ Box
+    // 1. Validation مبدئي على الاسم
     $validated = $request->validate([
         'medication_name' => 'required|string|max:50',
     ]);
 
     try {
         $userId = Auth::id();
+        
+        // تنظيف الاسم من المسافات الزيادة عشان الـ مقارنة تكون دقيقة
+        $medicationName = trim($validated['medication_name']);
 
-        // بنكريت الدوا لليوزر ده، وباقي الـ FKs (الـ log_id والـ medication_id) هينزلوا null مؤقتاً
+        // 2. التشيك السحري: هل الدوا ده متسجل عند نفس اليوزر قبل كده؟
+        $exists = SelectedMedication::where('user_id', $userId)
+            ->where('medication_name', $medicationName)
+            ->exists();
+
+        if ($exists) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This medication already exists in your list.',
+            ], 400); // 400 يعني Bad Request لأن الداتا مكررة
+        }
+
+        // 3. لو مش مكرر بيعمل Create عادي جداً
         $selectedMedication = SelectedMedication::create([
             'user_id'         => $userId,
-            'medication_name' => $validated['medication_name'],
-            'medication_id'   => null, // هينزل null لحد ما يربطه بللوج
+            'medication_name' => $medicationName,
+            'medication_id'   => null, 
         ]);
 
         return response()->json([
