@@ -18,28 +18,28 @@ class CombinedLogController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validation
+        // 1. Validation (تعديل الـ Keys لـ snake_case)
         $validated = $request->validate([
             'log_title' => 'nullable|string',
             'log_description' => 'nullable|string',
             'logged_at' => 'nullable|date_format:Y-m-d H:i:s',
 
-            'recordGlucose' => 'nullable|array',
-            'recordGlucose.glucose_level' => 'nullable|numeric',
-            'recordGlucose.reading_type' => 'required_with:recordGlucose.glucose_level|string',
-            'recordGlucose.a1c_estimation' => 'nullable',
-            'recordGlucose.notes' => 'nullable|string',
+            'record_glucose' => 'nullable|array',
+            'record_glucose.glucose_level' => 'nullable|numeric',
+            'record_glucose.reading_type' => 'required_with:record_glucose.glucose_level|string',
+            'record_glucose.a1c_estimation' => 'nullable',
+            'record_glucose.notes' => 'nullable|string',
 
-            'recordMeal' => 'nullable|array',
-            'recordMeal.meal_type' => 'nullable|in:Breakfast,Lunch,Dinner,Snack',
-            'recordMeal.meal_description' => 'nullable|string',
-            'recordMeal.total_calories' => 'required_with:recordMeal.meal_type|numeric',
-            'recordMeal.total_carb' => 'required_with:recordMeal.meal_type|numeric',
-            'recordMeal.notes' => 'nullable|string',
+            'record_meal' => 'nullable|array',
+            'record_meal.meal_type' => 'nullable|in:Breakfast,Lunch,Dinner,Snack',
+            'record_meal.meal_description' => 'nullable|string',
+            'record_meal.total_calories' => 'required_with:record_meal.meal_type|numeric',
+            'record_meal.total_carb' => 'required_with:record_meal.meal_type|numeric',
+            'record_meal.notes' => 'nullable|string',
 
-            'recordMedication' => 'nullable|array',
-            'recordMedication.medications' => 'nullable|array',
-            'recordMedication.notes' => 'nullable|string',
+            'record_medication' => 'nullable|array',
+            'record_medication.medications' => 'nullable|array',
+            'record_medication.notes' => 'nullable|string',
         ]);
 
         try {
@@ -57,8 +57,8 @@ class CombinedLogController extends Controller
                     'logged_at' => $loggedAt,
                 ]);
 
-                // Create Glucose record (if glucose_level is present)
-                $glucoseData = $request->input('recordGlucose');
+                // Create Glucose record
+                $glucoseData = $request->input('record_glucose');
                 if (!empty($glucoseData['glucose_level'])) {
                     Glucose::create([
                         'log_id' => $log->log_id,
@@ -70,8 +70,8 @@ class CombinedLogController extends Controller
                     ]);
                 }
 
-                // Create Meal record (if meal_type is present)
-                $mealData = $request->input('recordMeal');
+                // Create Meal record
+                $mealData = $request->input('record_meal');
                 if (!empty($mealData['meal_type'])) {
                     Meal::create([
                         'log_id' => $log->log_id,
@@ -84,8 +84,8 @@ class CombinedLogController extends Controller
                     ]);
                 }
 
-                // Create RecordMedication record (if medications array is present)
-                $medicationData = $request->input('recordMedication');
+                // Create RecordMedication record
+                $medicationData = $request->input('record_medication');
                 if (!empty($medicationData['medications']) && is_array($medicationData['medications'])) {
                     RecordMedication::create([
                         'log_id' => $log->log_id,
@@ -95,7 +95,8 @@ class CombinedLogController extends Controller
                     ]);
                 }
 
-                return $log;
+                // بنرجع الـ log مع العلاقات بالـ ديفولت الـ snake_case بتاع لارافيل
+                return $log->load(['recordGlucose', 'recordMeal', 'recordMedication']);
             });
 
             // 3. Response
@@ -115,45 +116,42 @@ class CombinedLogController extends Controller
 
     /**
      * Store a combined health log entry with Android-generated UUID.
-     * 
-     * The Android client generates a UUID and sends it as log_id in the request.
-     * This method explicitly uses the client-generated UUID for the parent Log and all child records.
      */
     public function storeWithAndroidId(Request $request)
     {
-        // 1. Validation - log_id must be provided as a UUID string
+        // 1. Validation
         $validated = $request->validate([
             'log_id' => 'required|string|uuid',
             'log_title' => 'nullable|string',
             'log_description' => 'nullable|string',
             'logged_at' => 'nullable|date_format:Y-m-d H:i:s',
 
-            'recordGlucose' => 'nullable|array',
-            'recordGlucose.glucose_level' => 'nullable|numeric',
-            'recordGlucose.reading_type' => 'required_with:recordGlucose.glucose_level|string',
-            'recordGlucose.a1c_estimation' => 'nullable',
-            'recordGlucose.notes' => 'nullable|string',
+            'record_glucose' => 'nullable|array',
+            'record_glucose.glucose_level' => 'nullable|numeric',
+            'record_glucose.reading_type' => 'required_with:record_glucose.glucose_level|string',
+            'record_glucose.a1c_estimation' => 'nullable',
+            'record_glucose.notes' => 'nullable|string',
 
-            'recordMeal' => 'nullable|array',
-            'recordMeal.meal_type' => 'nullable|in:Breakfast,Lunch,Dinner,Snack',
-            'recordMeal.meal_description' => 'nullable|string',
-            'recordMeal.total_calories' => 'nullable|numeric',
-            'recordMeal.total_carb' => 'nullable|numeric',
-            'recordMeal.notes' => 'nullable|string',
+            'record_meal' => 'nullable|array',
+            'record_meal.meal_type' => 'nullable|in:Breakfast,Lunch,Dinner,Snack',
+            'record_meal.meal_description' => 'nullable|string',
+            'record_meal.total_calories' => 'nullable|numeric',
+            'record_meal.total_carb' => 'nullable|numeric',
+            'record_meal.notes' => 'nullable|string',
 
-            'recordMedication' => 'nullable|array',
-            'recordMedication.medications' => 'nullable|array',
-            'recordMedication.notes' => 'nullable|string',
+            'record_medication' => 'nullable|array',
+            'record_medication.medications' => 'nullable|array',
+            'record_medication.notes' => 'nullable|string',
         ]);
 
         try {
             // 2. Database Transaction
             $result = DB::transaction(function () use ($request, $validated) {
                 $userId = Auth::id();
-                $logId = $validated['log_id']; // Use the Android-generated UUID
+                $logId = $validated['log_id'];
                 $loggedAt = !empty($validated['logged_at']) ? $validated['logged_at'] : now();
 
-                // Create the parent Log record with the provided log_id (UUID)
+                // Create the parent Log record
                 $log = Log::create([
                     'log_id' => $logId,
                     'user_id' => $userId,
@@ -162,8 +160,8 @@ class CombinedLogController extends Controller
                     'logged_at' => $loggedAt,
                 ]);
 
-                // Create Glucose record (if glucose_level is present)
-                $glucoseData = $request->input('recordGlucose');
+                // Create Glucose record
+                $glucoseData = $request->input('record_glucose');
                 if (!empty($glucoseData['glucose_level'])) {
                     Glucose::create([
                         'log_id' => $logId,
@@ -175,8 +173,8 @@ class CombinedLogController extends Controller
                     ]);
                 }
 
-                // Create Meal record (if meal_type is present)
-                $mealData = $request->input('recordMeal');
+                // Create Meal record
+                $mealData = $request->input('record_meal');
                 if (!empty($mealData['meal_type'])) {
                     Meal::create([
                         'log_id' => $logId,
@@ -189,8 +187,8 @@ class CombinedLogController extends Controller
                     ]);
                 }
 
-                // Create RecordMedication record (if medications array is present)
-                $medicationData = $request->input('recordMedication');
+                // Create RecordMedication record
+                $medicationData = $request->input('record_medication');
                 if (!empty($medicationData['medications']) && is_array($medicationData['medications'])) {
                     RecordMedication::create([
                         'log_id' => $logId,
@@ -200,13 +198,12 @@ class CombinedLogController extends Controller
                     ]);
                 }
 
-                return $log;
+                return $log->load(['recordGlucose', 'recordMeal', 'recordMedication']);
             });
 
-            // 3. Response
             return response()->json([
                 'success' => true,
-                'message' => ' log saved successfully with Android ',
+                'message' => 'log saved successfully with Android',
                 'data' => $result
             ], 201);
 
@@ -214,10 +211,11 @@ class CombinedLogController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString() // زود السطر ده مؤقتاً عشان يبان الكراش فين بالظبط
+                'trace' => $e->getTraceAsString() 
             ], 500);
         }
     }
+
     public function update(Request $request, Log $log)
     {
         // 1. Validation
@@ -225,22 +223,22 @@ class CombinedLogController extends Controller
             'log_title' => 'nullable|string',
             'log_description' => 'nullable|string',
 
-            'recordGlucose' => 'nullable|array',
-            'recordGlucose.glucose_level' => 'nullable|numeric',
-            'recordGlucose.reading_type' => 'required_with:recordGlucose.glucose_level|string',
-            'recordGlucose.a1c_estimation' => 'nullable',
-            'recordGlucose.notes' => 'nullable|string',
+            'record_glucose' => 'nullable|array',
+            'record_glucose.glucose_level' => 'nullable|numeric',
+            'record_glucose.reading_type' => 'required_with:record_glucose.glucose_level|string',
+            'record_glucose.a1c_estimation' => 'nullable',
+            'record_glucose.notes' => 'nullable|string',
 
-            'recordMeal' => 'nullable|array',
-            'recordMeal.meal_type' => 'nullable|in:Breakfast,Lunch,Dinner,Snack',
-            'recordMeal.meal_description' => 'nullable|string',
-            'recordMeal.total_calories' => 'required_with:recordMeal.meal_type|numeric',
-            'recordMeal.total_carb' => 'required_with:recordMeal.meal_type|numeric',
-            'recordMeal.notes' => 'nullable|string',
+            'record_meal' => 'nullable|array',
+            'record_meal.meal_type' => 'nullable|in:Breakfast,Lunch,Dinner,Snack',
+            'record_meal.meal_description' => 'nullable|string',
+            'record_meal.total_calories' => 'required_with:record_meal.meal_type|numeric',
+            'record_meal.total_carb' => 'required_with:record_meal.meal_type|numeric',
+            'record_meal.notes' => 'nullable|string',
 
-            'recordMedication' => 'nullable|array',
-            'recordMedication.medications' => 'nullable|array',
-            'recordMedication.notes' => 'nullable|string',
+            'record_medication' => 'nullable|array',
+            'record_medication.medications' => 'nullable|array',
+            'record_medication.notes' => 'nullable|string',
         ]);
 
         try {
@@ -251,13 +249,12 @@ class CombinedLogController extends Controller
                 // Update the parent Log record
                 $log->update([
                     'log_title' => $validated['log_title'] ?? $log->log_title,
-                    'log_descri9-ption' => $validated['log_description'] ?? $log->log_description,
+                    'log_description' => $validated['log_description'] ?? $log->log_description,
                 ]);
 
                 // Handle Glucose record
-                $glucoseData = $request->input('recordGlucose');
+                $glucoseData = $request->input('record_glucose');
                 if (!empty($glucoseData['glucose_level'])) {
-                    // Update or create Glucose record
                     Glucose::updateOrCreate(
                         ['log_id' => $log->log_id],
                         [
@@ -269,14 +266,12 @@ class CombinedLogController extends Controller
                         ]
                     );
                 } else {
-                    // Delete existing Glucose record if no data provided
                     Glucose::where('log_id', $log->log_id)->delete();
                 }
 
                 // Handle Meal record
-                $mealData = $request->input('recordMeal');
+                $mealData = $request->input('record_meal');
                 if (!empty($mealData['meal_type'])) {
-                    // Update or create Meal record
                     Meal::updateOrCreate(
                         ['log_id' => $log->log_id],
                         [
@@ -289,14 +284,12 @@ class CombinedLogController extends Controller
                         ]
                     );
                 } else {
-                    // Delete existing Meal record if no data provided
                     Meal::where('log_id', $log->log_id)->delete();
                 }
 
                 // Handle RecordMedication record
-                $medicationData = $request->input('recordMedication');
+                $medicationData = $request->input('record_medication');
                 if (!empty($medicationData['medications']) && is_array($medicationData['medications'])) {
-                    // Update or create RecordMedication record
                     RecordMedication::updateOrCreate(
                         ['log_id' => $log->log_id],
                         [
@@ -306,17 +299,15 @@ class CombinedLogController extends Controller
                         ]
                     );
                 } else {
-                    // Delete existing RecordMedication record if no data provided
                     RecordMedication::where('log_id', $log->log_id)->delete();
                 }
 
-                // Reload log with all relations
-                $log->load('recordGlucoses', 'recordMeals', 'recordMedications');
+                // الـ Reload العادي
+                $log->load(['recordGlucose', 'recordMeal', 'recordMedication']);
 
                 return $log;
             });
 
-            // 3. Response
             return response()->json([
                 'success' => true,
                 'message' => 'Log updated successfully',
@@ -337,18 +328,13 @@ class CombinedLogController extends Controller
     public function destroy(Log $log)
     {
         try {
-            // 1. Database Transaction
             DB::transaction(function () use ($log) {
-                // Delete associated records first
                 Glucose::where('log_id', $log->log_id)->delete();
                 Meal::where('log_id', $log->log_id)->delete();
                 RecordMedication::where('log_id', $log->log_id)->delete();
-
-                // Delete the parent Log record
                 $log->delete();
             });
 
-            // 2. Response
             return response()->json([
                 'success' => true,
                 'message' => 'Log and all associated records deleted successfully'
@@ -363,71 +349,69 @@ class CombinedLogController extends Controller
     }
 
     /**
-     * Get all combined logs for the authenticated user.
-     */
-    
-
-    /**
      * Get a specific combined log with all associated records.
-     */public function show(Request $request)
-{
-    try {
-        $userId = Auth::id();
-        
-        // 1. بنعمل eager load للعلاقات الجديدة (المفرد والجمع حسب تعديل الموديل)
-        // ملحوظة: لو سبت الـ medication كـ hasMany سيب اسمها بالجمع recordMedications
-        $query = Log::where('user_id', $userId)
-            ->with(['recordGlucose', 'recordMeal', 'recordMedication']);
+     */
+    public function show(Request $request)
+    {
+        try {
+            $userId = Auth::id();
+            
+            // شيلنا الـ "as" ورجعنا للـ default الـ snake_case
+            $query = Log::where('user_id', $userId)
+                ->with(['recordGlucose', 'recordMeal', 'recordMedication']);
 
-        // 2. فلترة بالتاريخ لو مبعوت في الـ Request
-        if ($request->has('date')) {
-            $date = $request->query('date');
-            $query->whereDate('logged_at', $date);
+            if ($request->has('date')) {
+                $date = $request->query('date');
+                $query->whereDate('logged_at', $date);
+            }
+
+            $logs = $query->orderBy('logged_at', 'desc')->get();
+
+            return response()->json([
+                'success' => true,
+                'message' => $request->has('date') 
+                    ? "Logs retrieved successfully for date: " . $request->query('date')
+                    : 'All user logs retrieved successfully',
+                'data' => $logs 
+            ], 200);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        // 3. بنستخدم ->get() عشان يرجع "كل اللوجز" كـ مصفوفة (Array) بناءً على طلبه
-        $logs = $query->orderBy('logged_at', 'desc')->get();
-
-        // 4. الـ Response النهائي
-        return response()->json([
-            'success' => true,
-            'message' => $request->has('date') 
-                ? "Logs retrieved successfully for date: " . $request->query('date')
-                : 'All user logs retrieved successfully',
-            'data' => $logs // دي هترجع Array (لأنها مجموعة لوجز)، وجواها العلاقات objects
-        ], 200);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage()
-        ], 500);
     }
-}
 
-public function sync(Request $request)
+ public function sync(Request $request)
 {
     try {
         $userId = Auth::id();
         
-        // بنعمل eager load للعلاقات المفرد والجمع اللي ظبطناها في الموديل
         $query = Log::where('user_id', $userId)
             ->with(['recordGlucose', 'recordMeal', 'recordMedication']);
 
-        // هنا التعديل اللي هو عايزه بالملي:
-        // بيشوف لو الأندرويد باعت وقت آخر مزامنة، بيجيب اللي الـ updated_at بتاعه أعلى (أحدث)
-        if ($request->has('last_sync')) {
-            $lastSync = $request->query('last_sync'); // هيستقبل مثلاً: 2026-05-18 14:30:00
-            $query->where('updated_at', '>', $lastSync);
+        // التعديل السحري: $request->input() بتقرأ من الـ URL ومن الـ Body في نفس الوقت عشان نضمن إننا لقطنا التاريخ
+        if ($request->has('last_sync') && !empty($request->input('last_sync'))) {
+            $lastSyncRaw = $request->input('last_sync'); // هيلقطها مبعوتة كدة أو كدة
+            
+            try {
+                // بنحول الاسترينج لـ Carbon object عشان قاعدة البيانات تفهمه صح
+                $lastSync = \Carbon\Carbon::parse($lastSyncRaw);
+                
+                // الفلترة الصريحة
+                $query->where('updated_at', '>', $lastSync);
+            } catch (\Exception $e) {
+                // fallback لو حصل أي لغبطة في الـ parsing
+            }
         }
 
-        // بنرتبهم من الأقدم للأحدث (asc) عشان الأندرويد ينزلهم بالترتيب المنطقي في الـ Room
         $updatedLogs = $query->orderBy('updated_at', 'asc')->get();
 
         return response()->json([
             'success' => true,
             'message' => 'Sync data retrieved successfully',
-            'data' => $updatedLogs // هيرجع Array باللوجز الجديدة أو المتعدلة بس، ولو مفيش هيرجع مصفوفة فاضية []
+            'data' => $updatedLogs 
         ], 200);
 
     } catch (\Exception $e) {
@@ -438,38 +422,35 @@ public function sync(Request $request)
     }
 }
 
-public function getLogById($log_id)
-{
-    try {
-        $userId = Auth::id();
+    public function getLogById($log_id)
+    {
+        try {
+            $userId = Auth::id();
 
-        // بنجيب اللوج المحدد الـ ID بتاعه وبنتأكد إنه مخصّص لليوزر ده أمان ليك
-        $log = Log::where('user_id', $userId)
-            ->where('log_id', $log_id)
-            ->with(['recordGlucose', 'recordMeal', 'recordMedication']) // العلاقات المفرد والجمع بتاعتك
-            ->first();
+            $log = Log::where('user_id', $userId)
+                ->where('log_id', $log_id)
+                ->with(['recordGlucose', 'recordMeal', 'recordMedication']) 
+                ->first();
 
-        // لو الـ ID غلط أو مش بتاع اليوزر ده
-        if (!$log) {
+            if (!$log) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Log not found',
+                    'data' => null
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Log retrieved successfully',
+                'data' => $log
+            ], 200);
+
+        } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Log not found',
-                'data' => null
-            ], 404);
+                'message' => $e->getMessage()
+            ], 500);
         }
-
-        // هيرجع كـ Single Object مباشر وجواه علاقاته Objects برضه زي ما الفرونت بيحب
-        return response()->json([
-            'success' => true,
-            'message' => 'Log retrieved successfully',
-            'data' => $log
-        ], 200);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage()
-        ], 500);
     }
-}
 }
