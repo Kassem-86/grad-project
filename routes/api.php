@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\GlucoseController;
 use App\Http\Controllers\SelectedMedicationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -94,6 +95,7 @@ Route::get('/logs/user/{log_id}', [CombinedLogController::class, 'getLogById']);
     Route::apiResource('logs', CombinedLogController::class);
     Route::post('/logs/android/', [CombinedLogController::class, 'storeWithAndroidId']);
     Route::apiResource('selected-medications', SelectedMedicationController::class);
+    Route::get('/glucose/history', [GlucoseController::class, 'getGlucoseHistory']);
 
     // --- Real-time Chat (Reverb) ---
     Route::prefix('conversations')->group(function () {

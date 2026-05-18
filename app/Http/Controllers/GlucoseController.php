@@ -133,4 +133,45 @@ class GlucoseController extends Controller
             'message' => 'Glucose reading deleted successfully',
         ]);
     }
+
+    public function getGlucoseHistory(): JsonResponse
+{
+    try {
+        $userId = Auth::id();
+
+        // بنجيب القياسات بتاعة اليوزر، وبنعمل لود لعلاقة الـ log عشان ناخد منها الـ logged_at
+        $glucoseReadings = Glucose::where('user_id', $userId)
+            ->with(['log' => function($query) {
+                $query->select('log_id', 'logged_at'); // بناخد الـ keys المهمة بس عشان الـ Performance
+            }])
+            ->get()
+            // بنعمل ترتيب (Sort) بناءً على تاريخ الـ log الأب تصاعدياً (من القديم للجديد) عشان الـ Chart
+            ->sortBy(function($glucose) {
+                return $glucose->log ? $glucose->log->logged_at : now();
+            })
+            ->values() // عشان يعيد ترتيب الـ indexes بتاعة الـ array من 0
+            ->map(function ($glucose) {
+                // بنشكل الـ Object بالظبط بالشكل اللي الأندرويد عايزه (Time & Value)
+                return [
+                    'value' => (float) $glucose->glucose_level,
+                    'time' => $glucose->log && $glucose->log->logged_at 
+          ? \Carbon\Carbon::parse($glucose->log->logged_at)->format('Y-m-d H:i:s') 
+          : null,
+                    'reading_type' => $glucose->reading_type, 
+                ];
+            });
+
+        return response()->json([
+            'success' => true,
+            'data'    => $glucoseReadings
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error fetching glucose history',
+            'error'   => $e->getMessage()
+        ], 500);
+    }
+}
 }
