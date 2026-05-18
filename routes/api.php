@@ -86,6 +86,10 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- Health Tracking (Resources) ---
 
     Route::get('/logs/user', [CombinedLogController::class, 'show']);
+Route::get('/logs/user/{log_id}', [CombinedLogController::class, 'getLogById']);
+    Route::get('/logs/sync', [CombinedLogController::class, 'sync']);
+
+
     Route::apiResource('logs', CombinedLogController::class);
     Route::post('/logs/android/', [CombinedLogController::class, 'storeWithAndroidId']);
 

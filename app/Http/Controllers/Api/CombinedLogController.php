@@ -404,4 +404,72 @@ class CombinedLogController extends Controller
         ], 500);
     }
 }
+
+public function sync(Request $request)
+{
+    try {
+        $userId = Auth::id();
+        
+        // بنعمل eager load للعلاقات المفرد والجمع اللي ظبطناها في الموديل
+        $query = Log::where('user_id', $userId)
+            ->with(['recordGlucose', 'recordMeal', 'recordMedication']);
+
+        // هنا التعديل اللي هو عايزه بالملي:
+        // بيشوف لو الأندرويد باعت وقت آخر مزامنة، بيجيب اللي الـ updated_at بتاعه أعلى (أحدث)
+        if ($request->has('last_sync')) {
+            $lastSync = $request->query('last_sync'); // هيستقبل مثلاً: 2026-05-18 14:30:00
+            $query->where('updated_at', '>', $lastSync);
+        }
+
+        // بنرتبهم من الأقدم للأحدث (asc) عشان الأندرويد ينزلهم بالترتيب المنطقي في الـ Room
+        $updatedLogs = $query->orderBy('updated_at', 'asc')->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Sync data retrieved successfully',
+            'data' => $updatedLogs // هيرجع Array باللوجز الجديدة أو المتعدلة بس، ولو مفيش هيرجع مصفوفة فاضية []
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
+
+public function getLogById($log_id)
+{
+    try {
+        $userId = Auth::id();
+
+        // بنجيب اللوج المحدد الـ ID بتاعه وبنتأكد إنه مخصّص لليوزر ده أمان ليك
+        $log = Log::where('user_id', $userId)
+            ->where('log_id', $log_id)
+            ->with(['recordGlucose', 'recordMeal', 'recordMedication']) // العلاقات المفرد والجمع بتاعتك
+            ->first();
+
+        // لو الـ ID غلط أو مش بتاع اليوزر ده
+        if (!$log) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Log not found',
+                'data' => null
+            ], 404);
+        }
+
+        // هيرجع كـ Single Object مباشر وجواه علاقاته Objects برضه زي ما الفرونت بيحب
+        return response()->json([
+            'success' => true,
+            'message' => 'Log retrieved successfully',
+            'data' => $log
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
+    }
+}
 }
