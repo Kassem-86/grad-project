@@ -17,7 +17,7 @@ class SelectedMedicationController extends Controller
         $medications = SelectedMedication::where('user_id', Auth::id())
             ->orderByDesc('created_at')
             ->get()
-            ->load('recordMedication', 'log');
+            ->load('recordMedication');
 
         return response()->json([
             'success' => true,
@@ -34,7 +34,7 @@ class SelectedMedicationController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $selectedMedication->load('recordMedication', 'log'),
+            'data' => $selectedMedication->load('recordMedication'),
         ]);
     }
 
