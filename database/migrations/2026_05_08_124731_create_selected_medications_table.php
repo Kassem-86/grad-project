@@ -10,13 +10,13 @@ return new class extends Migration
     {
         Schema::create('selected_medications', function (Blueprint $table) {
             $table->id('selected_med_id');
-            $table->unsignedBigInteger('medication_id');
-            $table->unsignedBigInteger('log_id');
+            $table->unsignedBigInteger('medication_id')->nullable();
+            // $table->unsignedBigInteger('log_id')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->string('medication_name', 50);
 
             $table->foreign('medication_id')->references('medication_id')->on('record_medications')->onDelete('cascade');
-            $table->foreign('log_id')->references('log_id')->on('logs')->onDelete('cascade');
+            // $table->foreign('log_id')->references('log_id')->on('logs')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             
             $table->timestamps();

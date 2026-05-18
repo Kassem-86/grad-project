@@ -91,4 +91,43 @@ class SelectedMedicationController extends Controller
             ], 500);
         }
     }
+
+
+
+    /**
+ * Store a newly created selected medication.
+ *//**
+ * Store a newly created custom medication from the Add Box.
+ */
+public function store(Request $request): JsonResponse
+{
+    // بنعمل validate على الاسم بس لأن المريض بيكتبه في الـ Box
+    $validated = $request->validate([
+        'medication_name' => 'required|string|max:50',
+    ]);
+
+    try {
+        $userId = Auth::id();
+
+        // بنكريت الدوا لليوزر ده، وباقي الـ FKs (الـ log_id والـ medication_id) هينزلوا null مؤقتاً
+        $selectedMedication = SelectedMedication::create([
+            'user_id'         => $userId,
+            'medication_name' => $validated['medication_name'],
+            'medication_id'   => null, // هينزل null لحد ما يربطه بللوج
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Medication created and added to your list successfully',
+            'data'    => $selectedMedication,
+        ], 201);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Error creating medication',
+            'error'   => $e->getMessage(),
+        ], 500);
+    }
+}
 }

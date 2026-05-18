@@ -15,10 +15,9 @@ class CombinedLogController extends Controller
 {
     /**
      * Store a combined health log entry.
-     */
-    public function store(Request $request)
+     */public function store(Request $request)
     {
-        // 1. Validation (تعديل الـ Keys لـ snake_case)
+        // 1. Validation (تعديل الـ Keys لـ snake_case والـ IDs)
         $validated = $request->validate([
             'log_title' => 'nullable|string',
             'log_description' => 'nullable|string',
@@ -38,7 +37,8 @@ class CombinedLogController extends Controller
             'record_meal.notes' => 'nullable|string',
 
             'record_medication' => 'nullable|array',
-            'record_medication.medications' => 'nullable|array',
+            'record_medication.selected_medication_ids' => 'nullable|array',
+            'record_medication.selected_medication_ids.*' => 'integer|exists:selected_medications,selected_med_id',
             'record_medication.notes' => 'nullable|string',
         ]);
 
@@ -51,22 +51,22 @@ class CombinedLogController extends Controller
                 // Create the parent Log record
                 $log = Log::create([
                     'log_id'          => (string) \Illuminate\Support\Str::uuid(), 
-                    'user_id' => $userId,
-                    'log_title' => $validated['log_title'] ?? null,
+                    'user_id'         => $userId,
+                    'log_title'       => $validated['log_title'] ?? null,
                     'log_description' => $validated['log_description'] ?? null,
-                    'logged_at' => $loggedAt,
+                    'logged_at'       => $loggedAt,
                 ]);
 
                 // Create Glucose record
                 $glucoseData = $request->input('record_glucose');
                 if (!empty($glucoseData['glucose_level'])) {
                     Glucose::create([
-                        'log_id' => $log->log_id,
-                        'user_id' => $userId,
-                        'glucose_level' => $glucoseData['glucose_level'],
-                        'reading_type' => $glucoseData['reading_type'],
+                        'log_id'         => $log->log_id,
+                        'user_id'        => $userId,
+                        'glucose_level'  => $glucoseData['glucose_level'],
+                        'reading_type'   => $glucoseData['reading_type'],
                         'a1c_estimation' => $glucoseData['a1c_estimation'] ?? null,
-                        'notes' => $glucoseData['notes'] ?? null,
+                        'notes'          => $glucoseData['notes'] ?? null,
                     ]);
                 }
 
@@ -74,29 +74,35 @@ class CombinedLogController extends Controller
                 $mealData = $request->input('record_meal');
                 if (!empty($mealData['meal_type'])) {
                     Meal::create([
-                        'log_id' => $log->log_id,
-                        'user_id' => $userId,
-                        'meal_type' => $mealData['meal_type'],
+                        'log_id'           => $log->log_id,
+                        'user_id'          => $userId,
+                        'meal_type'        => $mealData['meal_type'],
                         'meal_description' => $mealData['meal_description'] ?? null,
-                        'total_calories' => $mealData['total_calories'],
-                        'total_carb' => $mealData['total_carb'],
-                        'notes' => $mealData['notes'] ?? null,
+                        'total_calories'   => $mealData['total_calories'],
+                        'total_carb'       => $mealData['total_carb'],
+                        'notes'            => $mealData['notes'] ?? null,
                     ]);
                 }
 
-                // Create RecordMedication record
+                // Handle RecordMedication and linking SelectedMedications
                 $medicationData = $request->input('record_medication');
-                if (!empty($medicationData['medications']) && is_array($medicationData['medications'])) {
-                    RecordMedication::create([
-                        'log_id' => $log->log_id,
+                if (!empty($medicationData['selected_medication_ids']) && is_array($medicationData['selected_medication_ids'])) {
+                    // أ) كريت الأب الأول
+                    $recordMedication = RecordMedication::create([
+                        'log_id'  => $log->log_id,
                         'user_id' => $userId,
-                        'medications' => $medicationData['medications'],
-                        'notes' => $medicationData['notes'] ?? null,
+                        'notes'   => $medicationData['notes'] ?? null,
                     ]);
+
+                    // ب) التعديل السحري: نعمل تحديث للأدوية اللي المريض اختارها عشان نربطها بالـ Log والـ Record الحالي
+                    \App\Models\SelectedMedication::whereIn('selected_med_id', $medicationData['selected_medication_ids'])
+                        ->update([
+                            'medication_id' => $recordMedication->medication_id
+                        ]);
                 }
 
-                // بنرجع الـ log مع العلاقات بالـ ديفولت الـ snake_case بتاع لارافيل
-                return $log->load(['recordGlucose', 'recordMeal', 'recordMedication']);
+                // بنرجع الـ log وبنعمل load لـ لستة الأدوية اللي جوة الـ recordMedication عشان تبان للفرونت إند
+                return $log->load(['recordGlucose', 'recordMeal', 'recordMedication.selectedMedications']);
             });
 
             // 3. Response
@@ -140,7 +146,8 @@ class CombinedLogController extends Controller
             'record_meal.notes' => 'nullable|string',
 
             'record_medication' => 'nullable|array',
-            'record_medication.medications' => 'nullable|array',
+            'record_medication.selected_medication_ids' => 'nullable|array',
+            'record_medication.selected_medication_ids.*' => 'integer|exists:selected_medications,selected_med_id',
             'record_medication.notes' => 'nullable|string',
         ]);
 
@@ -187,18 +194,23 @@ class CombinedLogController extends Controller
                     ]);
                 }
 
-                // Create RecordMedication record
+                // Handle RecordMedication and linking SelectedMedications
                 $medicationData = $request->input('record_medication');
-                if (!empty($medicationData['medications']) && is_array($medicationData['medications'])) {
-                    RecordMedication::create([
-                        'log_id' => $logId,
+                if (!empty($medicationData['selected_medication_ids']) && is_array($medicationData['selected_medication_ids'])) {
+                    // أ) كريت الأب
+                    $recordMedication = RecordMedication::create([
                         'user_id' => $userId,
-                        'medications' => $medicationData['medications'],
                         'notes' => $medicationData['notes'] ?? null,
                     ]);
+
+                    // ب) ربط الأولاد
+                    \App\Models\SelectedMedication::whereIn('selected_med_id', $medicationData['selected_medication_ids'])
+                        ->update([
+                            'medication_id' => $recordMedication->medication_id
+                        ]);
                 }
 
-                return $log->load(['recordGlucose', 'recordMeal', 'recordMedication']);
+                return $log->load(['recordGlucose', 'recordMeal', 'recordMedication.selectedMedications']);
             });
 
             return response()->json([
@@ -232,8 +244,8 @@ class CombinedLogController extends Controller
             'record_meal' => 'nullable|array',
             'record_meal.meal_type' => 'nullable|in:Breakfast,Lunch,Dinner,Snack',
             'record_meal.meal_description' => 'nullable|string',
-            'record_meal.total_calories' => 'required_with:record_meal.meal_type|numeric',
-            'record_meal.total_carb' => 'required_with:record_meal.meal_type|numeric',
+            'record_meal.total_calories' => 'nullable|numeric',
+            'record_meal.total_carb' => 'nullable|numeric',
             'record_meal.notes' => 'nullable|string',
 
             'record_medication' => 'nullable|array',
@@ -314,6 +326,8 @@ class CombinedLogController extends Controller
                 'data' => $result
             ], 200);
 
+
+
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -364,6 +378,7 @@ class CombinedLogController extends Controller
                 $date = $request->query('date');
                 $query->whereDate('logged_at', $date);
             }
+            
 
             $logs = $query->orderBy('logged_at', 'desc')->get();
 
@@ -382,8 +397,7 @@ class CombinedLogController extends Controller
             ], 500);
         }
     }
-
- public function sync(Request $request)
+public function sync(Request $request)
 {
     try {
         $userId = Auth::id();
@@ -391,18 +405,18 @@ class CombinedLogController extends Controller
         $query = Log::where('user_id', $userId)
             ->with(['recordGlucose', 'recordMeal', 'recordMedication']);
 
-        // التعديل السحري: $request->input() بتقرأ من الـ URL ومن الـ Body في نفس الوقت عشان نضمن إننا لقطنا التاريخ
         if ($request->has('last_sync') && !empty($request->input('last_sync'))) {
-            $lastSyncRaw = $request->input('last_sync'); // هيلقطها مبعوتة كدة أو كدة
+            $lastSyncRaw = $request->input('last_sync'); // جاي مثلاً: 2026-05-18 04:18:48
             
             try {
-                // بنحول الاسترينج لـ Carbon object عشان قاعدة البيانات تفهمه صح
-                $lastSync = \Carbon\Carbon::parse($lastSyncRaw);
+                // التعديل السحري: بنفهمه إن الوقت ده بتوقيت مصر، وحوله للـ timezone بتاعة السيرفر (UTC مثلاً) عشان المقارنة في الداتابيز تكون عادلة
+                $lastSync = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $lastSyncRaw, 'Africa/Cairo')
+                    ->setTimezone(config('app.timezone'));
                 
-                // الفلترة الصريحة
                 $query->where('updated_at', '>', $lastSync);
             } catch (\Exception $e) {
-                // fallback لو حصل أي لغبطة في الـ parsing
+                // لو حصلت مشكلة في الـ parsing لأي سبب، يشتغل بالـ raw كـ fallback
+                $query->where('updated_at', '>', $lastSyncRaw);
             }
         }
 
@@ -420,9 +434,7 @@ class CombinedLogController extends Controller
             'message' => $e->getMessage()
         ], 500);
     }
-}
-
-    public function getLogById($log_id)
+}    public function getLogById($log_id)
     {
         try {
             $userId = Auth::id();

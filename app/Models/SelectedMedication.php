@@ -12,7 +12,6 @@ class SelectedMedication extends Model
 
     protected $fillable = [
         'medication_id',
-        'log_id',
         'user_id',
         'medication_name',
     ];
@@ -22,10 +21,10 @@ class SelectedMedication extends Model
         return $this->belongsTo(RecordMedication::class, 'medication_id', 'medication_id');
     }
 
-    public function log(): BelongsTo
-    {
-        return $this->belongsTo(Log::class, 'log_id', 'log_id');
-    }
+    // public function log(): BelongsTo
+    // {
+    //     return $this->belongsTo(Log::class, 'log_id', 'log_id');
+    // }
 
     public function user(): BelongsTo
     {

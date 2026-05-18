@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\SelectedMedicationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\{
@@ -92,6 +93,7 @@ Route::get('/logs/user/{log_id}', [CombinedLogController::class, 'getLogById']);
 
     Route::apiResource('logs', CombinedLogController::class);
     Route::post('/logs/android/', [CombinedLogController::class, 'storeWithAndroidId']);
+    Route::apiResource('selected-medications', SelectedMedicationController::class);
 
     // --- Real-time Chat (Reverb) ---
     Route::prefix('conversations')->group(function () {
@@ -116,13 +118,11 @@ Route::get('/logs/user/{log_id}', [CombinedLogController::class, 'getLogById']);
     Route::patch('/notifications/read-all', [\App\Http\Controllers\Api\NotificationController::class, 'markAllAsRead']);
     Route::patch('/notifications/{id}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markAsRead']);
 
-     // راوت حفظ توكن الموبايل للإشعارات 🚀
     Route::post('/user/save-device-token', function (Request $request) {
         $request->validate([
             'device_token' => 'required|string',
         ]);
 
-        // بنحدث التوكن لليوزر اللي عامل تسجيل دخول حالياً
         auth('sanctum')->user()->update([
             'device_token' => $request->device_token
         ]);
