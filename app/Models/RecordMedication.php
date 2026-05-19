@@ -18,6 +18,8 @@ protected $touches = ['log'];
         'notes',
         'medications',
     ];
+    protected $hidden = ['selectedMedications'];
+    protected $appends = ['medications'];
 
     protected $guarded = []; // 👈 ده معناه "اسمح بكتابة أي داتا جاية من غير حماية"
     protected $casts = [
@@ -37,6 +39,20 @@ protected $touches = ['log'];
     public function selectedMedications(): HasMany
     {
         return $this->hasMany(SelectedMedication::class, 'medication_id', 'medication_id');
+    }
+   public function getMedicationsAttribute()
+    {
+        // لو العلاقة مش معملولها load، رجع مصفوفة فاضية
+        if (!$this->relationLoaded('selectedMedications')) {
+            return [];
+        }
+
+        // بنلف على الأدوية ونرجع أوبجكتس فيها الـ name بس
+        return $this->selectedMedications->map(function ($selectedMed) {
+            return [
+                'medication_name' => $selectedMed->medication_name
+            ];
+        })->values()->all();
     }
 }
 
