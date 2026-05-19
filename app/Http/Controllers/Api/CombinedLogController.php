@@ -483,8 +483,8 @@ public function sync(Request $request)
 
             $log = Log::where('user_id', $userId)
                 ->where('log_id', $log_id)
-                ->with(['recordGlucose', 'recordMeal', 'recordMedication.selectedMedications']) ->find($log_id);
-                // ->first();
+                ->with(['recordGlucose', 'recordMeal', 'recordMedication.selectedMedications']) ->first();
+                 
 
             if (!$log) {
                 return response()->json([

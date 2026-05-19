@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class RecordMedication extends Model
 {
     protected $table = 'record_medications';
-    protected $primaryKey = 'medication_id';
+    protected $primaryKey = 'medication_id'; // 👈 المفتاح الأساسي
+    public $incrementing = true;
+    protected $keyType = 'int';
     public $timestamps = false;
 protected $touches = ['log'];
     protected $fillable = [
@@ -22,10 +24,9 @@ protected $touches = ['log'];
     protected $appends = ['medications'];
 
     protected $guarded = []; // 👈 ده معناه "اسمح بكتابة أي داتا جاية من غير حماية"
-    protected $casts = [
-        'medications' => 'array',
-    ];
-
+protected $casts = [
+    'medication_id' => 'integer', 
+];
     public function log(): BelongsTo
     {
         return $this->belongsTo(Log::class, 'log_id', 'log_id');
@@ -36,23 +37,26 @@ protected $touches = ['log'];
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function selectedMedications(): HasMany
+    public function selectedMedications() 
     {
         return $this->hasMany(SelectedMedication::class, 'medication_id', 'medication_id');
     }
-   public function getMedicationsAttribute()
+    public function getMedicationsAttribute($value)
     {
-        // لو العلاقة مش معملولها load، رجع مصفوفة فاضية
-        if (!$this->relationLoaded('selectedMedications')) {
-            return [];
+        if ($this->relationLoaded('selectedMedications')) {
+            return $this->selectedMedications->map(function ($selectedMed) {
+                return [
+                    'medication_name' => $selectedMed->medication_name
+                ];
+            })->values()->all();
         }
 
-        // بنلف على الأدوية ونرجع أوبجكتس فيها الـ name بس
-        return $this->selectedMedications->map(function ($selectedMed) {
-            return [
-                'medication_name' => $selectedMed->medication_name
-            ];
-        })->values()->all();
+        if ($value) {
+            $decoded = json_decode($value, true);
+            return is_array($decoded) ? $decoded : $value;
+        }
+
+        return [];
     }
 }
 
