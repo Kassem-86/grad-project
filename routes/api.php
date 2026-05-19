@@ -82,13 +82,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/friends/{id}/request', [FriendshipController::class, 'sendRequest']);
     Route::post('/friends/{id}/accept', [FriendshipController::class, 'acceptRequest']);
     Route::delete('/friends/{id}', [FriendshipController::class, 'removeFriend']);
-      Route::post('/friends/{id}/block', [BlockController::class, 'block']);
+    Route::post('/friends/{id}/block', [BlockController::class, 'block']);
     Route::delete('/friends/{id}/unblock', [BlockController::class, 'unblock']);
 
     // --- Health Tracking (Resources) ---
 
     Route::get('/logs/user', [CombinedLogController::class, 'show']);
-Route::get('/logs/user/{log_id}', [CombinedLogController::class, 'getLogById']);
+    Route::get('/logs/user/{log_id}', [CombinedLogController::class, 'getLogById']);
     Route::get('/logs/sync', [CombinedLogController::class, 'sync']);
 
 

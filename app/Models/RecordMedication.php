@@ -11,7 +11,7 @@ class RecordMedication extends Model
     protected $table = 'record_medications';
     protected $primaryKey = 'medication_id';
     public $timestamps = false;
-
+protected $touches = ['log'];
     protected $fillable = [
         'log_id',
         'user_id',
@@ -19,6 +19,7 @@ class RecordMedication extends Model
         'medications',
     ];
 
+    protected $guarded = []; // 👈 ده معناه "اسمح بكتابة أي داتا جاية من غير حماية"
     protected $casts = [
         'medications' => 'array',
     ];

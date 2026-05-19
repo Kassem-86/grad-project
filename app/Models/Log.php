@@ -15,14 +15,14 @@ class Log extends Model
     protected $keyType = 'string';
     public $timestamps = true;
 
-    protected $fillable = [
-        'log_id',   
-        'user_id',
-        'log_title',
-        'log_description',
-        'logged_at',
-    ];
-
+        protected $fillable = [
+            'log_id',   
+            'user_id',
+            'log_title',
+            'log_description',
+            'logged_at',
+        ];
+    protected $guarded = []; // 👈 ده معناه "اسمح بكتابة أي داتا جاية من غير حماية"
     protected $casts = [
         'logged_at' => 'datetime',
     ];

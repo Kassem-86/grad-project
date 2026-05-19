@@ -10,6 +10,7 @@ class Glucose extends Model
     protected $table = 'record_glucose';
     protected $primaryKey = 'reading_id';
     public $timestamps = false;
+    protected $touches = ['log'];
 
     protected $fillable = [
         'log_id',
@@ -18,8 +19,9 @@ class Glucose extends Model
         'reading_type',
         'notes',
         'a1c_estimation',
-        'average_glucose_level',
     ];
+
+    // protected $guarded = []; // 👈 ده معناه "اسمح بكتابة أي داتا جاية من غير حماية"
 
     protected $casts = [
         'glucose_level' => 'float',

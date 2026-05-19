@@ -10,7 +10,7 @@ class Meal extends Model
     protected $table = 'record_meals';
     protected $primaryKey = 'meal_id';
     public $timestamps = false;
-
+protected $touches = ['log'];
     protected $fillable = [
         'log_id',
         'user_id',
@@ -20,6 +20,7 @@ class Meal extends Model
         'meal_description',
         'notes',
     ];
+    protected $guarded = []; // 👈 ده معناه "اسمح بكتابة أي داتا جاية من غير حماية"
 
     protected $casts = [
         'total_carb' => 'float',
