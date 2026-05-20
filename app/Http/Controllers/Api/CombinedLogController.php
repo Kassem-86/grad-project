@@ -432,9 +432,9 @@ public function update(Request $request, Log $log)
         
         // 👈 استخدمنا where عادية عشان تطابق التاريخ والوقت بالثانية بالملي زي ما جاي من الـ URL
         $log = Log::where('user_id', $userId)
-            ->where('logged_at', $date) 
+            ->whereDate('logged_at', $date) 
             ->with(['recordGlucose', 'recordMeal', 'recordMedication.selectedMedications'])
-            ->first();
+            ->get();
 
         if (!$log) {
             return response()->json([
