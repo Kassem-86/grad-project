@@ -41,22 +41,14 @@ protected $casts = [
     {
         return $this->hasMany(SelectedMedication::class, 'medication_id', 'medication_id');
     }
-    public function getMedicationsAttribute($value)
-    {
-        if ($this->relationLoaded('selectedMedications')) {
-            return $this->selectedMedications->map(function ($selectedMed) {
-                return [
-                    'medication_name' => $selectedMed->medication_name
-                ];
-            })->values()->all();
-        }
-
-        if ($value) {
-            $decoded = json_decode($value, true);
-            return is_array($decoded) ? $decoded : $value;
-        }
-
+  public function getMedicationsAttribute()
+{
+    if (!$this->relationLoaded('selectedMedications')) {
         return [];
     }
+
+    // هيرجع مصفوفة أسماء مباشرة: ["tremadol", "panadol"]
+    return $this->selectedMedications->pluck('medication_name')->all();
+}
 }
 

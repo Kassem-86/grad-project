@@ -15,113 +15,120 @@ class CombinedLogController extends Controller
 {
     /**
      * Store a combined health log entry.
-     */public function store(Request $request)
-    { 
-        $validated = $request->validate([
-            'log_title' => 'nullable|string',
-            'log_description' => 'nullable|string',
-            'logged_at' => 'nullable|date_format:Y-m-d H:i:s',
+     */
+    public function store(Request $request)
+{ 
+    $validated = $request->validate([
+        'log_title' => 'nullable|string',
+        'log_description' => 'nullable|string',
+        'logged_at' => 'nullable|date_format:Y-m-d H:i:s',
 
-            'record_glucose' => 'nullable|array',
-            'record_glucose.glucose_level' => 'nullable|numeric',
-            'record_glucose.reading_type' => 'required_with:record_glucose.glucose_level|string',
-            'record_glucose.a1c_estimation' => 'nullable',
-            'record_glucose.notes' => 'nullable|string',
+        'record_glucose' => 'nullable|array',
+        'record_glucose.glucose_level' => 'nullable|numeric',
+        'record_glucose.reading_type' => 'required_with:record_glucose.glucose_level|string',
+        'record_glucose.a1c_estimation' => 'nullable',
+        'record_glucose.notes' => 'nullable|string',
 
-            'record_meal' => 'nullable|array',
-            'record_meal.meal_type' => 'nullable|in:Breakfast,Lunch,Dinner,Snack',
-            'record_meal.meal_description' => 'nullable|string',
-            'record_meal.total_calories' => 'required_with:record_meal.meal_type|numeric',
-            'record_meal.total_carb' => 'required_with:record_meal.meal_type|numeric',
-            'record_meal.notes' => 'nullable|string',
+        'record_meal' => 'nullable|array',
+        'record_meal.meal_type' => 'nullable|in:Breakfast,Lunch,Dinner,Snack',
+        'record_meal.meal_description' => 'nullable|string',
+        'record_meal.total_calories' => 'nullable|numeric',
+        'record_meal.total_carb' => 'nullable|numeric',
+        'record_meal.notes' => 'nullable|string',
 
-            'record_medication' => 'nullable|array',
-            'record_medication.selected_medication_ids' => 'nullable|array',
-            'record_medication.selected_medication_ids.*' => 'integer|exists:selected_medications,selected_med_id',
-            'record_medication.notes' => 'nullable|string',
-        ]);
+        'record_medication' => 'nullable|array',
+        'record_medication.medications' => 'nullable|array', // 👈 مصفوفة أسامي سادة
+        'record_medication.medications.*' => 'string',       // كل عنصر عبارة عن نص
+        'record_medication.notes' => 'nullable|string',
+    ]);
 
-        try {
-            // 2. Database Transaction
-            $result = DB::transaction(function () use ($request, $validated) {
-                $userId = Auth::id();
-                $loggedAt = !empty($validated['logged_at']) ? $validated['logged_at'] : now();
+    try {
+        // 2. Database Transaction (بترجع الـ ID بس)
+        $logId = DB::transaction(function () use ($request, $validated) {
+            $userId = Auth::id();
+            $loggedAt = !empty($validated['logged_at']) ? $validated['logged_at'] : now();
 
-                // Create the parent Log record
-                $log = Log::create([
-                    'log_id'          => (string) \Illuminate\Support\Str::uuid(), 
-                    'user_id'         => $userId,
-                    'log_title'       => $validated['log_title'] ?? null,
-                    'log_description' => $validated['log_description'] ?? null,
-                    'logged_at'       => $loggedAt,
+            // Create the parent Log record
+            $log = Log::create([
+                'log_id'          => (string) \Illuminate\Support\Str::uuid(), 
+                'user_id'         => $userId,
+                'log_title'       => $validated['log_title'] ?? null,
+                'log_description' => $validated['log_description'] ?? null,
+                'logged_at'       => $loggedAt,
+            ]);
+
+            // Create Glucose record
+            $glucoseData = $validated['record_glucose'] ?? null;
+            if (!empty($glucoseData['glucose_level'])) {
+                Glucose::create([
+                    'log_id'         => $log->log_id,
+                    'user_id'        => $userId,
+                    'glucose_level'  => $glucoseData['glucose_level'],
+                    'reading_type'   => $glucoseData['reading_type'],
+                    'a1c_estimation' => $glucoseData['a1c_estimation'] ?? null,
+                    'notes'          => $glucoseData['notes'] ?? null,
+                ]);
+            }
+
+            // Create Meal record
+            $mealData = $validated['record_meal'] ?? null;
+            if (!empty($mealData['meal_type'])) {
+                Meal::create([
+                    'log_id'           => $log->log_id,
+                    'user_id'          => $userId,
+                    'meal_type'        => $mealData['meal_type'],
+                    'meal_description' => $mealData['meal_description'] ?? null,
+                    'total_calories'   => $mealData['total_calories'],
+                    'total_carb'       => $mealData['total_carb'],
+                    'notes'            => $mealData['notes'] ?? null,
+                ]);
+            }
+
+            // ─── Handle RecordMedication ───
+            $medicationData = $validated['record_medication'] ?? null;
+            if (!empty($medicationData)) {
+                $recordMedication = RecordMedication::create([
+                    'log_id'  => $log->log_id,
+                    'user_id' => $userId,
+                    'notes'   => $medicationData['notes'] ?? null,
                 ]);
 
-                // Create Glucose record
-                $glucoseData = $validated['record_glucose'] ?? null;
-                if (!empty($glucoseData['glucose_level'])) {
-                    Glucose::create([
-                        'log_id'         => $log->log_id,
-                        'user_id'        => $userId,
-                        'glucose_level'  => $glucoseData['glucose_level'],
-                        'reading_type'   => $glucoseData['reading_type'],
-                        'a1c_estimation' => $glucoseData['a1c_estimation'] ?? null,
-                        'notes'          => $glucoseData['notes'] ?? null,
-                    ]);
-                }
-
-                // Create Meal record
-                $mealData = $validated['record_meal'] ?? null;
-                if (!empty($mealData['meal_type'])) {
-                    Meal::create([
-                        'log_id'           => $log->log_id,
-                        'user_id'          => $userId,
-                        'meal_type'        => $mealData['meal_type'],
-                        'meal_description' => $mealData['meal_description'] ?? null,
-                        'total_calories'   => $mealData['total_calories'],
-                        'total_carb'       => $mealData['total_carb'],
-                        'notes'            => $mealData['notes'] ?? null,
-                    ]);
-                }
-
-                // Handle RecordMedication and linking SelectedMedications
-                $medicationData = $validated['record_medication'] ?? null;
-                if (!empty($medicationData['selected_medication_ids']) && is_array($medicationData['selected_medication_ids'])) {
-                    // أ) كريت الأب الأول
-                    $recordMedication = RecordMedication::create([
-                        'log_id'  => $log->log_id,
-                        'user_id' => $userId,
-                        'notes'   => $medicationData['notes'] ?? null,
-                    ]);
-
-                    // ب) التعديل السحري: نعمل تحديث للأدوية اللي المريض اختارها عشان نربطها بالـ Log والـ Record الحالي
-                    \App\Models\SelectedMedication::whereIn('selected_med_id', $medicationData['selected_medication_ids'])
-                        ->update([
-                            'medication_id' => $recordMedication->medication_id
+                if (!empty($medicationData['medications']) && is_array($medicationData['medications'])) {
+                    foreach ($medicationData['medications'] as $medName) {
+                        \App\Models\SelectedMedication::create([
+                            'medication_id'   => $recordMedication->medication_id,
+                            'medication_name' => $medName,
+                            'user_id'         => $userId
                         ]);
+                    }
                 }
+            }
 
-                // بنرجع الـ log وبنعمل load لـ لستة الأدوية اللي جوة الـ recordMedication عشان تبان للفرونت إند
-                return $log->load(['recordGlucose', 'recordMeal', 'recordMedication.selectedMedications']);
-            });
+            return $log->log_id;
+        });
 
-            // 3. Response
-            return response()->json([
-                'success' => true,
-                'message' => 'Combined log saved successfully',
-                'data' => $result
-            ], 201);
+        // 👈 بنقرا اللوج فريش من الداتابيز بعد الـ Commit عشان الـ UUID يربط صح
+        $finalLog = Log::with(['recordGlucose', 'recordMeal', 'recordMedication.selectedMedications'])->find($logId);
 
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }
+        // 3. Response
+        return response()->json([
+            'success' => true,
+            'message' => 'Combined log saved successfully',
+            'data' => $finalLog
+        ], 201);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
     }
+}
 
-    /**
-     * Store a combined health log entry with Android-generated UUID.
-     */public function storeWithAndroidId(Request $request)
+/**
+ * Store a combined health log entry with Android-generated UUID.
+ */
+public function storeWithAndroidId(Request $request)
 {
     // 1. Validation
     $validated = $request->validate([
@@ -143,24 +150,22 @@ class CombinedLogController extends Controller
         'record_meal.total_carb' => 'nullable|numeric',
         'record_meal.notes' => 'nullable|string',
 
-        'record_medication' => 'required|array',
-        'record_medication.selected_medication_ids' => 'nullable|array',
-        'record_medication.selected_medication_ids.*' => 'integer|exists:selected_medications,selected_med_id',
+        'record_medication' => 'nullable|array',
+        'record_medication.medications' => 'nullable|array',
+        'record_medication.medications.*' => 'string',
         'record_medication.notes' => 'nullable|string',
     ]);
 
     try {
-        $result = DB::transaction(function () use ($request, $validated) {
+        $resultData = DB::transaction(function () use ($request, $validated) {
             $userId = Auth::id();
             $logId = $validated['log_id'];
             $loggedAt = !empty($validated['logged_at']) ? $validated['logged_at'] : now();
 
             // ─── ON CONFLICT STRATEGY (UPSERT) ───
-            // بنشوف اللوج موجود قبل كده ولا لأ
             $log = Log::where('log_id', $logId)->where('user_id', $userId)->first();
 
             if ($log) {
-                // لو موجود: بنعمل Update (الـ Android جاي يـعدل أو بيبعت داتا قديمة)
                 $log->update([
                     'log_title' => $validated['log_title'] ?? $log->log_title,
                     'log_description' => $validated['log_description'] ?? $log->log_description,
@@ -168,7 +173,6 @@ class CombinedLogController extends Controller
                 ]);
                 $message = 'Log updated successfully on conflict';
             } else {
-                // لو مش موجود: بنعمل Insert عادي جداً
                 $log = Log::create([
                     'log_id' => $logId,
                     'user_id' => $userId,
@@ -182,7 +186,6 @@ class CombinedLogController extends Controller
             // ─── 1. GLUCOSE UPSERT ───
             $glucoseData = $request->input('record_glucose');
             if (!empty($glucoseData['glucose_level'])) {
-                // باستخدام updateOrCreate: لو السطر موجود بالـ log_id ده هيحدثه، لو مش موجود هيكريته
                 Glucose::updateOrCreate(
                     ['log_id' => $logId, 'user_id' => $userId],
                     [
@@ -193,7 +196,6 @@ class CombinedLogController extends Controller
                     ]
                 );
             } else {
-                // لو المريض مسح قراءة السكر من الموبايل في التعديل، بنمسحها من السيرفر
                 Glucose::where('log_id', $logId)->delete();
             }
 
@@ -214,37 +216,47 @@ class CombinedLogController extends Controller
                 Meal::where('log_id', $logId)->delete();
             }
 
-            // ─── 3. MEDICATION UPSERT (السيناريو بتاعك بدون log_id جوه الأدوية) ───
+            // ─── 3. MEDICATION UPSERT ───
             $medicationData = $request->input('record_medication');
-            
-            // أولاً: بنظبط السطر الأب (RecordMedication) بـ updateOrCreate
-            $recordMedication = RecordMedication::updateOrCreate(
-                ['log_id' => $logId, 'user_id' => $userId],
-                ['notes' => $medicationData['notes'] ?? null]
-            );
+            if (!empty($medicationData)) {
+                $recordMedication = RecordMedication::updateOrCreate(
+                    ['log_id' => $logId, 'user_id' => $userId],
+                    ['notes' => $medicationData['notes'] ?? null]
+                );
 
-            // ثانياً: فك الارتباط القديم لأي دوا مربوط بالـ medication_id ده (عشان لو اليوزر غير رأيه في الأندرويد)
-            \App\Models\SelectedMedication::where('medication_id', $recordMedication->medication_id)
-                ->update(['medication_id' => null]);
+                // مسح القديم
+                \App\Models\SelectedMedication::where('medication_id', $recordMedication->medication_id)->delete();
 
-            // ثالثاً: ربط الأدوية الجديدة المبعوتة حالا في الـ Array
-            if (!empty($medicationData['selected_medication_ids']) && is_array($medicationData['selected_medication_ids'])) {
-                \App\Models\SelectedMedication::whereIn('selected_med_id', $medicationData['selected_medication_ids'])
-                    ->update([
-                        'medication_id' => $recordMedication->medication_id
-                    ]);
+                // إدخال الجديد بالاسم
+                if (!empty($medicationData['medications']) && is_array($medicationData['medications'])) {
+                    foreach ($medicationData['medications'] as $medName) {
+                        \App\Models\SelectedMedication::create([
+                            'medication_id'   => $recordMedication->medication_id,
+                            'medication_name' => $medName,
+                            'user_id'         => $userId
+                        ]);
+                    }
+                }
+            } else {
+                $recordMedication = RecordMedication::where('log_id', $logId)->first();
+                if ($recordMedication) {
+                    \App\Models\SelectedMedication::where('medication_id', $recordMedication->medication_id)->delete();
+                    $recordMedication->delete();
+                }
             }
 
-            return [
-                'log' => $log->load(['recordGlucose', 'recordMeal', 'recordMedication.selectedMedications']),
-                'message' => $message
-            ];
-        });
+            return ['log_id' => $logId, 'message' => $message];
+    });
+
+        // 👈 جلب الداتا فريش برة الـ Transaction
+        $finalLog = Log::with(['recordGlucose', 'recordMeal', 'recordMedication.selectedMedications'])
+            ->where('log_id', $resultData['log_id'])
+            ->first();
 
         return response()->json([
             'success' => true,
-            'message' => $result['message'],
-            'data' => $result['log']
+            'message' => $resultData['message'],
+            'data' => $finalLog
         ], 200);
 
     } catch (\Exception $e) {
@@ -254,9 +266,10 @@ class CombinedLogController extends Controller
         ], 500);
     }
 }
+
 public function update(Request $request, Log $log)
 {
-    // 1. Validation نظيف ومطابق للـ store بالملي
+    // 1. Validation
     $validated = $request->validate([
         'log_title' => 'nullable|string',
         'log_description' => 'nullable|string',
@@ -275,14 +288,14 @@ public function update(Request $request, Log $log)
         'record_meal.notes' => 'nullable|string',
 
         'record_medication' => 'nullable|array',
-        'record_medication.selected_medication_ids' => 'nullable|array',
-        'record_medication.selected_medication_ids.*' => 'integer|exists:selected_medications,selected_med_id',
+        'record_medication.medications' => 'nullable|array',
+        'record_medication.medications.*' => 'string',
         'record_medication.notes' => 'nullable|string',
     ]);
 
     try {
-        // 2. Database Transaction عشان لو حاجة ضربت كله يـ Rollback
-        $result = DB::transaction(function () use ($validated, $log) {
+        // 2. Database Transaction
+        $logId = DB::transaction(function () use ($validated, $log) {
             $userId = Auth::id();
 
             // Update the parent Log record
@@ -305,7 +318,6 @@ public function update(Request $request, Log $log)
                     ]
                 );
             } else {
-                // لو الفرونت إند شال قراءة السكر، بنمسحها من الداتابيز
                 Glucose::where('log_id', $log->log_id)->delete();
             }
 
@@ -324,14 +336,12 @@ public function update(Request $request, Log $log)
                     ]
                 );
             } else {
-                // لو الفرونت إند مسح الوجبة، بنشيلها
                 Meal::where('log_id', $log->log_id)->delete();
             }
 
-            // ─── Handle RecordMedication (الأدوية) ───
+            // ─── Handle RecordMedication (البلدوزر) ───
             $medicationData = $validated['record_medication'] ?? null;
             if (!empty($medicationData)) {
-                // ا) بنعمل updateOrCreate للسطر الأب في جدول الـ record_medications
                 $recordMedication = RecordMedication::updateOrCreate(
                     ['log_id' => $log->log_id],
                     [
@@ -340,35 +350,37 @@ public function update(Request $request, Log $log)
                     ]
                 );
 
-                // ب) بنفك ربط أي أدوية قديمة كانت مربوطة بالـ medication_id ده
-                \App\Models\SelectedMedication::where('medication_id', $recordMedication->medication_id)
-                    ->update(['medication_id' => null]);
+                // فك وتنظيف
+                \App\Models\SelectedMedication::where('medication_id', $recordMedication->medication_id)->delete();
 
-                // ج) بنربط لستة الـ IDs الجديدة اللي الـ React باعتها حالا
-                if (!empty($medicationData['selected_medication_ids']) && is_array($medicationData['selected_medication_ids'])) {
-                    \App\Models\SelectedMedication::whereIn('selected_med_id', $medicationData['selected_medication_ids'])
-                        ->update([
-                            'medication_id' => $recordMedication->medication_id
+                // ربط جديد بالاسم
+                if (!empty($medicationData['medications']) && is_array($medicationData['medications'])) {
+                    foreach ($medicationData['medications'] as $medName) {
+                        \App\Models\SelectedMedication::create([
+                            'medication_id'   => $recordMedication->medication_id,
+                            'medication_name' => $medName,
+                            'user_id'         => $userId
                         ]);
+                    }
                 }
             } else {
-                // لو الـ React مبعتش أوبجكت الـ record_medication خالص، بنمسح الأب ونفك ربط الأدوية
                 $recordMedication = RecordMedication::where('log_id', $log->log_id)->first();
                 if ($recordMedication) {
-                    \App\Models\SelectedMedication::where('medication_id', $recordMedication->medication_id)
-                        ->update(['medication_id' => null]);
+                    \App\Models\SelectedMedication::where('medication_id', $recordMedication->medication_id)->delete();
                     $recordMedication->delete();
                 }
             }
 
-            // الـ Reload النظيف بالعلاقات المظبوطة بالملي للـ React
-            return $log->load(['recordGlucose', 'recordMeal', 'recordMedication.selectedMedications']);
-        });
+            return $log->log_id;
+    });
+
+        // 👈 جلب الداتا فريش برة الـ Transaction لضمان القراءة المكتملة
+        $finalLog = Log::with(['recordGlucose', 'recordMeal', 'recordMedication.selectedMedications'])->find($logId);
 
         return response()->json([
             'success' => true,
             'message' => 'Log updated successfully',
-            'data' => $result
+            'data' => $finalLog
         ], 200);
 
     } catch (\Exception $e) {
@@ -385,6 +397,13 @@ public function update(Request $request, Log $log)
     {
         try {
             DB::transaction(function () use ($log) {
+                // Log sync deletion before permanently deleting
+                DB::table('sync_deletions')->insert([
+                    'user_id' => $log->user_id,
+                    'log_id' => $log->log_id,
+                    'deleted_at' => now()
+                ]);
+
                 Glucose::where('log_id', $log->log_id)->delete();
                 Meal::where('log_id', $log->log_id)->delete();
                 RecordMedication::where('log_id', $log->log_id)->delete();
@@ -447,6 +466,8 @@ public function sync(Request $request)
         $query = Log::where('user_id', $userId)
             ->with(['recordGlucose', 'recordMeal', 'recordMedication.selectedMedications']);
 
+        $deletedLogIds = [];
+
         if ($request->has('last_sync') && !empty($request->input('last_sync'))) {
             $lastSyncRaw = $request->input('last_sync'); // جاي مثلاً: 2026-05-18 04:18:48
             
@@ -456,9 +477,23 @@ public function sync(Request $request)
                     ->setTimezone(config('app.timezone'));
                 
                 $query->where('updated_at', '>', $lastSync);
+
+                // Fetch deleted log IDs since last_sync
+                $deletedLogIds = DB::table('sync_deletions')
+                    ->where('user_id', $userId)
+                    ->where('deleted_at', '>', $lastSync)
+                    ->pluck('log_id')
+                    ->toArray();
+
             } catch (\Exception $e) {
                 // لو حصلت مشكلة في الـ parsing لأي سبب، يشتغل بالـ raw كـ fallback
                 $query->where('updated_at', '>', $lastSyncRaw);
+
+                $deletedLogIds = DB::table('sync_deletions')
+                    ->where('user_id', $userId)
+                    ->where('deleted_at', '>', $lastSyncRaw)
+                    ->pluck('log_id')
+                    ->toArray();
             }
         }
 
@@ -467,7 +502,10 @@ public function sync(Request $request)
         return response()->json([
             'success' => true,
             'message' => 'Sync data retrieved successfully',
-            'data' => $updatedLogs 
+            'data' => [
+                'upserted_logs' => $updatedLogs,
+                'deleted_log_ids' => $deletedLogIds
+            ]
         ], 200);
 
     } catch (\Exception $e) {
