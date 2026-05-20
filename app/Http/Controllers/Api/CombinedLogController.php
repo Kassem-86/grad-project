@@ -425,39 +425,38 @@ public function update(Request $request, Log $log)
 
     /**
      * Get a specific combined log with all associated records.
-     */
-    public function show(Request $request)
-    {
-        try {
-            $userId = Auth::id();
-            
-            // شيلنا الـ "as" ورجعنا للـ default الـ snake_case
-            $query = Log::where('user_id', $userId)
-                ->with(['recordGlucose', 'recordMeal', 'recordMedication']);
+     */public function show(Request $request, $date) 
+{
+    try {
+        $userId = Auth::id();
+        
+        // 👈 استخدمنا where عادية عشان تطابق التاريخ والوقت بالثانية بالملي زي ما جاي من الـ URL
+        $log = Log::where('user_id', $userId)
+            ->where('logged_at', $date) 
+            ->with(['recordGlucose', 'recordMeal', 'recordMedication.selectedMedications'])
+            ->first();
 
-            if ($request->has('date')) {
-                $date = $request->query('date');
-                $query->whereDate('logged_at', $date);
-            }
-            
-
-            $logs = $query->orderBy('logged_at', 'desc')->get();
-
-            return response()->json([
-                'success' => true,
-                'message' => $request->has('date') 
-                    ? "Logs retrieved successfully for date: " . $request->query('date')
-                    : 'All user logs retrieved successfully',
-                'data' => $logs 
-            ], 200);
-
-        } catch (\Exception $e) {
+        if (!$log) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
+                'message' => "No log found for the date: " . $date,
+                'data' => null
+            ], 404);
         }
+
+        return response()->json([
+            'success' => true,
+            'message' => "Log retrieved successfully for date: " . $date,
+            'data' => $log
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 500);
     }
+}
 public function sync(Request $request)
 {
     try {
