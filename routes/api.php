@@ -115,7 +115,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/conversations/{conversation_id}/mark-as-read', [ChatController::class, 'markAsRead']);
 
     // --- Reminders ---
-    Route::apiResource('reminders', ReminderController::class, ['only' => ['index', 'store']]);
+    Route::apiResource('reminders', ReminderController::class, ['only' => ['index', 'store', 'destroy']]);
     Route::put('/reminders/{reminder}/status', [ReminderController::class, 'updateStatus']);
 
     // --- Notifications ---
