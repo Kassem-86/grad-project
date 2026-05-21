@@ -11,6 +11,7 @@ class Meal extends Model
     protected $primaryKey = 'meal_id';
     public $timestamps = false;
 protected $touches = ['log'];
+// protected $hidden = ['log_id'];
     protected $fillable = [
         'log_id',
         'user_id',
@@ -20,7 +21,7 @@ protected $touches = ['log'];
         'meal_description',
         'notes',
     ];
-    protected $guarded = []; // 👈 ده معناه "اسمح بكتابة أي داتا جاية من غير حماية"
+    // protected $guarded = []; // 👈 ده معناه "اسمح بكتابة أي داتا جاية من غير حماية"
 
     protected $casts = [
         'total_carb' => 'float',

@@ -11,7 +11,7 @@ class Glucose extends Model
     protected $primaryKey = 'reading_id';
     public $timestamps = false;
     protected $touches = ['log'];
-
+// protected $hidden = ['log_id'];
     protected $fillable = [
         'log_id',
         'user_id',
