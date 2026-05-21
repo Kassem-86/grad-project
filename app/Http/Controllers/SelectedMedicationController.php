@@ -6,6 +6,7 @@ use App\Models\SelectedMedication;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class SelectedMedicationController extends Controller
 {
@@ -28,14 +29,14 @@ class SelectedMedicationController extends Controller
     /**
      * Get a specific selected medication.
      */
- public function show(): JsonResponse
+public function show(): JsonResponse
 {
     $userId = Auth::id();
 
-    // بنجيب الـ ID واسم الدواء الصافي فقط لليوزر الحالي وبدون تكرار كامل للسطر
+    // بنجيب أقل ID لكل اسم دواء فريد لليوزر ده، وبكده نضمن عدم تكرار الاسم نهائياً
     $medications = \App\Models\SelectedMedication::where('user_id', $userId)
-        ->select('selected_med_id', 'medication_name') // 👈 بنحدد الحقول دي بس
-        ->distinct('medication_name')                  // 👈 عشان نمنع تكرار نفس الاسم
+        ->select(DB::raw('MIN(selected_med_id) as selected_med_id'), 'medication_name')
+        ->groupBy('medication_name')
         ->get();
 
     return response()->json([
