@@ -31,9 +31,9 @@ class ReminderController extends Controller
     {
         $validated = $request->validate([
             'message_type' => 'required|in:medication,glucose_check,meal',
-            'medication_name' => 'required_if:message_type,medication|string|max:255',
-            'title' => 'required|string|max:255',
-            'time' => 'required|date_format:Y-m-d H:i:s',
+            'medication_name' => 'nullable|string|max:255',
+            'title' => 'nullable|string|max:255',
+            'time' => 'nullable|date_format:Y-m-d H:i:s',
         ]);
 
         $reminder = $request->user()->reminders()->create([
