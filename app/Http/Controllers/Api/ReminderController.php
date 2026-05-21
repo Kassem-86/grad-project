@@ -69,4 +69,18 @@ class ReminderController extends Controller
             'reminder' => new ReminderResource($reminder),
         ]);
     }
+
+    /**
+     * Delete a reminder.
+     */
+    public function destroy(Reminder $reminder): JsonResponse
+    {
+        $this->authorize('delete', $reminder);
+
+        $reminder->delete();
+
+        return response()->json([
+            'message' => 'Reminder deleted successfully',
+        ]);
+    }
 }
