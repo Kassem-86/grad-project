@@ -273,6 +273,7 @@ public function update(Request $request, Log $log)
     $validated = $request->validate([
         'log_title' => 'nullable|string',
         'log_description' => 'nullable|string',
+        'logged_at' => 'nullable|date_format:Y-m-d H:i:s',
 
         'record_glucose' => 'nullable|array',
         'record_glucose.glucose_level' => 'nullable|numeric',

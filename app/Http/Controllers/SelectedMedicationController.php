@@ -28,16 +28,22 @@ class SelectedMedicationController extends Controller
     /**
      * Get a specific selected medication.
      */
-    public function show(SelectedMedication $selectedMedication): JsonResponse
-    {
-        $this->authorize('view', $selectedMedication);
+ public function show(): JsonResponse
+{
+    $userId = Auth::id();
 
-        return response()->json([
-            'success' => true,
-            'data' => $selectedMedication->load('recordMedication'),
-        ]);
-    }
+    // بنجيب الـ ID واسم الدواء الصافي فقط لليوزر الحالي وبدون تكرار كامل للسطر
+    $medications = \App\Models\SelectedMedication::where('user_id', $userId)
+        ->select('selected_med_id', 'medication_name') // 👈 بنحدد الحقول دي بس
+        ->distinct('medication_name')                  // 👈 عشان نمنع تكرار نفس الاسم
+        ->get();
 
+    return response()->json([
+        'success' => true,
+        'message' => 'User medications retrieved successfully',
+        'data'    => $medications
+    ], 200);
+}
     /**
      * Update a selected medication.
      */
