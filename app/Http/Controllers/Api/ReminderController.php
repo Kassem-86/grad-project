@@ -30,12 +30,16 @@ class ReminderController extends Controller
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'message_type' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
+            'message_type' => 'required|in:medication,glucose_check,meal',
+            'medication_name' => 'required_if:message_type,medication|nullable|string|max:255',
             'time' => 'required|date_format:Y-m-d H:i:s',
         ]);
 
         $reminder = $request->user()->reminders()->create([
+            'title' => $validated['title'],
             'message_type' => $validated['message_type'],
+            'medication_name' => $validated['medication_name'] ?? null,
             'time' => $validated['time'],
             'status' => 'Still',
         ]);

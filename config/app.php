@@ -15,6 +15,8 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+
+    'timezone' => 'Africa/Cairo',
     /*
     |--------------------------------------------------------------------------
     | Application Environment

@@ -18,9 +18,14 @@ class ReminderFactory extends Factory
      */
     public function definition(): array
     {
+        $messageType = fake()->randomElement(['medication', 'glucose_check', 'meal']);
+        $medicationNames = ['Insulin Aspart', 'Metformin 500mg', 'Lisinopril 10mg', 'Atorvastatin 20mg', 'Aspirin 81mg'];
+
         return [
             'user_id' => 1,
-            'message_type' => fake()->randomElement(['Medicine', 'Water', 'Exercise', 'Glucose Check', 'Meal']),
+            'title' => fake()->sentence(3),
+            'message_type' => $messageType,
+            'medication_name' => $messageType === 'medication' ? fake()->randomElement($medicationNames) : null,
             'time' => fake()->dateTimeBetween('-1 hour', '+2 hours'),
             'status' => fake()->randomElement(['Still', 'Done', 'Skipped']),
         ];

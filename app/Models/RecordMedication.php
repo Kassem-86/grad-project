@@ -18,7 +18,6 @@ protected $touches = ['log'];
         'log_id',
         'user_id',
         'notes',
-        'medications',
     ];
     protected $hidden = ['selectedMedications'];
     protected $appends = ['medications'];

@@ -18,6 +18,7 @@ class ReminderResource extends JsonResource
             'id' => $this->id,
             'user_id' => $this->user_id,
             'message_type' => $this->message_type,
+            'medication_name' => $this->medication_name,
             'time' => $this->time->format('Y-m-d H:i:s'),
             'status' => $this->status,
             'created_at' => $this->created_at,

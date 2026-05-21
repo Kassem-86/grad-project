@@ -134,35 +134,41 @@ class GlucoseController extends Controller
         ]);
     }
 
-    public function getGlucoseHistory(): JsonResponse
+   public function getGlucoseHistory(Request $request): JsonResponse
 {
     try {
         $userId = Auth::id();
+        
+        // بناخد التاريخ من الـ Query Parameter (لو متبعتش، ممكن نخليه يرجع داتا اليوم أوتوماتيك)
+        $chosenDate = $request->query('date', now()->format('Y-m-d'));
 
-        // بنجيب القياسات بتاعة اليوزر، وبنعمل لود لعلاقة الـ log عشان ناخد منها الـ logged_at
+        // بنجيب القياسات ونفلتر بناءً على تاريخ الـ log الأب
         $glucoseReadings = Glucose::where('user_id', $userId)
+            ->whereHas('log', function($query) use ($chosenDate) {
+                // الفلتر السحري اللي بيطابق تاريخ اليوم بالظبط
+                $query->whereDate('logged_at', $chosenDate); 
+            })
             ->with(['log' => function($query) {
-                $query->select('log_id', 'logged_at'); // بناخد الـ keys المهمة بس عشان الـ Performance
+                $query->select('log_id', 'logged_at');
             }])
-            ->get()
-            // بنعمل ترتيب (Sort) بناءً على تاريخ الـ log الأب تصاعدياً (من القديم للجديد) عشان الـ Chart
+            ->get() // مية مية كدا get() مش first()
             ->sortBy(function($glucose) {
                 return $glucose->log ? $glucose->log->logged_at : now();
             })
-            ->values() // عشان يعيد ترتيب الـ indexes بتاعة الـ array من 0
+            ->values()
             ->map(function ($glucose) {
-                // بنشكل الـ Object بالظبط بالشكل اللي الأندرويد عايزه (Time & Value)
                 return [
                     'value' => (float) $glucose->glucose_level,
                     'time' => $glucose->log && $glucose->log->logged_at 
-          ? \Carbon\Carbon::parse($glucose->log->logged_at)->format('Y-m-d H:i:s') 
-          : null,
+                        ? \Carbon\Carbon::parse($glucose->log->logged_at)->format('Y-m-d H:i:s') 
+                        : null,
                     'reading_type' => $glucose->reading_type, 
                 ];
             });
 
         return response()->json([
             'success' => true,
+            'date_filtered' => $chosenDate, // عشان الـ Android يتأكد إنه نفس اليوم
             'data'    => $glucoseReadings
         ], 200);
 

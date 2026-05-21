@@ -116,44 +116,43 @@ class LogSeeder extends Seeder
     }
 
     /**
-     * Create medication records with medications array for a log
-     * Stores medications as a JSON array in the RecordMedication model
+     * Create medication records for a log
+     * Creates RecordMedication entry and links it to selected_medications
      */
     private function createMedicationRecords(Log $log, User $user, $loggedDate): void
     {
-        $medicationOptions = [
-            ['name' => 'Metformin', 'dosage' => '500mg', 'frequency' => 'Twice Daily'],
-            ['name' => 'Lisinopril', 'dosage' => '10mg', 'frequency' => 'Once Daily'],
-            ['name' => 'Atorvastatin', 'dosage' => '20mg', 'frequency' => 'Once Daily'],
-            ['name' => 'Aspirin', 'dosage' => '81mg', 'frequency' => 'Once Daily'],
-            ['name' => 'Vitamin D3', 'dosage' => '2000IU', 'frequency' => 'Once Daily'],
-            ['name' => 'Amlodipine', 'dosage' => '5mg', 'frequency' => 'Once Daily'],
-            ['name' => 'Omeprazole', 'dosage' => '20mg', 'frequency' => 'Once Daily'],
+        $medicationNames = [
+            'metformin',
+            'lisinopril',
+            'atorvastatin',
+            'aspirin',
+            'vitamin_d3',
+            'amlodipine',
+            'omeprazole',
         ];
 
-        // Randomly select 2-5 medications for this log
-        $selectedMedications = [];
-        $medicationCount = rand(2, 5);
-        $randomMeds = array_rand($medicationOptions, $medicationCount);
-        
-        // Handle case where array_rand returns a single value
-        if (!is_array($randomMeds)) {
-            $randomMeds = [$randomMeds];
-        }
-        
-        foreach ($randomMeds as $index) {
-            $selectedMedications[] = array_merge(
-                $medicationOptions[$index],
-                ['notes' => 'Regularly taken']
-            );
-        }
-
-        // Create a single RecordMedication entry with all medications as a JSON array
-        RecordMedication::create([
+        // Create RecordMedication record
+        $recordMedication = RecordMedication::create([
             'log_id' => $log->log_id,
             'user_id' => $user->id,
-            'medications' => $selectedMedications,
             'notes' => 'Daily medication routine for ' . $loggedDate->format('Y-m-d'),
         ]);
+
+        // Randomly select 2-5 medications and link them to this record
+        $medicationCount = rand(2, 5);
+        $selectedIndices = array_rand($medicationNames, $medicationCount);
+        
+        // Handle case where array_rand returns a single value
+        if (!is_array($selectedIndices)) {
+            $selectedIndices = [$selectedIndices];
+        }
+        
+        foreach ($selectedIndices as $index) {
+            SelectedMedication::create([
+                'medication_id' => $recordMedication->medication_id,
+                'user_id' => $user->id,
+                'medication_name' => $medicationNames[$index],
+            ]);
+        }
     }
 }
