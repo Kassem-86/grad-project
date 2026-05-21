@@ -95,11 +95,15 @@ class CombinedLogController extends Controller
 
                 if (!empty($medicationData['medications']) && is_array($medicationData['medications'])) {
                     foreach ($medicationData['medications'] as $medName) {
-                        \App\Models\SelectedMedication::create([
-                            'medication_id'   => $recordMedication->medication_id,
-                            'medication_name' => $medName,
-                            'user_id'         => $userId
-                        ]);
+                        \App\Models\SelectedMedication::firstOrCreate(
+                            [
+                                'user_id'         => $userId,
+                                'medication_name' => trim($medName),
+                            ],
+                            [
+                                'medication_id'   => $recordMedication->medication_id,
+                            ]
+                        );
                     }
                 }
             }
@@ -230,11 +234,15 @@ public function storeWithAndroidId(Request $request)
                 // إدخال الجديد بالاسم
                 if (!empty($medicationData['medications']) && is_array($medicationData['medications'])) {
                     foreach ($medicationData['medications'] as $medName) {
-                        \App\Models\SelectedMedication::create([
-                            'medication_id'   => $recordMedication->medication_id,
-                            'medication_name' => $medName,
-                            'user_id'         => $userId
-                        ]);
+                        \App\Models\SelectedMedication::firstOrCreate(
+                            [
+                                'user_id'         => $userId,
+                                'medication_name' => trim($medName),
+                            ],
+                            [
+                                'medication_id'   => $recordMedication->medication_id,
+                            ]
+                        );
                     }
                 }
             } else {
@@ -274,6 +282,7 @@ public function update(Request $request, Log $log)
         'log_title' => 'nullable|string',
         'log_description' => 'nullable|string',
         'logged_at' => 'nullable|date_format:Y-m-d H:i:s',
+        
 
         'record_glucose' => 'nullable|array',
         'record_glucose.glucose_level' => 'nullable|numeric',
@@ -376,12 +385,12 @@ public function update(Request $request, Log $log)
     });
 
         // 👈 جلب الداتا فريش برة الـ Transaction لضمان القراءة المكتملة
-        $finalLog = Log::with(['recordGlucose', 'recordMeal', 'recordMedication.selectedMedications'])->find($logId);
+            $finalLog = Log::with(['recordGlucose', 'recordMeal', 'recordMedication.selectedMedications'])->find($logId);
 
         return response()->json([
             'success' => true,
             'message' => 'Log updated successfully',
-            'data' => $finalLog
+            'data'    => $finalLog
         ], 200);
 
     } catch (\Exception $e) {

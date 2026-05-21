@@ -19,7 +19,7 @@ protected $touches = ['log'];
         'user_id',
         'notes',
     ];
-    protected $hidden = ['selectedMedications'];
+    protected $hidden = ['selectedMedications', 'log_id'];
     protected $appends = ['medications'];
 
     protected $guarded = []; // 👈 ده معناه "اسمح بكتابة أي داتا جاية من غير حماية"
