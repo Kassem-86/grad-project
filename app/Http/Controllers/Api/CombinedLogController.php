@@ -312,6 +312,7 @@ public function update(Request $request, Log $log)
             $log->update([
                 'log_title' => $validated['log_title'] ?? $log->log_title,
                 'log_description' => $validated['log_description'] ?? $log->log_description,
+                'logged_at' => $validated['logged_at'] ?? $log->logged_at,
             ]);
 
             // ─── Handle Glucose ───
