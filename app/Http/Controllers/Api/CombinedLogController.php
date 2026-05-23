@@ -84,7 +84,6 @@ class CombinedLogController extends Controller
                 ]);
             }
 
-            // ─── Handle RecordMedication ───
             $medicationData = $validated['record_medication'] ?? null;
             if (!empty($medicationData)) {
                 $recordMedication = RecordMedication::create([
@@ -94,17 +93,14 @@ class CombinedLogController extends Controller
                 ]);
 
                 if (!empty($medicationData['medications']) && is_array($medicationData['medications'])) {
+                    $medicationIds = [];
                     foreach ($medicationData['medications'] as $medName) {
-                        \App\Models\SelectedMedication::firstOrCreate(
-                            [
-                                'user_id'         => $userId,
-                                'medication_name' => trim($medName),
-                            ],
-                            [
-                                'medication_id'   => $recordMedication->medication_id,
-                            ]
+                        $med = \App\Models\SelectedMedication::firstOrCreate(
+                            ['user_id' => $userId, 'medication_name' => trim($medName)]
                         );
+                        $medicationIds[] = $med->selected_med_id;
                     }
+                    $recordMedication->selectedMedications()->sync($medicationIds);
                 }
             }
 
@@ -228,27 +224,22 @@ public function storeWithAndroidId(Request $request)
                     ['notes' => $medicationData['notes'] ?? null]
                 );
 
-                // مسح القديم
-                \App\Models\SelectedMedication::where('medication_id', $recordMedication->medication_id)->delete();
-
-                // إدخال الجديد بالاسم
                 if (!empty($medicationData['medications']) && is_array($medicationData['medications'])) {
+                    $medicationIds = [];
                     foreach ($medicationData['medications'] as $medName) {
-                        \App\Models\SelectedMedication::firstOrCreate(
-                            [
-                                'user_id'         => $userId,
-                                'medication_name' => trim($medName),
-                            ],
-                            [
-                                'medication_id'   => $recordMedication->medication_id,
-                            ]
+                        $med = \App\Models\SelectedMedication::firstOrCreate(
+                            ['user_id' => $userId, 'medication_name' => trim($medName)]
                         );
+                        $medicationIds[] = $med->selected_med_id;
                     }
+                    $recordMedication->selectedMedications()->sync($medicationIds);
+                } else {
+                    $recordMedication->selectedMedications()->detach();
                 }
             } else {
                 $recordMedication = RecordMedication::where('log_id', $logId)->first();
                 if ($recordMedication) {
-                    \App\Models\SelectedMedication::where('medication_id', $recordMedication->medication_id)->delete();
+                    $recordMedication->selectedMedications()->detach();
                     $recordMedication->delete();
                 }
             }
@@ -361,23 +352,22 @@ public function update(Request $request, Log $log)
                     ]
                 );
 
-                // فك وتنظيف
-                \App\Models\SelectedMedication::where('medication_id', $recordMedication->medication_id)->delete();
-
-                // ربط جديد بالاسم
                 if (!empty($medicationData['medications']) && is_array($medicationData['medications'])) {
+                    $medicationIds = [];
                     foreach ($medicationData['medications'] as $medName) {
-                        \App\Models\SelectedMedication::create([
-                            'medication_id'   => $recordMedication->medication_id,
-                            'medication_name' => $medName,
-                            'user_id'         => $userId
-                        ]);
+                        $med = \App\Models\SelectedMedication::firstOrCreate(
+                            ['user_id' => $userId, 'medication_name' => trim($medName)]
+                        );
+                        $medicationIds[] = $med->selected_med_id;
                     }
+                    $recordMedication->selectedMedications()->sync($medicationIds);
+                } else {
+                    $recordMedication->selectedMedications()->detach();
                 }
             } else {
                 $recordMedication = RecordMedication::where('log_id', $log->log_id)->first();
                 if ($recordMedication) {
-                    \App\Models\SelectedMedication::where('medication_id', $recordMedication->medication_id)->delete();
+                    $recordMedication->selectedMedications()->detach();
                     $recordMedication->delete();
                 }
             }

@@ -93,8 +93,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::apiResource('logs', CombinedLogController::class);
+     Route::put('logs', CombinedLogController::class, 'update');
     Route::post('/logs/android/', [CombinedLogController::class, 'storeWithAndroidId']);
     Route::get('/selected-medications', [SelectedMedicationController::class, 'show']);
+    Route::post('/selected-medications', [SelectedMedicationController::class, 'store']);
 
     Route::get('/glucose/history', [GlucoseController::class, 'getGlucoseHistory']);
     // Route::get('/logs/user', [CombinedLogController::class, 'show']);

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class SelectedMedication extends Model
 {
@@ -11,14 +12,13 @@ class SelectedMedication extends Model
     protected $primaryKey = 'selected_med_id';
 
     protected $fillable = [
-        'medication_id',
         'user_id',
         'medication_name',
     ];
 
-    public function recordMedication(): BelongsTo
+    public function recordMedications()
     {
-        return $this->belongsTo(RecordMedication::class, 'medication_id', 'medication_id');
+        return $this->belongsToMany(RecordMedication::class, 'medication_log_pivot', 'selected_medication_id', 'record_medication_id');
     }
 
     // public function log(): BelongsTo

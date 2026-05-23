@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class RecordMedication extends Model
 {
@@ -19,6 +20,7 @@ protected $touches = ['log'];
         'user_id',
         'notes',
     ];
+    
     protected $hidden = ['selectedMedications'];
     protected $appends = ['medications'];
 
@@ -38,7 +40,7 @@ protected $casts = [
 
     public function selectedMedications() 
     {
-        return $this->hasMany(SelectedMedication::class, 'medication_id', 'medication_id');
+        return $this->belongsToMany(SelectedMedication::class, 'medication_log_pivot', 'record_medication_id', 'selected_medication_id');
     }
   public function getMedicationsAttribute()
 {
@@ -50,4 +52,3 @@ protected $casts = [
     return $this->selectedMedications->pluck('medication_name')->all();
 }
 }
-
