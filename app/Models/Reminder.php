@@ -4,13 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Reminder extends Model
 {
     /** @use HasFactory<\Database\Factories\ReminderFactory> */
-    use HasFactory;
+    use HasFactory, HasUuids;
+
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     // Enum values for message_type
     public const MESSAGE_TYPES = [
@@ -44,7 +48,7 @@ class Reminder extends Model
             \Illuminate\Support\Facades\DB::table('sync_deletions')->insert([
                 'user_id' => $reminder->user_id,
                 'table_name' => 'reminders',
-                'record_id' => (string) $reminder->id,
+                'record_id' => (string) $reminder->getKey(),
                 'deleted_at' => now(),
             ]);
         });

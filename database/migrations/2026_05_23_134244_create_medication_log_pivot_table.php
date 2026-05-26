@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('medication_log_pivot', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('record_medication_id');
-            $table->unsignedBigInteger('selected_medication_id');
+            $table->uuid('selected_medication_id');
             $table->timestamps();
 
             $table->foreign('record_medication_id')->references('medication_id')->on('record_medications')->onDelete('cascade');

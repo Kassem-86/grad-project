@@ -5,11 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class SelectedMedication extends Model
 {
+    use HasUuids;
+
     protected $table = 'selected_medications';
     protected $primaryKey = 'selected_med_id';
+    
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     protected $fillable = [
         'user_id',
@@ -24,7 +30,7 @@ class SelectedMedication extends Model
             \Illuminate\Support\Facades\DB::table('sync_deletions')->insert([
                 'user_id' => $selectedMedication->user_id,
                 'table_name' => 'selected_medications',
-                'record_id' => (string) $selectedMedication->selected_med_id,
+                'record_id' => (string) $selectedMedication->getKey(),
                 'deleted_at' => now(),
             ]);
         });

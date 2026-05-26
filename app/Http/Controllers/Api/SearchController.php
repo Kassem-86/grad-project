@@ -27,7 +27,7 @@ class SearchController extends Controller
     $usersQuery = User::query();
     
 
-    
+
     $usersQuery->where(function ($q) use ($query) {
         $q->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$query}%"]);
         
@@ -46,7 +46,7 @@ class SearchController extends Controller
                    ->where('id', '!=', $request->user()->id);
     }
 
-    $users = $usersQuery->limit(5)->get();
+    $users = $usersQuery->limit(10)->get();
 
     // 2. بحث البوستات مع Pagination
     $postsQuery = Post::with(['user', 'images']) // بنحمل الأساسيات بس
