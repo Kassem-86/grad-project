@@ -109,6 +109,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::prefix('messages')->group(function () {
+        Route::get('/chat/{receiver_id}', [ChatController::class, 'index']);
         Route::post('/', [ChatController::class, 'store']);
         Route::put('/{id}', [ChatController::class, 'updateMessage']);
         Route::delete('/{id}', [ChatController::class, 'deleteMessage']);

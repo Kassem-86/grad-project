@@ -149,4 +149,41 @@ public function show(): JsonResponse
         ], 500);
     }
 }
+
+    public function sync(\Illuminate\Http\Request $request)
+    {
+        $userId = $request->user()->id;
+        $lastSync = $request->input('last_sync');
+        $lastSyncTime = null;
+
+        if ($lastSync) {
+            $lastSyncTime = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $lastSync, 'Africa/Cairo')
+                ->setTimezone(config('app.timezone'));
+        }
+
+        // Fetch Upserted Medications
+        $medicationsQuery = \App\Models\SelectedMedication::where('user_id', $userId);
+
+        if ($lastSyncTime) {
+            $medicationsQuery->where('updated_at', '>', $lastSyncTime);
+        }
+
+        $upsertedMedications = $medicationsQuery->get();
+
+        // Fetch Deleted Medication IDs
+        $deletedQuery = \Illuminate\Support\Facades\DB::table('sync_deletions')
+            ->where('user_id', $userId)
+            ->where('table_name', 'selected_medications');
+
+        if ($lastSyncTime) {
+            $deletedQuery->where('deleted_at', '>', $lastSyncTime);
+        }
+
+        $deletedMedicationIds = $deletedQuery->pluck('record_id');
+
+        return response()->json([
+            'upserted_medications' => $upsertedMedications,
+            'deleted_medication_ids' => $deletedMedicationIds,
+        ], 200);
+    }
 }

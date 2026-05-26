@@ -398,13 +398,7 @@ public function update(Request $request, Log $log)
     {
         try {
             DB::transaction(function () use ($log) {
-                // Log sync deletion before permanently deleting
-                DB::table('sync_deletions')->insert([
-                    'user_id' => $log->user_id,
-                    'log_id' => $log->log_id,
-                    'deleted_at' => now()
-                ]);
-
+                // Models now handle sync_deletions via model boot methods
                 Glucose::where('log_id', $log->log_id)->delete();
                 Meal::where('log_id', $log->log_id)->delete();
                 RecordMedication::where('log_id', $log->log_id)->delete();
@@ -458,63 +452,43 @@ public function update(Request $request, Log $log)
         ], 500);
     }
 }
-public function sync(Request $request)
-{
-    try {
-        $userId = Auth::id();
-        
-        $query = Log::where('user_id', $userId)
-            ->with(['recordGlucose', 'recordMeal', 'recordMedication.selectedMedications']);
+public function sync(\Illuminate\Http\Request $request)
+    {
+        $userId = $request->user()->id;
+        $lastSync = $request->input('last_sync');
+        $lastSyncTime = null;
 
-        $deletedLogIds = [];
-
-        if ($request->has('last_sync') && !empty($request->input('last_sync'))) {
-            $lastSyncRaw = $request->input('last_sync'); // جاي مثلاً: 2026-05-18 04:18:48
-            
-            try {
-                // التعديل السحري: بنفهمه إن الوقت ده بتوقيت مصر، وحوله للـ timezone بتاعة السيرفر (UTC مثلاً) عشان المقارنة في الداتابيز تكون عادلة
-                $lastSync = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $lastSyncRaw, 'Africa/Cairo')
-                    ->setTimezone(config('app.timezone'));
-                
-                $query->where('updated_at', '>', $lastSync);
-
-                // Fetch deleted log IDs since last_sync
-                $deletedLogIds = DB::table('sync_deletions')
-                    ->where('user_id', $userId)
-                    ->where('deleted_at', '>', $lastSync)
-                    ->pluck('log_id')
-                    ->toArray();
-
-            } catch (\Exception $e) {
-                // لو حصلت مشكلة في الـ parsing لأي سبب، يشتغل بالـ raw كـ fallback
-                $query->where('updated_at', '>', $lastSyncRaw);
-
-                $deletedLogIds = DB::table('sync_deletions')
-                    ->where('user_id', $userId)
-                    ->where('deleted_at', '>', $lastSyncRaw)
-                    ->pluck('log_id')
-                    ->toArray();
-            }
+        if ($lastSync) {
+            $lastSyncTime = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $lastSync, 'Africa/Cairo')
+                ->setTimezone(config('app.timezone'));
         }
 
-        $updatedLogs = $query->orderBy('updated_at', 'asc')->get();
+        // Fetch Upserted Logs
+        $logsQuery = \App\Models\Log::where('user_id', $userId)
+            ->with(['recordGlucose', 'recordMeal', 'recordMedication.selectedMedications']);
+
+        if ($lastSyncTime) {
+            $logsQuery->where('updated_at', '>', $lastSyncTime);
+        }
+
+        $upsertedLogs = $logsQuery->get();
+
+        // Fetch Deleted Log IDs
+        $deletedQuery = \Illuminate\Support\Facades\DB::table('sync_deletions')
+            ->where('user_id', $userId)
+            ->where('table_name', 'logs');
+
+        if ($lastSyncTime) {
+            $deletedQuery->where('deleted_at', '>', $lastSyncTime);
+        }
+
+        $deletedLogIds = $deletedQuery->pluck('record_id');
 
         return response()->json([
-            'success' => true,
-            'message' => 'Sync data retrieved successfully',
-            'data' => [
-                'upserted_logs' => $updatedLogs,
-                'deleted_log_ids' => $deletedLogIds
-            ]
+            'upserted_logs' => $upsertedLogs,
+            'deleted_log_ids' => $deletedLogIds,
         ], 200);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'success' => false,
-            'message' => $e->getMessage()
-        ], 500);
-    }
-}    public function getLogById($log_id)
+    }    public function getLogById($log_id)
     {
         try {
             $userId = Auth::id();

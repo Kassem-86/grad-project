@@ -27,6 +27,20 @@ class Log extends Model
         'logged_at' => 'datetime',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleted(function ($log) {
+            \Illuminate\Support\Facades\DB::table('sync_deletions')->insert([
+                'user_id' => $log->user_id,
+                'table_name' => 'logs',
+                'record_id' => (string) $log->log_id,
+                'deleted_at' => now(),
+            ]);
+        });
+    }
+
     /**
      * تعديل: قراءة سكر واحدة فقط لكل لوج
      */

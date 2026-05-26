@@ -34,6 +34,20 @@ class Reminder extends Model
         'updated_at' => 'datetime',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleted(function ($reminder) {
+            \Illuminate\Support\Facades\DB::table('sync_deletions')->insert([
+                'user_id' => $reminder->user_id,
+                'table_name' => 'reminders',
+                'record_id' => (string) $reminder->reminder_id ?? $reminder->id,
+                'deleted_at' => now(),
+            ]);
+        });
+    }
+
     /**
      * Get the user that owns the reminder.
      */

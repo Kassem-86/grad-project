@@ -43,7 +43,7 @@ class MessageSent implements ShouldBroadcast
         $this->receiverId = $receiverId;
 
         return [
-            new Channel('chat.' . $receiverId),
+            new PrivateChannel('chat.' . $receiverId),
         ];
     }
 
@@ -52,7 +52,7 @@ class MessageSent implements ShouldBroadcast
      */
     public function broadcastAs(): string
     {
-        return 'message.sent';
+        return 'MessageSent';
     }
 
     /**
@@ -63,7 +63,11 @@ class MessageSent implements ShouldBroadcast
     public function broadcastWith(): array
     {
         return [
-            'message' => new MessageResource($this->message),
+            'message_id'   => $this->message->id,
+            'sender_id'    => $this->message->sender_id,
+            'receiver_id'  => $this->receiverId,
+            'message_text' => $this->message->message,
+            'created_at'   => $this->message->created_at->toISOString(),
         ];
     }
 }

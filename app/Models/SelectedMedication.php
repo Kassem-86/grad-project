@@ -16,6 +16,20 @@ class SelectedMedication extends Model
         'medication_name',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::deleted(function ($selectedMedication) {
+            \Illuminate\Support\Facades\DB::table('sync_deletions')->insert([
+                'user_id' => $selectedMedication->user_id,
+                'table_name' => 'selected_medications',
+                'record_id' => (string) $selectedMedication->selected_med_id,
+                'deleted_at' => now(),
+            ]);
+        });
+    }
+
     public function recordMedications()
     {
         return $this->belongsToMany(RecordMedication::class, 'medication_log_pivot', 'selected_medication_id', 'record_medication_id');

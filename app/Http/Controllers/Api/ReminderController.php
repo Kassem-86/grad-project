@@ -8,6 +8,8 @@ use App\Models\Reminder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\DB;
+use Kreait\Firebase\Auth;
 
 class ReminderController extends Controller
 {
@@ -83,4 +85,42 @@ class ReminderController extends Controller
             'message' => 'Reminder deleted successfully',
         ]);
     }
+
+    public function sync(\Illuminate\Http\Request $request)
+    {
+        $userId = $request->user()->id;
+        $lastSync = $request->input('last_sync');
+        $lastSyncTime = null;
+
+        if ($lastSync) {
+            $lastSyncTime = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $lastSync, 'Africa/Cairo')
+                ->setTimezone(config('app.timezone'));
+        }
+
+        // Fetch Upserted Reminders
+        $remindersQuery = \App\Models\Reminder::where('user_id', $userId);
+
+        if ($lastSyncTime) {
+            $remindersQuery->where('updated_at', '>', $lastSyncTime);
+        }
+
+        $upsertedReminders = $remindersQuery->get();
+
+        // Fetch Deleted Reminder IDs
+        $deletedQuery = \Illuminate\Support\Facades\DB::table('sync_deletions')
+            ->where('user_id', $userId)
+            ->where('table_name', 'reminders');
+
+        if ($lastSyncTime) {
+            $deletedQuery->where('deleted_at', '>', $lastSyncTime);
+        }
+
+        $deletedReminderIds = $deletedQuery->pluck('record_id');
+
+        return response()->json([
+            'upserted_reminders' => $upsertedReminders,
+            'deleted_reminder_ids' => $deletedReminderIds,
+        ], 200);
+    }
 }
+

@@ -22,6 +22,35 @@ use Illuminate\Support\Facades\Validator;
 class ChatController extends Controller
 {
     /**
+     * Get old messages when opening a chat.
+     */
+    public function index($receiver_id): JsonResponse
+    {
+        $authId = Auth::id();
+
+        // Find the conversation ID between the two users
+        $conversation = Conversation::where(function ($query) use ($authId, $receiver_id) {
+            $query->where('user1_id', $authId)->where('user2_id', $receiver_id);
+        })->orWhere(function ($query) use ($authId, $receiver_id) {
+            $query->where('user1_id', $receiver_id)->where('user2_id', $authId);
+        })->first();
+
+        if (!$conversation) {
+            return response()->json([
+                'success' => true,
+                'data' => []
+            ]);
+        }
+
+        // Fetch paginated messages sorted by created_at ascending
+        $messages = \App\Models\ChatMessage::where('conversation_id', $conversation->id)
+            ->orderBy('created_at', 'asc')
+            ->paginate(50); // or any limit you prefer
+
+        return response()->json($messages);
+    }
+
+    /**
      * Store a new message in a conversation.
      */public function store(Request $request): JsonResponse
     {
