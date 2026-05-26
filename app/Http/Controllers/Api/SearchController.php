@@ -26,6 +26,8 @@ class SearchController extends Controller
     // 1. بحث اليوزرز (نفس الـ Logic بتاعك مع إضافة تصفية بسيطة)
     $usersQuery = User::query();
     
+
+    
     $usersQuery->where(function ($q) use ($query) {
         $q->whereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$query}%"]);
         

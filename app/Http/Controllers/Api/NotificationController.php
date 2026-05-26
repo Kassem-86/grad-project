@@ -14,7 +14,7 @@ class NotificationController extends Controller
      */
     public function index(Request $request)
     {
-        $user = auth()->user();
+        $user = auth('sanctum')->user();
 
         // Fetch notifications ordered by newest
         $notifications = Notification::where('user_id', $user->id)
@@ -42,7 +42,7 @@ class NotificationController extends Controller
      */
     public function markAsRead($id)
     {
-        $user = auth()->user();
+        $user = auth('sanctum')->user();
 
         $notification = Notification::where('user_id', $user->id)
             ->where('notification_id', $id)
@@ -50,7 +50,7 @@ class NotificationController extends Controller
 
         if (!$notification) {
             return response()->json([
-                'success' => false,
+                'success' => false,                                                      
                 'message' => 'Notification not found or unauthorized'
             ], 404);
         }
@@ -74,7 +74,7 @@ class NotificationController extends Controller
      */
     public function markAllAsRead()
     {
-        $user = auth()->user();
+        $user = auth('sanctum')->user();
 
         Notification::where('user_id', $user->id)
             ->where('is_read', false)

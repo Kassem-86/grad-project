@@ -26,6 +26,8 @@ class Reminder extends Model
         'medication_name',
         'time',
         'status',
+        'record_id'
+        
     ];
 
     protected $casts = [
@@ -42,7 +44,7 @@ class Reminder extends Model
             \Illuminate\Support\Facades\DB::table('sync_deletions')->insert([
                 'user_id' => $reminder->user_id,
                 'table_name' => 'reminders',
-                'record_id' => (string) $reminder->reminder_id ?? $reminder->id,
+                'record_id' => (string) $reminder->id,
                 'deleted_at' => now(),
             ]);
         });

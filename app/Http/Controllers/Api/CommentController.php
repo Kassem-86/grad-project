@@ -99,7 +99,7 @@ public function store(Request $request, Post $post)
     public function destroy(Comment $comment): JsonResponse
     {
         // Get the authenticated user using the request
-        $user = auth()->user();
+        $user = auth('sanctum')->user();
         
         if (!$user) {
             return response()->json(['message' => 'Unauthorized'], 401);
