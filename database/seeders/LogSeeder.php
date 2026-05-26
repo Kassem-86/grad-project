@@ -26,7 +26,12 @@ class LogSeeder extends Seeder
             return;
         }
 
-        // Create unified health logs for each user
+        // First, seed selected medications for each user (done once per user, not per log)
+        foreach ($users as $user) {
+            $this->seedSelectedMedications($user);
+        }
+
+        // Then create unified health logs for each user
         foreach ($users as $user) {
             // Create 5-10 unified logs per user with different dates
             $logsPerUser = rand(5, 10);
@@ -36,6 +41,44 @@ class LogSeeder extends Seeder
         }
 
         $this->command->info('Unified logs and related health records seeded successfully!');
+    }
+
+    /**
+     * Seed selected medications for a user (done once per user)
+     */
+    private function seedSelectedMedications(User $user): void
+    {
+        $medicationNames = [
+            'metformin',
+            'lisinopril',
+            'atorvastatin',
+            'aspirin',
+            'vitamin_d3',
+            'amlodipine',
+            'omeprazole',
+        ];
+
+        // Select 3-5 random medications for this user
+        $medicationCount = rand(3, 5);
+        $selectedIndices = array_rand($medicationNames, $medicationCount);
+        
+        // Handle case where array_rand returns a single value
+        if (!is_array($selectedIndices)) {
+            $selectedIndices = [$selectedIndices];
+        }
+        
+        foreach ($selectedIndices as $index) {
+            SelectedMedication::firstOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'medication_name' => $medicationNames[$index],
+                ],
+                [
+                    'user_id' => $user->id,
+                    'medication_name' => $medicationNames[$index],
+                ]
+            );
+        }
     }
 
     /**
@@ -117,42 +160,18 @@ class LogSeeder extends Seeder
 
     /**
      * Create medication records for a log
-     * Creates RecordMedication entry and links it to selected_medications
+     * Simply creates the RecordMedication entry (pivot table linking is optional)
      */
     private function createMedicationRecords(Log $log, User $user, $loggedDate): void
     {
-        $medicationNames = [
-            'metformin',
-            'lisinopril',
-            'atorvastatin',
-            'aspirin',
-            'vitamin_d3',
-            'amlodipine',
-            'omeprazole',
-        ];
-
         // Create RecordMedication record
-        $recordMedication = RecordMedication::create([
+        RecordMedication::create([
             'log_id' => $log->log_id,
             'user_id' => $user->id,
             'notes' => 'Daily medication routine for ' . $loggedDate->format('Y-m-d'),
         ]);
-
-        // Randomly select 2-5 medications and link them to this record
-        $medicationCount = rand(2, 5);
-        $selectedIndices = array_rand($medicationNames, $medicationCount);
         
-        // Handle case where array_rand returns a single value
-        if (!is_array($selectedIndices)) {
-            $selectedIndices = [$selectedIndices];
-        }
-        
-        foreach ($selectedIndices as $index) {
-            SelectedMedication::create([
-                'medication_id' => $recordMedication->medication_id,
-                'user_id' => $user->id,
-                'medication_name' => $medicationNames[$index],
-            ]);
-        }
+        // Note: Pivot table linking via medication_log_pivot is optional and can be 
+        // seeded separately if needed. The RecordMedication record alone is sufficient.
     }
 }

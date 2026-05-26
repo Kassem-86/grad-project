@@ -93,7 +93,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::apiResource('logs', CombinedLogController::class);
-     Route::put('logs', CombinedLogController::class, 'update');
+    //  Route::put('logs', CombinedLogController::class, 'update');
     Route::post('/logs/android/', [CombinedLogController::class, 'storeWithAndroidId']);
     Route::get('/selected-medications', [SelectedMedicationController::class, 'show']);
     Route::post('/selected-medications', [SelectedMedicationController::class, 'store']);
@@ -141,11 +141,77 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
     // ... الـ routes القديمة
+
+
+    Route::get('/test-fcm', function() {
+    // 1. جيب يوزر عندك يكون مسجل device_token فعلي
+    $user = \App\Models\User::whereNotNull('device_token')->first();
+    
+    if (!$user) {
+        return response()->json(['error' => 'No user found with a device token'], 404);
+    }
+
+    // 2. نقرأ ملف الـ JSON
+    $filePath = storage_path('app/firebase_credentials.json');
+    $credentials = json_decode(file_get_contents($filePath), true);
+    $projectId = $credentials['project_id'];
+
+    // 3. نولد الـ Token (هنستعين بنفس الـ Logic اللي جوه الـ Controller)
+    // لتسهيل التست هنا، هفترض إنك هتعمل الـ JWT سريعا أو تنده على الميثود لو عاملها في Helper
+    // لكن الأسهل خد السطور دي عشان تشوف النتيجة علطول:
+    
+    $privateKey = $credentials['private_key'];
+    $clientEmail = $credentials['client_email'];
+    $header = json_encode(['alg' => 'RS256', 'typ' => 'JWT']);
+    $now = time();
+    $payload = json_encode([
+        'iss' => $clientEmail,
+        'scope' => 'https://www.googleapis.com/auth/firebase.messaging',
+        'aud' => 'https://oauth2.googleapis.com/token',
+        'exp' => $now + 3600,
+        'iat' => $now
+    ]);
+    $base64UrlHeader = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
+    $base64UrlPayload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($payload));
+    $signature = '';
+    openssl_sign($base64UrlHeader . "." . $base64UrlPayload, $signature, $privateKey, OPENSSL_ALGO_SHA256);
+    $base64UrlSignature = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($signature));
+    $jwt = $base64UrlHeader . "." . $base64UrlPayload . "." . $base64UrlSignature;
+
+    $tokenResponse = Http::asForm()->post('https://oauth2.googleapis.com/token', [
+        'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+        'assertion' => $jwt,
+    ]);
+    
+    $accessToken = $tokenResponse->json()['access_token'] ?? null;
+
+    // 4. نبعت لـ Firebase ونرجع الـ Response الأصلي بتاع جوجل للـ Postman
+    $url = "https://fcm.googleapis.com/v1/projects/{$projectId}/messages:send";
+    $fcmResponse = Http::withToken($accessToken)->post($url, [
+        'message' => [
+            'token' => $user->device_token,
+            'notification' => [
+                'title' => 'Test Notification',
+                'body' => 'Hello from Laravel Postman Test!',
+            ],
+        ]
+    ]);
+
+    // هنرجع رد جوجل بالملّي للبوست مان
+    return response()->json([
+        'google_status' => $fcmResponse->status(),
+        'google_response' => $fcmResponse->json()
+    ]);
+});
   
 });
 /*
 |--------------------------------------------------------------------------
 | Broadcasting Routes (Reverb)
 |--------------------------------------------------------------------------
+
+
+
+
 */
 Broadcast::routes(['middleware' => ['auth:sanctum']]);

@@ -65,32 +65,29 @@ class CommentController extends Controller
     /**
      * Store a newly created comment.
      */
-    public function store(Request $request, Post $post)
+public function store(Request $request, Post $post)
     {
         $request->validate([
             'comment_text' => 'required|string',
         ]);
 
+        // 1. كارييت الكومنت الجديد في الداتابيز
         $comment = $post->comments()->create([
             'comment_text' => $request->comment_text,
             'user_id' => auth('sanctum')->id(),
         ]);
+        
         $comment->load(['user', 'likes.user']);
         
         // Set is_liked to false since it's a new comment
         $comment->is_liked = false;
 
-        // Trigger notification for post owner (only if commenter is not the post owner)
+        // 2. 🚀 السطر السحري: بننده الميثود اللي في LikeController عشان تشغل الـ Local DB والـ Firebase سوا
         if ((int) $post->user_id !== (int) auth('sanctum')->id()) {
-            \App\Models\Notification::create([
-                'user_id' => $post->user_id,
-                'title' => 'New Comment',
-                'message' => auth()->user()->first_name . ' commented on your post.',
-                'type' => 'community',
-                'reference_id' => $post->id,
-            ]);
+            app(\App\Http\Controllers\Api\LikeController::class)->togglePostNotificationComment($request, $post);
         }
 
+        // 3. رجّع الـ Response للفرونت إند
         return response()->json([
             'message' => 'Comment added successfully',
             'comment' => new CommentResource($comment)

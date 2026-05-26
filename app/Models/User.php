@@ -150,6 +150,7 @@ class User extends Authenticatable
         'target_glucose_range',
         'min_glucose',
         'emergency_contact',
+        'device_token'
     ];
 
     /**
