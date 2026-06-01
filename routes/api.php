@@ -1,6 +1,7 @@
 <?php
 use App\Http\Controllers\GlucoseController;
 use App\Http\Controllers\SelectedMedicationController;
+use App\Http\Controllers\ChatbotController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\{
@@ -57,6 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
     Route::get('/user/profile/{id}', [UserController::class, 'showProfile']);
+    Route::post('/chatbot/ask', [App\Http\Controllers\ChatbotController::class, 'askChatbot']);// Route عشان تسأل الشات بوت (ممكن تحطه في مكان تاني لو حابب)
     // Preferred standardized endpoint for retrieving the authenticated user
     Route::get('/me', [AuthController::class, 'me']);
     Route::delete('/delete-me', [AuthController::class, 'deleteUser']);
@@ -111,6 +113,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [ConversationController::class, 'index']);
         Route::get('/{conversation_id}', [ConversationController::class, 'show']);
     });
+
+    // --- Chatbot ---
+    Route::post('/chatbot/ask', [ChatbotController::class, 'askChatbot']);
 
     Route::prefix('messages')->group(function () {
         Route::get('/chat/{receiver_id}', [ChatController::class, 'index']);

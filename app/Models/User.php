@@ -229,6 +229,14 @@ public function friends(): \Illuminate\Support\Collection // 👈 غيرنا د�
     }
 
     /**
+     * Get the chatbot messages for the user.
+     */
+    public function chatbotMessages(): HasMany
+    {
+        return $this->hasMany(Chatbot::class, 'user_id');
+    }
+
+    /**
      * Get a merged list of all user IDs that this user should be restricted from.
      * Includes people I blocked and people who blocked me.
      */
