@@ -59,6 +59,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
     Route::get('/user/profile/{id}', [UserController::class, 'showProfile']);
     Route::post('/chatbot/ask', [App\Http\Controllers\ChatbotController::class, 'askChatbot']);// Route عشان تسأل الشات بوت (ممكن تحطه في مكان تاني لو حابب)
+    Route::get('/chatbot/history', [ChatbotController::class, 'getChatHistory']);
     // Preferred standardized endpoint for retrieving the authenticated user
     Route::get('/me', [AuthController::class, 'me']);
     Route::delete('/delete-me', [AuthController::class, 'deleteUser']);

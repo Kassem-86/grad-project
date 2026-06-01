@@ -17,23 +17,16 @@ class ChatbotController extends Controller
             'message' => 'required|string',
         ]);
 
-        $user = auth('sanctum')->user();
+       $user = auth('sanctum')->user();
 
         if (!$user) {
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
 
-        // 2. حفظ رسالة المستخدم في جدول الـ chatbot
-        Chatbot::create([
-            'user_id' => $user->id,
-            'role'    => 'user',
-            'content' => $request->message,
-        ]);
-
-        // 3. سحب الـ History (آخر 12 رسالة) وترتيبهم صح
+        // 🔄 الخطوة 2 بقيت (سحب الـ History الأول): سحب آخر 12 رسالة قديمة "قبل" ما نسيف الجديدة
         $historyData = Chatbot::where('user_id', $user->id)
             ->latest()
-            ->take(6)
+            ->take(12)
             ->get()
             ->reverse()
             ->map(function ($chat) {
@@ -42,6 +35,17 @@ class ChatbotController extends Controller
                     'content' => $chat->content,
                 ];
             })->values()->toArray();
+
+        // 🔄 الخطوة 3 بقيت (حفظ الرسالة الحالية): بنسيفها بعد ما خدنا الـ History خلاص عشان متظهرش فيه مرتين
+        Chatbot::create([
+            'user_id' => $user->id,
+            'role'    => 'user',
+            'content' => $request->message,
+        ]);        
+
+        // -------------------------------------------------------------
+        // 🔥 تجميع الـ PayloadMedical من قاعدة البيانات عندك تلقائياً 🔥
+        // -------------------------------------------------------------
 
         // -------------------------------------------------------------
         // 🔥 تجميع الـ PayloadMedical من قاعدة البيانات عندك تلقائياً 🔥
@@ -168,4 +172,24 @@ $response = Http::timeout(190)->withHeaders([
             return response()->json(['error' => 'An error occurred while contacting AI server.'], 500);
         }
     }
+
+
+    public function getChatHistory()
+{
+    $user = auth('sanctum')->user();
+
+    if (!$user) {
+        return response()->json(['error' => 'Unauthenticated.'], 401);
+    }
+
+    // سحب كل رسائل الشات الخاصة باليوزر مترتبة من الأقدم للأحدث عشان تتعرض صح في الشاشة
+    $chatHistory = Chatbot::where('user_id', $user->id)
+        ->orderBy('created_at', 'asc') // من الأقدم للأحدث عشان الـ UI يرصهم صح
+        ->get(['role', 'content', 'created_at']); // سحبنا الحقول المهمة بس
+
+    return response()->json([
+        'success' => true,
+        'history' => $chatHistory
+    ], 200);
+}
 }
