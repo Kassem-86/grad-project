@@ -84,6 +84,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/friends/{id}', [FriendshipController::class, 'removeFriend']);
     Route::post('/friends/{id}/block', [BlockController::class, 'block']);
     Route::delete('/friends/{id}/unblock', [BlockController::class, 'unblock']);
+    Route::get('/user/blocks', [BlockController::class, 'index']);
 
     // --- Health Tracking (Resources) ---
 
