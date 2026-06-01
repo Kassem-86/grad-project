@@ -108,22 +108,22 @@ class User extends Authenticatable
 
     /**
      * All accepted friends for this user, in either direction.
-     */
-    public function friends(): EloquentCollection
-    {
-        return $this->acceptedOutgoingFriendships()
-            ->with('friend')
-            ->get()
-            ->pluck('friend')
-            ->merge(
-                $this->acceptedIncomingFriendships()
-                    ->with('user')
-                    ->get()
-                    ->pluck('user')
-            )
-            ->unique('id')
-            ->values();
-    }
+     */// جوه ملف app/Models/User.php
+public function friends(): \Illuminate\Support\Collection // 👈 غيرنا دي هنا عشان تتوافق مع الـ merge والـ pluck
+{
+    return $this->acceptedOutgoingFriendships()
+        ->with('friend')
+        ->get()
+        ->pluck('friend')
+        ->merge(
+            $this->acceptedIncomingFriendships()
+                ->with('user')
+                ->get()
+                ->pluck('user')
+        )
+        ->unique('id')
+        ->values();
+}
 
     /**
      * The attributes that are mass assignable.
