@@ -85,6 +85,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/comments/{comment}/likes', [LikeController::class, 'getCommentLikes']);
 
     // --- Community: Friendships ---
+
     Route::post('/friends/{id}/request', [FriendshipController::class, 'sendRequest']);
     Route::post('/friends/{id}/accept', [FriendshipController::class, 'acceptRequest']);
     Route::delete('/friends/{id}/cancel', [FriendshipController::class, 'cancelRequest']);
@@ -92,6 +93,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/friends/{id}/block', [BlockController::class, 'block']);
     Route::delete('/friends/{id}/unblock', [BlockController::class, 'unblock']);
     Route::get('/friends/blocks', [BlockController::class, 'index']);
+    Route::get('/friends', [FriendshipController::class, 'getFriends']);    // الـ Route الجديد لجلب قائمة الأصحاب
+
+
+    // --- Conversations / Chat Search ---
+
 
     // --- Health Tracking (Resources) ---
 
@@ -115,6 +121,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('conversations')->group(function () {
         Route::get('/', [ConversationController::class, 'index']);
         Route::get('/{conversation_id}', [ConversationController::class, 'show']);
+            Route::get('/search', [ConversationController::class, 'searchChatFriends']);    // الـ Route الجديد للبحث عن شات معين باسم الصاحب
+
     });
 
     // --- Chatbot ---

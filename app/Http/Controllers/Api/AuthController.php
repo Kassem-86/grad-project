@@ -132,6 +132,7 @@ class AuthController extends Controller
             'id' => 'sometimes|integer|unique:users,id,' . $user->id,
             'first_name' => 'sometimes|required|string|max:50',
             'last_name' => 'sometimes|required|string|max:50',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'email' => 'sometimes|required|string|email|max:50|unique:users,email,' . $user->id,
             'gender' => 'nullable|in:Male,Female',
             'phone' => 'nullable|string|max:11',

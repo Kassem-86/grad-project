@@ -179,4 +179,32 @@ public function acceptFriendRequest(Request $request, $senderId)
 
     return response()->json(['message' => 'Friend request accepted']);
 }
+
+
+public function getFriends(Request $request)
+{
+    $user = $request->user();
+
+    // جلب أسامي وبيانات الأصحاب المقبولين فقط
+    $friends = \DB::table('friendships')
+        ->where(function($query) use ($user) {
+            $query->where('sender_id', $user->id)
+                  ->orWhere('receiver_id', $user->id);
+        })
+        ->where('status', 'accepted') // المقبولين بس
+        ->get()
+        ->map(function($friendship) use ($user) {
+            // عشان نعرف مين الصاحب ومين اليوزر الحالي في السطر ده
+            $friendId = ($friendship->sender_id == $user->id) ? $friendship->receiver_id : $friendship->sender_id;
+            
+            // جلب بيانات الصاحب من جدول الـ users
+            return \App\Models\User::find($friendId, ['id', 'first_name', 'last_name', 'email']);
+        })->filter()->values();
+
+    return response()->json([
+        'success' => true,
+        'friends' => $friends
+    ], 200);
+}
+
 }
