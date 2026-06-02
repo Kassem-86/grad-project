@@ -64,6 +64,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/me', [AuthController::class, 'me']);
     Route::delete('/delete-me', [AuthController::class, 'deleteUser']);
     Route::post('/logout', [AuthController::class, 'logout']);
+    Route::put('/user/profile', [AuthController::class, 'updateProfile']);
 
     // --- Community: Posts ---
     Route::apiResource('posts', PostController::class);
