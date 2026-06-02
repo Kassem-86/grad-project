@@ -24,7 +24,7 @@ class AuthController extends Controller
             'id' => 'sometimes|integer|unique:users',
             'first_name' => 'required|string|max:50',
             'last_name' => 'required|string|max:50',
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
             'email' => 'required|string|email|max:50|unique:users',
             'password' => 'required|string|min:8',          
             'gender' => 'nullable|in:Male,Female',
@@ -132,7 +132,7 @@ class AuthController extends Controller
             'id' => 'sometimes|integer|unique:users,id,' . $user->id,
             'first_name' => 'sometimes|required|string|max:50',
             'last_name' => 'sometimes|required|string|max:50',
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240 ',
             'email' => 'sometimes|required|string|email|max:50|unique:users,email,' . $user->id,
             'gender' => 'nullable|in:Male,Female',
             'phone' => 'nullable|string|max:11',
@@ -249,4 +249,5 @@ public function checkEmail(Request $request)
             'message' => 'User account deleted successfully',
         ], 200);
     }
+
 }  
