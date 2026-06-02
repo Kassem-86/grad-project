@@ -87,6 +87,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // --- Community: Friendships ---
     Route::post('/friends/{id}/request', [FriendshipController::class, 'sendRequest']);
     Route::post('/friends/{id}/accept', [FriendshipController::class, 'acceptRequest']);
+    Route::delete('/friends/{id}/cancel', [FriendshipController::class, 'cancelRequest']);
     Route::delete('/friends/{id}', [FriendshipController::class, 'removeFriend']);
     Route::post('/friends/{id}/block', [BlockController::class, 'block']);
     Route::delete('/friends/{id}/unblock', [BlockController::class, 'unblock']);
