@@ -18,7 +18,10 @@ class AuthController extends Controller
      * Register a new user and return a token
      */
     public function register(Request $request)
-    {                                                                                              
+    {                                 
+        
+    
+    //
 
         $validated = $request->validate([
             'id' => 'sometimes|integer|unique:users',

@@ -111,90 +111,125 @@ class LikeController extends Controller
     /**
      * Trigger notification for post owner
      */
+  /**
+     * Trigger notification for post owner (LIKE)
+     */
     public function togglePostNotification(Request $request, Post $post): void
     {
-        if ((int) $post->user_id !== (int) $request->user()->id) {
-            $title = 'Post Liked';
-            $message = $request->user()->first_name . ' liked your post.';
-            $type = 'community';
+        $currentUser = $request->user();
+
+        if ((int) $post->user_id !== (int) $currentUser->id) {
+            $title = 'New Interaction 🎯';
+            $message = $currentUser->first_name . ' liked your post.';
+            $type = 'like'; 
+
+            $extraData = [
+                'post_id'     => (int) $post->id,
+                'username'    => $currentUser->first_name . ' ' . $currentUser->last_name,
+                'likes_count' => (int) $post->likes()->count(),
+            ];
 
             CustomNotification::create([
-                'user_id' => $post->user_id,
-                'title' => $title,
-                'message' => $message,
-                'type' => $type,
+                'user_id'      => $post->user_id,
+                'title'        => $title,
+                'message'      => $message,
+                'type'         => $type,
                 'reference_id' => $post->id,
+                'extra_data'   => $extraData,
             ]);
 
-            // جلب بيانات اليوزر المستهدف للتحقق من الـ Token
             $targetUser = User::find($post->user_id);
             if ($targetUser && $targetUser->device_token) {
                 $this->sendFcmNotification($targetUser->device_token, $title, $message, [
-                    'type' => $type,
-                    'reference_id' => (string) $post->id
+                    'type'         => $type,
+                    'reference_id' => (string) $post->id,
+                    'post_id'      => (string) $post->id,
+                    'username'     => $extraData['username'],
+                    'likes_count'  => (string) $extraData['likes_count']
                 ]);
             }
         }
     }
 
     /**
-     * Trigger notification for comment owner
+     * Trigger notification for comment owner (LIKE COMMENT)
      */
     public function toggleCommentNotification(Request $request, Comment $comment): void
     {
-        if ((int) $comment->user_id !== (int) $request->user()->id) {
-            $title = 'Comment Liked';
-            $message = $request->user()->first_name . ' liked your comment.';
-            $type = 'community';
+        $currentUser = $request->user();
+
+        if ((int) $comment->user_id !== (int) $currentUser->id) {
+            $title ='liked your comment';
+            $message = $currentUser->first_name . ' liked your comment.';
+            $type = 'comment'; 
+
+            $extraData = [
+                'post_id'        => (int) $comment->commentable_id,
+                'username'       => $currentUser->first_name . ' ' . $currentUser->last_name,
+                'comments_count' => (int) Comment::where('post_id', $comment->commentable_id)->count(),
+            ];
 
             CustomNotification::create([
-                'user_id' => $comment->user_id,
-                'title' => $title,
-                'message' => $message,
-                'type' => $type,
+                'user_id'      => $comment->user_id,
+                'title'        => $title,
+                'message'      => $message,
+                'type'         => $type,
                 'reference_id' => $comment->id,
+                'extra_data'   => $extraData,
             ]);
 
             $targetUser = User::find($comment->user_id);
             if ($targetUser && $targetUser->device_token) {
                 $this->sendFcmNotification($targetUser->device_token, $title, $message, [
-                    'type' => $type,
-                    'reference_id' => (string) $comment->id
+                    'type'           => $type,
+                    'reference_id'   => (string) $comment->id,
+                    'post_id'        => (string) $extraData['post_id'],
+                    'username'       => $extraData['username'],
+                    'comments_count' => (string) $extraData['comments_count']
                 ]);
             }
         }
     }
 
     /**
-     * Trigger notification for post owner when commented
+     * Trigger notification for post owner when commented (NEW COMMENT)
      */
     public function togglePostNotificationComment(Request $request, Post $post): void
     {
         $currentUser = auth('sanctum')->user() ?? $request->user();
 
         if ($currentUser && (int) $post->user_id !== (int) $currentUser->id) {
-            $title = 'New Comment';
+            $title = 'New Comment 💬';
             $message = $currentUser->first_name . ' commented on your post.';
-            $type = 'community';
+            $type = 'comment';
+
+            $extraData = [
+                'post_id'        => (int) $post->id,
+                'username'       => $currentUser->first_name . ' ' . $currentUser->last_name,
+                'comments_count' => (int) $post->comments()->count(),
+            ];
 
             CustomNotification::create([
-                'user_id' => $post->user_id,
-                'title' => $title,
-                'message' => $message,
-                'type' => $type,
+                'user_id'      => $post->user_id,
+                'title'        => $title,
+                'message'      => $message,
+                'type'         => $type,
                 'reference_id' => $post->id,
+                'extra_data'   => $extraData,
             ]);
 
             $targetUser = User::find($post->user_id);
             if ($targetUser && $targetUser->device_token) {
                 $this->sendFcmNotification($targetUser->device_token, $title, $message, [
-                    'type' => $type,
-                    'reference_id' => (string) $post->id
+                    'type'           => $type,
+                    'reference_id'   => (string) $post->id,
+                    'post_id'        => (string) $post->id,
+                    'username'       => $extraData['username'],
+                    'comments_count' => (string) $extraData['comments_count']
                 ]);
             }
         }
     }
-
     /**
      * 🔥 العقل المدبر: توليد الـ OAuth2 Token وإرسال الإشعار لـ Firebase v1
      */
