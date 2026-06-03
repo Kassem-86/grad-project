@@ -127,40 +127,50 @@ class AuthController extends Controller
     /**
      * Update authenticated user's profile with medical details
      */
-    public function updateProfile(Request $request)
-    {
-        $user = $request->user();
+   public function updateProfile(Request $request)
+{
+    $user = $request->user();
 
-        $validated = $request->validate([
-            'id' => 'sometimes|integer|unique:users,id,' . $user->id,
-            'first_name' => 'sometimes|required|string|max:50',
-            'last_name' => 'sometimes|required|string|max:50',
-            'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240 ',
-            'email' => 'sometimes|required|string|email|max:50|unique:users,email,' . $user->id,
-            'gender' => 'nullable|in:Male,Female',
-            'phone' => 'nullable|string|max:11',
-            'birthDate' => 'nullable|date',
-            'diabetes_type' => ['nullable', Rule::in(User::DIABETES_TYPES)],
-            'insulin_therapy' => 'nullable|in:Pen / Syringes,pump,No insulin',
-            'diagnose_date' => 'nullable|date_format:Y-m-d H:i:s',
-            'glucose' => 'nullable|in:mg/dl,mmol/L',
-            'weight' => 'nullable|numeric|min:0',
-            'height' => 'nullable|numeric|min:0',
-            'max_glucose' => 'nullable|numeric|min:0',
-            'target_glucose_range' => 'nullable|numeric|min:0',
-            'min_glucose' => 'nullable|numeric|min:0',
-            'emergency_contact' => 'nullable|string|max:11',
-        ]);
+    $validated = $request->validate([
+        'id' => 'sometimes|integer|unique:users,id,' . $user->id,
+        'first_name' => 'sometimes|required|string|max:50',
+        'last_name' => 'sometimes|required|string|max:50',
+        'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:10240',
+        'email' => 'sometimes|required|string|email|max:50|unique:users,email,' . $user->id,
+        'gender' => 'nullable|in:Male,Female',
+        'phone' => 'nullable|string|max:11',
+        'birthDate' => 'nullable|date',
+        'diabetes_type' => ['nullable', Rule::in(User::DIABETES_TYPES)],
+        'insulin_therapy' => 'nullable|in:Pen / Syringes,pump,No insulin',
+        'diagnose_date' => 'nullable|date_format:Y-m-d H:i:s',
+        'glucose' => 'nullable|in:mg/dl,mmol/L',
+        'weight' => 'nullable|numeric|min:0',
+        'height' => 'nullable|numeric|min:0',
+        'max_glucose' => 'nullable|numeric|min:0',
+        'target_glucose_range' => 'nullable|numeric|min:0',
+        'min_glucose' => 'nullable|numeric|min:0',
+        'emergency_contact' => 'nullable|string|max:11',
+    ]);
 
-        $user->update($validated);
+    // ─── THE FIX IS RIGHT HERE ───────────────────────────────────────────
+    if ($request->hasFile('profile_picture')) {
+        // Optional: Delete the old profile picture from storage so you don't waste space
+        if ($user->profile_picture) {
+            Storage::disk('public')->delete($user->profile_picture);
+        }
 
-        return response()->json([
-            'message' => 'Profile updated successfully',
-            'user' => $user,
-        ], 200);
+        // Store the file correctly and replace the file object in $validated with the string path
+        $validated['profile_picture'] = $request->file('profile_picture')->store('profiles', 'public');
     }
+    // ─────────────────────────────────────────────────────────────────────
 
+    $user->update($validated);
 
+    return response()->json([
+        'message' => 'Profile updated successfully',
+        'user' => $user,
+    ], 200);
+}
     /**
  * Check if the email is already registered.
  */

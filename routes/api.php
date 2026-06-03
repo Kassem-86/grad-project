@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\Api\ReportController;
 use App\Http\Controllers\GlucoseController;
 use App\Http\Controllers\SelectedMedicationController;
 use App\Http\Controllers\ChatbotController;
@@ -145,6 +146,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/notifications', [\App\Http\Controllers\Api\NotificationController::class, 'index']);
     Route::patch('/notifications/read-all', [\App\Http\Controllers\Api\NotificationController::class, 'markAllAsRead']);
     Route::patch('/notifications/{id}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markAsRead']);
+    Route::get('/reports/glucose/pdf', [ReportController::class, 'exportGlucosePdf']);
 
     Route::post('/user/save-device-token', function (Request $request) {
         $request->validate([
@@ -159,6 +161,7 @@ Route::middleware('auth:sanctum')->group(function () {
             'success' => true,
             'message' => 'Device token updated successfully.'
         ]);
+
     });
     // ... الـ routes القديمة
 
