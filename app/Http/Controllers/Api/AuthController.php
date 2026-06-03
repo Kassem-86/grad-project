@@ -165,6 +165,7 @@ class AuthController extends Controller
     // ─────────────────────────────────────────────────────────────────────
 
     $user->update($validated);
+    $user->refresh();
 
     return response()->json([
         'message' => 'Profile updated successfully',

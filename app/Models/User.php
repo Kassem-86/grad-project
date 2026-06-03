@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Collection as EloquentCollection;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
+use Illuminate\Support\Facades\Storage;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -261,10 +261,14 @@ public function friends(): \Illuminate\Support\Collection // 👈 غيرنا د�
     /**
      * Get the profile picture URL.
      */
-    public function getProfilePictureAttribute(): string
-    {
-        return $this->attributes['profile_picture']
-            ? asset('storage/profiles/' . $this->attributes['profile_picture'])
-            : asset('storage/profiles/default.png');
+  public function getProfilePictureAttribute($value): string
+{
+    // If there is a value in the database, let Laravel's Storage handle the pathing
+    if ($value) {
+        return asset(Storage::url($value));
     }
+
+    // Fallback if no profile picture is set
+    return asset('storage/profiles/default.png');
+}
 }
