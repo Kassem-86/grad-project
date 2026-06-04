@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title', 150);
             $table->text('message');
             $table->enum('type', ['reminder', 'community', 'chat']);
-            $table->unsignedBigInteger('reference_id')->nullable();
+            $table->uuid('reference_id')->nullable();
             $table->boolean('is_read')->default(false);
             $table->dateTime('read_at')->nullable();
             $table->timestamps();

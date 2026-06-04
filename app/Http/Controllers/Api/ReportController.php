@@ -25,7 +25,7 @@ class ReportController extends Controller
 
         $startDate = $request->query('start_date');
         $endDate   = $request->query('end_date');
-        $start = Carbon::parse($startDate)->startOfDay();
+        $start = Carbon::parse($startDate)->star tOfDay();
         $end   = Carbon::parse($endDate)->endOfDay();
 
         $readings = Glucose::where('record_glucose.user_id', $user->id)

@@ -5,19 +5,26 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ReminderResource;
 use App\Models\Reminder;
+use App\Models\Notification; // تأكد من استيراد الموديل
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
-use Illuminate\Support\Facades\DB;
-use Kreait\Firebase\Auth;
+use Illuminate\Support\Carbon;
 
 class ReminderController extends Controller
 {
-    /**
-     * Get all reminders for the authenticated user with status 'Still'.
-     */
-    public function index(Request $request): AnonymousResourceCollection
+    public function __construct()
     {
+        $this->middleware('auth:sanctum');
+    }
+
+    /**
+     * Get all reminders and check for any due ones to create notifications.
+     */
+    public function index(Request $request)
+    {
+        // 1. تشغيل فحص التذكيرات فوراً قبل ما يعرض القائمة
+        $this->checkAndNotify($request);
+
         $reminders = Reminder::where('user_id', $request->user()->id)
             ->where('status', 'Still')
             ->orderBy('time', 'asc')
@@ -27,32 +34,62 @@ class ReminderController extends Controller
     }
 
     /**
-     * Store a newly created reminder.
+     * التحقق من التذكيرات التي حان وقتها وتحويلها لإشعارات
      */
-    public function store(Request $request): JsonResponse
+    public function checkAndNotify(Request $request)
     {
-        $validated = $request->validate([
-            'message_type' => 'required|in:medication,glucose_check,meal',
-            'medication_name' => 'nullable|string|max:255',
-            'title' => 'nullable|string|max:255',
-            'time' => 'nullable|date_format:Y-m-d H:i:s',
-        ]);
+        $userId = $request->user()->id;
+        $now = Carbon::now()->format('Y-m-d H:i:s');
+// استبدل السطر اللي بيعمل الخطأ بـ:
+\Log::info("Now: " . \Carbon\Carbon::now()->format('Y-m-d H:i:s'));        // جلب التذكيرات التي انتهى وقتها ولم يتم التعامل معها
+        $dueReminders = Reminder::where('user_id', $userId)
+            ->where('status', 'Still')
+            ->where('time', '<=', $now)
+            ->get();
+            \Log::info("Found " . $dueReminders->count() . " reminders to process.");
 
-        $reminder = $request->user()->reminders()->create([
-            'message_type' => $validated['message_type'],
-            'medication_name' => $validated['medication_name'] ?? null,
-            'title' => $validated['title'],
-            'time' => $validated['time'],
-            'status' => 'Still',
-        ]);
-        $reminder->refresh();
+        foreach ($dueReminders as $reminder) {
+            // إنشاء إشعار
+            Notification::create([
+                'user_id' => $userId,
+                'title' => 'time for ' . $reminder->message_type,
+                'message' => 'Reminder: ' . ($reminder->title ?? $reminder->medication_name),
+                'type' => 'reminder',
+                'reference_id' => $reminder->id,
+            ]);
 
-        return response()->json([
-            'message' => 'Reminder created successfully',
-            'reminder' => new ReminderResource($reminder)
-        ], 201);
+            // تحديث الحالة لـ Done عشان ميتكررش الإشعار
+            $reminder->update(['status' => 'Done']);        }
     }
 
+    /**
+     * Store a newly created reminder.
+     */
+public function store(Request $request): JsonResponse
+{
+    $validated = $request->validate([
+        'message_type' => 'required|in:medication,glucose_check,meal',
+        'medication_name' => 'nullable|string|max:255',
+        'title' => 'nullable|string|max:255',
+        'time' => 'required|date_format:Y-m-d H:i:s',
+    ]);
+
+    $reminder = $request->user()->reminders()->create([
+        'message_type' => $validated['message_type'],
+        'medication_name' => $validated['medication_name'] ?? null,
+        'title' => $validated['title'],
+        'time' => $validated['time'],
+        'status' => 'Still',
+    ]);
+
+    // *** التعديل هنا: نادِ دالة الفحص فوراً بعد الحفظ ***
+    // $this->checkAndNotify($request);
+
+    return response()->json([
+        'message' => 'Reminder created successfully',
+        'reminder' => new ReminderResource($reminder)
+    ], 201);
+}
     /**
      * Update the status of a reminder.
      */
@@ -78,15 +115,15 @@ class ReminderController extends Controller
     public function destroy(Reminder $reminder): JsonResponse
     {
         $this->authorize('delete', $reminder);
-
         $reminder->delete();
-
-        return response()->json([
-            'message' => 'Reminder deleted successfully',
-        ]);
+   
+        return response()->json(['message' => 'Reminder deleted successfully']);
     }
 
-    public function sync(\Illuminate\Http\Request $request)
+    /**
+     * Sync function remains as is...
+     */
+    public function sync(Request $request)
     {
         $userId = $request->user()->id;
         $lastSync = $request->input('last_sync');

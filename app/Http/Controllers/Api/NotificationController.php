@@ -18,6 +18,7 @@ class NotificationController extends Controller
 
         // Fetch notifications ordered by newest
         $notifications = Notification::where('user_id', $user->id)
+        ->with(['sender:id,first_name,last_name,profile_picture'])
             ->latest()
             ->paginate(20);
 
@@ -35,6 +36,8 @@ class NotificationController extends Controller
             'links' => $resourceCollection['links'] ?? null,
             'meta' => $resourceCollection['meta'] ?? null,
         ]);
+
+        
     }
 
     /**
@@ -86,6 +89,33 @@ class NotificationController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'All notifications marked as read'
+        ]);
+    }
+
+    /**
+     * Delete a specific notification.
+     */
+    public function destroy($id)
+    {
+        $user = auth('sanctum')->user();
+
+        // ابحث عن الإشعار الخاص باليوزر الحالي فقط لضمان الأمان
+        $notification = Notification::where('user_id', $user->id)
+            ->where('notification_id', $id)
+            ->first();
+
+        if (!$notification) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Notification not found or unauthorized'
+            ], 404);
+        }
+
+        $notification->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Notification deleted successfully'
         ]);
     }
 }

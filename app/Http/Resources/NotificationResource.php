@@ -26,6 +26,9 @@ class NotificationResource extends JsonResource
             'read_at' => $this->read_at ? $this->read_at->format('Y-m-d H:i:s') : null,
             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
             'time_ago' => $this->created_at->diffForHumans(),
+            'sender_image' => $this->type === 'friend_request' && $this->sender 
+                          ? asset('storage/' . $this->sender->profile_picture) 
+                          : null,
         ];
     }
 
@@ -66,3 +69,4 @@ class NotificationResource extends JsonResource
         }
     }
 }
+

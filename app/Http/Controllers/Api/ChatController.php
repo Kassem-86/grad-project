@@ -44,6 +44,7 @@ class ChatController extends Controller
 
         // Fetch paginated messages sorted by created_at ascending
         $messages = \App\Models\ChatMessage::where('conversation_id', $conversation->id)
+            ->with(['sender:id,first_name,last_name,profile_picture']) // بنجيب الصورة مع بيانات المرسل
             ->orderBy('created_at', 'asc')
             ->paginate(50); // or any limit you prefer
 
@@ -143,6 +144,7 @@ class ChatController extends Controller
             'voice_url'       => $voiceUrl,
             'video_url'       => $videoUrl,
             'is_read'         => false,
+
         ]);
 
         broadcast(new \App\Events\MessageSent($message))->toOthers();
@@ -172,7 +174,7 @@ class ChatController extends Controller
 
         return response()->json([
             'message' => 'Message sent successfully',
-            'data' => clone $message->load('sender')
+            'data' => clone $message->load('sender:id,first_name,last_name,profile_picture')
         ], 201);
     }
     /**

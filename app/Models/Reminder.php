@@ -40,6 +40,7 @@ class Reminder extends Model
         'updated_at' => 'datetime',
     ];
 
+    
     protected static function boot()
     {
         parent::boot();
