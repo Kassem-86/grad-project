@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Glucose;
 use Carbon\Carbon;
+use Google\Type\TimeOfDay;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Barryvdh\DomPDF\Facade\Pdf; 
@@ -25,7 +26,7 @@ class ReportController extends Controller
 
         $startDate = $request->query('start_date');
         $endDate   = $request->query('end_date');
-        $start = Carbon::parse($startDate)->star tOfDay();
+        $start = Carbon::parse($startDate)->startOfDay();
         $end   = Carbon::parse($endDate)->endOfDay();
 
         $readings = Glucose::where('record_glucose.user_id', $user->id)

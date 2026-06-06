@@ -125,7 +125,7 @@ public function store(Request $request): JsonResponse
      */
     public function sync(Request $request)
     {
-        $userId = $request->user()->id;
+        $userId = $request->user()->id; 
         $lastSync = $request->input('last_sync');
         $lastSyncTime = null;
 
