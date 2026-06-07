@@ -6,8 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Notification extends Model
-{    use FormatsDates;
-
+{    
     /**
      * The primary key associated with the table.
      *
