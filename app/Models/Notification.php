@@ -48,4 +48,10 @@ class Notification extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function sender()
+{
+    // الـ reference_id هو الـ ID بتاع اليوزر اللي بعت الطلب
+    return $this->belongsTo(User::class, 'reference_id');
+}
 }
