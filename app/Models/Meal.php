@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Meal extends Model
-{
+{    use FormatsDates;
+
     protected $table = 'record_meals';
     protected $primaryKey = 'meal_id';
     public $timestamps = false;
@@ -43,5 +44,6 @@ protected $touches = ['log'];
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+    
 }
 

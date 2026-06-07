@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Model;
+use App\Models\FormatsDates;
 
 class Chatbot extends Model
 {
@@ -11,6 +13,8 @@ class Chatbot extends Model
      *
      * @var string
      */
+
+    use FormatsDates;
     protected $table = 'chatbot';
 
     /**
@@ -31,4 +35,5 @@ class Chatbot extends Model
     {
         return $this->belongsTo(User::class);
     }
+
 }

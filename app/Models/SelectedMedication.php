@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class SelectedMedication extends Model
-{
+{    use FormatsDates;
+
     use HasUuids;
 
     protected $table = 'selected_medications';

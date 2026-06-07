@@ -7,8 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
+
 class Comment extends Model
 {
+    use FormatsDates;
     /** @use HasFactory<\Database\Factories\CommentFactory> */
     use HasFactory;
 
@@ -57,4 +59,5 @@ class Comment extends Model
     {
         return $this->morphMany(Like::class, 'likeable');
     }
+    
 }

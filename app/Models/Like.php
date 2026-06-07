@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Like extends Model
-{
+{    use FormatsDates;
+
     /** @use HasFactory<\Database\Factories\LikeFactory> */
     use HasFactory;
 

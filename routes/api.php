@@ -111,6 +111,10 @@ Route::middleware('auth:sanctum')->group(function () {
     //  Route::put('logs', CombinedLogController::class, 'update');
     Route::post('/logs/android/', [CombinedLogController::class, 'storeWithAndroidId']);
     Route::apiResource('selected-medications' , SelectedMedicationController::class);
+Route::post('/sync/medication', [SelectedMedicationController::class, 'sync']);
+    
+
+    
 
 
 
@@ -140,7 +144,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // --- Reminders ---
     Route::apiResource('reminders', ReminderController::class, ['only' => ['index', 'store', 'destroy']]);
-    Route::put('/reminders/{reminder}/status', [ReminderController::class, 'updateStatus']);
+    Route::put('/reminders/{reminder}/status', [ReminderController::class, 'updateStatus']);// Route عشان تتعديل حالة التذكير
+    Route::post('/sync/reminders', [ReminderController::class, 'sync']);
+
 
     // --- Notifications ---
     Route::get('/notifications', [\App\Http\Controllers\Api\NotificationController::class, 'index']);

@@ -26,14 +26,14 @@ class ReportController extends Controller
 
         $startDate = $request->query('start_date');
         $endDate   = $request->query('end_date');
-        $start = Carbon::parse($startDate)->startOfDay();
-        $end   = Carbon::parse($endDate)->endOfDay();
+        $start = Carbon::parse($startDate, 'Africa/Cairo')->startOfDay();
+        $end   = Carbon::parse($endDate, 'Africa/Cairo')->endOfDay();
 
         $readings = Glucose::where('record_glucose.user_id', $user->id)
             ->join('logs', 'record_glucose.log_id', '=', 'logs.log_id')
-            ->whereBetween('logs.created_at', [$start, $end])
-            ->orderBy('logs.created_at', 'desc')
-            ->select('record_glucose.*', 'logs.created_at as log_created_at')
+            ->whereBetween('logs.logged_at', [$start, $end])
+            ->orderBy('logs.logged_at', 'desc')
+            ->select('record_glucose.*', 'logs.logged_at as log_logged_at')
             ->get();
 
         if ($readings->isEmpty()) {
@@ -50,8 +50,7 @@ class ReportController extends Controller
         ];
 
         $formattedReadings = $readings->map(function($reading) {
-            $logTime = Carbon::parse($reading->log_created_at);
-            return [
+$logTime = Carbon::parse($reading->log_logged_at, 'UTC')->setTimezone('Africa/Cairo');            return [
                 'glucose_level' => (int) $reading->glucose_level,
                 'reading_type'  => $reading->reading_type,
                 'notes'         => $reading->notes,
@@ -84,14 +83,14 @@ class ReportController extends Controller
 
         $startDate = $request->query('start_date');
         $endDate   = $request->query('end_date');
-        $start = Carbon::parse($startDate)->startOfDay();
-        $end   = Carbon::parse($endDate)->endOfDay();
+        $start = Carbon::parse($startDate, 'Africa/Cairo')->startOfDay();
+        $end   = Carbon::parse($endDate, 'Africa/Cairo')->endOfDay();
         
         $readings = Glucose::where('record_glucose.user_id', $user->id)
             ->join('logs', 'record_glucose.log_id', '=', 'logs.log_id')
-            ->whereBetween('logs.created_at', [$start, $end])
-            ->orderBy('logs.created_at', 'desc')
-            ->select('record_glucose.*', 'logs.created_at as log_created_at')
+            ->whereBetween('logs.logged_at', [$start, $end])
+            ->orderBy('logs.logged_at', 'desc')
+            ->select('record_glucose.*', 'logs.logged_at as log_logged_at')
             ->get();
 
         if ($readings->isEmpty()) {

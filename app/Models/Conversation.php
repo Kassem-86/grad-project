@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Conversation extends Model
 {
+    use FormatsDates;
     protected $fillable = ['user1_id', 'user2_id', 'last_updated'];
 
     protected $casts = [
@@ -33,4 +34,5 @@ class Conversation extends Model
     {
         return $this->hasOne(ChatMessage::class)->latestOfMany();
     }
+    
 }

@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Notification extends Model
-{
+{    use FormatsDates;
+
     /**
      * The primary key associated with the table.
      *
@@ -54,4 +55,5 @@ class Notification extends Model
     // الـ reference_id هو الـ ID بتاع اليوزر اللي بعت الطلب
     return $this->belongsTo(User::class, 'reference_id');
 }
+
 }

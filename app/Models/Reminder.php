@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class Reminder extends Model
-{
+{    use FormatsDates;
+
     /** @use HasFactory<\Database\Factories\ReminderFactory> */
     use HasFactory, HasUuids;
 
@@ -62,4 +63,5 @@ class Reminder extends Model
     {
         return $this->belongsTo(User::class);
     }
+    
 }

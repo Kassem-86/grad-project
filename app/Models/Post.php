@@ -10,7 +10,8 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Auth;
 
 class Post extends Model
-{
+{    use FormatsDates;
+
     /** @use HasFactory<\Database\Factories\PostFactory> */
     use HasFactory;
 
@@ -97,4 +98,5 @@ class Post extends Model
 
         return (bool) $this->likes()->where('user_id', $userId)->exists();
     }
+    
 }

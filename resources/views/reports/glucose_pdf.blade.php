@@ -55,8 +55,7 @@
     <div class="user-info">
         <strong>Patient Name:</strong> {{ $username }} <br>
         <strong>Report Period:</strong> From {{ $start_date }} To {{ $end_date }} ({{ $days }} Days) <br>
-        <strong>Generated On:</strong> {{ now()->format('Y-m-d H:i A') }}
-    </div>
+<strong>Generated On:</strong> {{ now('Africa/Cairo')->format('Y-m-d h:i A') }}    </div>
 
     <table style="width: 100%; margin-bottom: 30px;">
         <tr>
@@ -81,8 +80,8 @@
         <tbody>
             @foreach($readings as $reading)
                 <tr>
-                    <td>{{ \Carbon\Carbon::parse($reading->log_created_at)->format('Y-m-d') }}</td>
-                    <td>{{ \Carbon\Carbon::parse($reading->log_created_at)->format('h:i A') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($reading->log_logged_at)->format('Y-m-d') }}</td>
+                    <td>{{ \Carbon\Carbon::parse($reading->log_logged_at)->format('h:i A') }}</td>
                     <td>
                         @if($reading->glucose_level < 70)
                             <span class="glucose-box box-low">{{ $reading->glucose_level }} mg/dL</span>

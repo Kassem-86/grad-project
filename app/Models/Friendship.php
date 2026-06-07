@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Friendship extends Model
-{
+{ 
+    use FormatsDates;
     use HasFactory;
 
     protected $fillable = [
@@ -25,4 +26,5 @@ class Friendship extends Model
     {
         return $this->belongsTo(User::class, 'friend_id');
     }
+    
 }

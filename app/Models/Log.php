@@ -5,9 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
+use App\Models\FormatsDates;
 
 class Log extends Model
-{
+{    use FormatsDates;
+
     protected $table = 'logs';
     protected $primaryKey = 'log_id';
     
@@ -21,10 +24,13 @@ class Log extends Model
             'log_title',
             'log_description',
             'logged_at',
+
         ];
     protected $guarded = []; // 👈 ده معناه "اسمح بكتابة أي داتا جاية من غير حماية"
     protected $casts = [
-        'logged_at' => 'datetime',
+        'created_at' => 'datetime:Y-m-d H:i:s',
+    'updated_at' => 'datetime:Y-m-d H:i:s',
+    'logged_at'  => 'datetime:Y-m-d H:i:s',
     ];
 
     protected static function boot()
@@ -72,4 +78,16 @@ class Log extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+
+    public function getCreatedAtAttribute($value)
+{
+    return Carbon::parse($value)->setTimezone('Africa/Cairo')->format('Y-m-d H:i:s');
+}
+
+public function getLoggedAtAttribute($value)
+{
+    return Carbon::parse($value)->setTimezone('Africa/Cairo')->format('Y-m-d H:i:s');
+}
+
+
 }

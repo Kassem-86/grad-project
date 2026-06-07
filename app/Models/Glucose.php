@@ -4,14 +4,18 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Models\FormatDates;
+
+
 
 class Glucose extends Model
 {
+        use FormatsDates;
+
     protected $table = 'record_glucose';
     protected $primaryKey = 'reading_id';
     public $timestamps = false;
     protected $touches = ['log'];
-// protected $hidden = ['log_id'];
     protected $fillable = [
         'log_id',
         'user_id',
@@ -42,4 +46,5 @@ class Glucose extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+    
 }

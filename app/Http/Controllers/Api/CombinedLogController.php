@@ -8,6 +8,7 @@ use App\Models\Glucose;
 use App\Models\Meal;
 use App\Models\RecordMedication;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -46,8 +47,9 @@ class CombinedLogController extends Controller
         // 2. Database Transaction (بترجع الـ ID بس)
         $logId = DB::transaction(function () use ($request, $validated) {
             $userId = Auth::id();
-            $loggedAt = !empty($validated['logged_at']) ? $validated['logged_at'] : now();
-
+$loggedAt = !empty($validated['logged_at']) 
+    ? Carbon::parse($validated['logged_at'], 'Africa/Cairo')->format('Y-m-d H:i:s') 
+    : now();
             // Create the parent Log record
             $log = Log::create([
                 'log_id'          => (string) \Illuminate\Support\Str::uuid(), 

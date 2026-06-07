@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class RecordMedication extends Model
-{
+{    use FormatsDates;
+
     protected $table = 'record_medications';
     protected $primaryKey = 'medication_id'; // 👈 المفتاح الأساسي
     public $incrementing = true;
@@ -51,4 +52,5 @@ protected $casts = [
     // هيرجع مصفوفة أسماء مباشرة: ["tremadol", "panadol"]
     return $this->selectedMedications->pluck('medication_name')->all();
 }
+
 }
