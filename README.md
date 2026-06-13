@@ -43,20 +43,7 @@
 
 ---
 
-## ☁️ Infrastructure & DevOps
 
-Deployed on **AWS** with a highly available, fault-tolerant architecture:
-
-| Component | Role |
-|-----------|------|
-| **EC2** | Application servers across multiple Availability Zones |
-| **ALB** (Application Load Balancer) | Distributes incoming traffic across instances |
-| **ASG** (Auto Scaling Group) | Scales up/down based on load with custom policies |
-| **Route 53** | DNS management with health checks for reliable routing |
-| **RDS** | Managed MySQL database with automated backups |
-| **S3** | Object storage for media and static assets |
-
-> Architecture ensures **99.9% uptime** with automatic failover and cost-optimized scaling.
 
 ---
 
