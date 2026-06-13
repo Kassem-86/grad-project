@@ -3,14 +3,19 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OtpMail;
 use App\Models\User;
 use App\Models\Conversation;
 use App\Models\ChatMessage;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Validation\Rule;
+
+
 
 class AuthController extends Controller
 {
@@ -264,4 +269,82 @@ public function checkEmail(Request $request)
         ], 200);
     }
 
+
+   public function sendOtp(Request $request)
+{
+    $request->validate(['email' => 'required|email|exists:users,email']);
+    $user = User::where('email', $request->email)->first();
+    $otp = rand(100000, 999999);
+    
+    DB::table('password_resets')->updateOrInsert(
+        ['email' => $request->email],
+        ['otp' => $otp, 'created_at' => now()]
+    );
+
+    // الطريقة الصحيحة للـ Mailable:
+Mail::to($request->email)->send(new OtpMail($otp, $user->last_name));
+    return response()->json(['message' => 'OTP sent successfully']);
+}
+    // 2. التحقق من الـ OTP
+    public function verifyOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email', 
+            'otp' => 'required|digits:6'
+        ]);
+        
+        $check = DB::table('password_resets')
+            ->where('email', $request->email)
+            ->where('otp', $request->otp)
+            ->where('created_at', '>=', now()->subMinutes(10))
+            ->first();
+
+        if (!$check) {
+            return response()->json(['message' => 'Invalid or expired OTP'], 400);
+        }
+        DB::table('password_resets')
+        ->where('email', $request->email)
+        ->update(['is_verified' => 1]);
+
+        return response()->json(['message' => 'OTP verified']);
+    }
+
+    // 3. إعادة تعيين الباسورد
+ public function resetPassword(Request $request)
+{
+    $request->validate([
+        'email' => 'required|email',
+        'password' => 'required|min:8'
+    ]);
+
+    $user = User::where('email', $request->email)->first();
+
+    // التأكد إن اليوزر عمل verify أولاً
+    $verified = DB::table('password_resets')
+        ->where('email', $request->email)
+        ->where('is_verified', 1)
+        ->first();
+
+    if (!$verified) {
+        return response()->json(['message' => 'You must verify OTP first!'], 403);
+    }
+
+    // --- الجزء الجديد: المقارنة ---
+    if (Hash::check($request->password, $user->password)) {
+        return response()->json([
+            'message' => 'New password cannot be the same as the old password'
+        ], 400);
+    }
+    // ----------------------------
+
+    // تحديث الباسورد
+    $user->update([
+        'password' => Hash::make($request->password)
+    ]);
+
+    // مسح الـ Record
+    DB::table('password_resets')->where('email', $request->email)->delete();
+
+    return response()->json(['message' => 'Password updated successfully']);
+}
 }  

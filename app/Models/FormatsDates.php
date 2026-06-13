@@ -13,7 +13,7 @@ trait FormatsDates
     {
         // غيرنا H لـ h وضفنا A
         return Carbon::instance($date)->setTimezone('Africa/Cairo')->format('Y-m-d h:i:s A');
-    }
+    }         
 
     // عشان أي تاريخ يخرج من الموديل دايماً يكون بالتنسيق ده
     public function getCreatedAtAttribute($value)

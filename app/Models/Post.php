@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class Post extends Model
 {    use FormatsDates;
-
+ 
     /** @use HasFactory<\Database\Factories\PostFactory> */
     use HasFactory;
 
