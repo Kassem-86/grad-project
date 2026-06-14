@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Collection as EloquentCollection;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -257,7 +258,18 @@ public function friends(): \Illuminate\Support\Collection // 👈 غيرنا د�
             ->orWhere('user2_id', $this->id)
             ->orderByDesc('last_updated');
     }
-
+    public function friendsOf():BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'friendships', 'friend_id', 'user_id')
+                    ->withPivot('status')
+                    ->wherePivot('status', 'accepted');
+    }
+public function friendsWith(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'friendships', 'user_id', 'friend_id')
+                    ->withPivot('status')
+                    ->wherePivot('status', 'accepted');
+    }
     /**
      * Get the profile picture URL.
      */

@@ -146,30 +146,64 @@ class FriendshipController extends Controller
         return response()->json($suggestions);
     }
 
-   public function getFriends(Request $request): JsonResponse
+//    public function getFriends(Request $request): JsonResponse
+// {
+//     $user = $request->user();
+
+//     $friends = Friendship::where('status', 'accepted')
+//         ->where(function ($query) use ($user) {
+//             $query->where('user_id', $user->id)
+//                   ->orWhere('friend_id', $user->id);
+//         })
+//         // أضفنا profile_pic هنا في العلاقات
+//         ->with([
+//             'user:id,first_name,last_name,profile_picture,diabetes_type',
+//             'friend:id,first_name,last_name,profile_picture,diabetes_type'
+//         ])
+//         ->get()
+//         ->map(function ($friendship) use ($user) {
+//             return $friendship->user_id === $user->id 
+//                 ? $friendship->friend 
+//                 : $friendship->user;
+//         });
+
+//     return response()->json([
+//         'count' => $friends->count(),
+//         'data' => $friends
+//     ]);
+// }
+
+public function getFriends(Request $request)
 {
+    $request->validate([
+        'query' => 'required|string|min:1',
+    ]);
+
+    $searchQuery = $request->input('query');
     $user = $request->user();
 
-    $friends = Friendship::where('status', 'accepted')
-        ->where(function ($query) use ($user) {
-            $query->where('user_id', $user->id)
-                  ->orWhere('friend_id', $user->id);
+    // بنجيب الصداقات اللي فيها الشخص الحالي و الـ status بتاعها accepted
+    $friends = \App\Models\Friendship::where('status', 'accepted')
+        ->where(function ($q) use ($user) {
+            $q->where('user_id', $user->id)
+              ->orWhere('friend_id', $user->id);
         })
-        // أضفنا profile_pic هنا في العلاقات
-        ->with([
-            'user:id,first_name,last_name,profile_picture,diabetes_type',
-            'friend:id,first_name,last_name,profile_picture,diabetes_type'
-        ])
+        ->with(['user:id,first_name,last_name,profile_picture,diabetes_type', 'friend:id,first_name,last_name,profile_picture,diabetes_type'])
         ->get()
+        // بنحول الـ Friendship لـ User Object بتاع الصديق
         ->map(function ($friendship) use ($user) {
-            return $friendship->user_id === $user->id 
-                ? $friendship->friend 
-                : $friendship->user;
-        });
+            return ($friendship->user_id === $user->id) ? $friendship->friend : $friendship->user;
+        })
+        // بنفلتر هنا بالاسم اللي المستخدم كتبه
+        ->filter(function ($friend) use ($searchQuery) {
+            $fullName = strtolower($friend->first_name . ' ' . $friend->last_name);
+            return str_contains($fullName, strtolower($searchQuery));
+        })
+        ->values();
 
     return response()->json([
-        'count' => $friends->count(),
-        'data' => $friends
+        'success' => true,
+        'results' => $friends // بيرجع قائمة الأصدقاء اللي ينفع تفتح معاهم شات
     ]);
 }
 }

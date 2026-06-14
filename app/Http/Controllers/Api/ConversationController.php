@@ -53,55 +53,50 @@ class ConversationController extends Controller
         return response()->json([
             'data' => $conversation
         ], 200);
-    }
-
-    public function searchChatFriends(Request $request)
+    }public function searchChatFriends(Request $request)
 {
-    $request->validate([
-        'query' => 'required|string|min:1',
-    ]);
-
-    $user = $request->user();
+    $request->validate(['query' => 'required|string|min:1']);
     $searchQuery = strtolower($request->input('query'));
+    $user = $request->user();
 
-    // 1. جبنا المحادثات ومعاها بيانات الشخصين (user1 و user2) مرة واحدة عشان الأداء
-    $conversations = \App\Models\Conversation::where(function($q) use ($user) {
-            $q->where('user1_id', $user->id)
-              ->orWhere('user2_id', $user->id);
+    // 1. نجيب كل الـ User IDs اللي بيننا وبينهم صداقة مقبولة
+    $friendIds = \App\Models\Friendship::where('status', 'accepted')
+        ->where(function ($q) use ($user) {
+            $q->where('user_id', $user->id)
+              ->orWhere('friend_id', $user->id);
         })
-        ->with(['user1', 'user2', 'latestMessage']) // تحميل البيانات مسبقاً (Eager Loading)
         ->get()
-        ->map(function($conversation) use ($user, $searchQuery) {
-            
-            // تحديد مين الطرف التاني
-            $friend = ($conversation->user1_id == $user->id) ? $conversation->user2 : $conversation->user1;
+        ->map(function ($f) use ($user) {
+            return ($f->user_id == $user->id) ? $f->friend_id : $f->user_id;
+        });
 
-            if ($friend) {
-                $fullName = strtolower($friend->first_name . ' ' . $friend->last_name);
-                
-                // تشييك لو اسم الصاحب جواه حروف البحث
-                if (str_contains($fullName, $searchQuery)) {
-                    return [
-                        'conversation_id' => $conversation->id,
-                        'friend_id'       => $friend->id,
-                        'friend_name'     => $friend->first_name . ' ' . $friend->last_name,
-                        // إرجاع مسار الصورة بالكامل
-                        'profile_picture' => $friend->profile_picture 
-                                             ? asset('storage/' . $friend->profile_picture) 
-                                             : null,
-                        'last_message'    => $conversation->latestMessage ? $conversation->latestMessage->message : '',
-                        'updated_at'      => $conversation->updated_at
-                    ];
-                }
-            }
-            return null;
+    // 2. نجيب كل الـ User IDs اللي عندنا معاهم محادثات
+    $chatUserIds = \App\Models\Conversation::where('user1_id', $user->id)
+        ->orWhere('user2_id', $user->id)
+        ->get()
+        ->map(function ($c) use ($user) {
+            return ($c->user1_id == $user->id) ? $c->user2_id : $c->user1_id;
+        });
+
+    // 3. ندمج الكل ونشيل التكرار ونبحث في جدول المستخدمين مباشرة
+    $allRelevantIds = $friendIds->concat($chatUserIds)->unique();
+
+    $results = \App\Models\User::whereIn('id', $allRelevantIds)
+        ->where(function($q) use ($searchQuery) {
+            $q->where('first_name', 'LIKE', "%{$searchQuery}%")
+              ->orWhere('last_name', 'LIKE', "%{$searchQuery}%");
         })
-        ->filter() // شيل أي حاجة فارغة (Null)
-        ->values(); // إعادة ترتيب الـ Index
+        ->select('id', 'first_name', 'last_name', 'profile_picture', 'diabetes_type')
+        ->get()
+        ->map(function ($user) {
+            return [
+                'id'              => $user->id,
+                'first_name'      => $user->first_name,
+                'last_name'       => $user->last_name,
+                'profile_picture' => $user->profile_picture ? asset('storage/' . $user->profile_picture) : null,
+                'diabetes_type'   => $user->diabetes_type,
+            ];
+        });
 
-    return response()->json([
-        'success' => true,
-        'results' => $conversations
-    ], 200);
-}
-}
+    return response()->json(['success' => true, 'results' => $results]);
+}}
