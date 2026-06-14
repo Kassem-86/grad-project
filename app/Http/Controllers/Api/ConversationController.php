@@ -53,7 +53,8 @@ class ConversationController extends Controller
         return response()->json([
             'data' => $conversation
         ], 200);
-    }public function searchChatFriends(Request $request)
+    }
+    public function searchChatFriends(Request $request)
 {
     $request->validate(['query' => 'required|string|min:1']);
     $searchQuery = strtolower($request->input('query'));
@@ -70,7 +71,6 @@ class ConversationController extends Controller
             return ($f->user_id == $user->id) ? $f->friend_id : $f->user_id;
         });
 
-    // 2. نجيب كل الـ User IDs اللي عندنا معاهم محادثات
     $chatUserIds = \App\Models\Conversation::where('user1_id', $user->id)
         ->orWhere('user2_id', $user->id)
         ->get()
@@ -78,7 +78,6 @@ class ConversationController extends Controller
             return ($c->user1_id == $user->id) ? $c->user2_id : $c->user1_id;
         });
 
-    // 3. ندمج الكل ونشيل التكرار ونبحث في جدول المستخدمين مباشرة
     $allRelevantIds = $friendIds->concat($chatUserIds)->unique();
 
     $results = \App\Models\User::whereIn('id', $allRelevantIds)
@@ -93,8 +92,10 @@ class ConversationController extends Controller
                 'id'              => $user->id,
                 'first_name'      => $user->first_name,
                 'last_name'       => $user->last_name,
-                'profile_picture' => $user->profile_picture ? asset('storage/' . $user->profile_picture) : null,
-                'diabetes_type'   => $user->diabetes_type,
+'profile_picture' => $user->profile_picture 
+    ? asset('storage/' . str_replace('storage/', '', $user->profile_picture)) 
+    : null,
+                    'diabetes_type'   => $user->diabetes_type,
             ];
         });
 
