@@ -157,8 +157,8 @@ class FriendshipController extends Controller
         })
         // أضفنا profile_pic هنا في العلاقات
         ->with([
-            'user:id,first_name,last_name,profile_picture', 
-            'friend:id,first_name,last_name,profile_picture'
+            'user:id,first_name,last_name,profile_picture,diabetes_type',
+            'friend:id,first_name,last_name,profile_picture,diabetes_type'
         ])
         ->get()
         ->map(function ($friendship) use ($user) {
