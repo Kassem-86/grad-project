@@ -145,4 +145,31 @@ class FriendshipController extends Controller
 
         return response()->json($suggestions);
     }
+
+   public function getFriends(Request $request): JsonResponse
+{
+    $user = $request->user();
+
+    $friends = Friendship::where('status', 'accepted')
+        ->where(function ($query) use ($user) {
+            $query->where('user_id', $user->id)
+                  ->orWhere('friend_id', $user->id);
+        })
+        // أضفنا profile_pic هنا في العلاقات
+        ->with([
+            'user:id,first_name,last_name,profile_picture', 
+            'friend:id,first_name,last_name,profile_picture'
+        ])
+        ->get()
+        ->map(function ($friendship) use ($user) {
+            return $friendship->user_id === $user->id 
+                ? $friendship->friend 
+                : $friendship->user;
+        });
+
+    return response()->json([
+        'count' => $friends->count(),
+        'data' => $friends
+    ]);
+}
 }

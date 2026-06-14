@@ -138,8 +138,9 @@ Route::post('/sync/medication', [SelectedMedicationController::class, 'sync']);
     // --- Real-time Chat (Reverb) ---
     Route::prefix('conversations')->group(function () {
         Route::get('/', [ConversationController::class, 'index']);
+                    Route::get('/search', [ConversationController::class, 'searchChatFriends']);    // الـ Route الجديد للبحث عن شات معين باسم الصاحب
+
         Route::get('/{conversation_id}', [ConversationController::class, 'show']);
-            Route::get('/search', [ConversationController::class, 'searchChatFriends']);    // الـ Route الجديد للبحث عن شات معين باسم الصاحب
 
     });
 

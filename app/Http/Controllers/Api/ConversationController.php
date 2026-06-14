@@ -66,15 +66,15 @@ class ConversationController extends Controller
 
     // 1. جبنا المحادثات ومعاها بيانات الشخصين (user1 و user2) مرة واحدة عشان الأداء
     $conversations = \App\Models\Conversation::where(function($q) use ($user) {
-            $q->where('user_one_id', $user->id)
-              ->orWhere('user_two_id', $user->id);
+            $q->where('user1_id', $user->id)
+              ->orWhere('user2_id', $user->id);
         })
-        ->with(['user1', 'user2']) // تحميل البيانات مسبقاً (Eager Loading)
+        ->with(['user1', 'user2', 'latestMessage']) // تحميل البيانات مسبقاً (Eager Loading)
         ->get()
         ->map(function($conversation) use ($user, $searchQuery) {
             
             // تحديد مين الطرف التاني
-            $friend = ($conversation->user_one_id == $user->id) ? $conversation->user2 : $conversation->user1;
+            $friend = ($conversation->user1_id == $user->id) ? $conversation->user2 : $conversation->user1;
 
             if ($friend) {
                 $fullName = strtolower($friend->first_name . ' ' . $friend->last_name);
@@ -89,8 +89,8 @@ class ConversationController extends Controller
                         'profile_picture' => $friend->profile_picture 
                                              ? asset('storage/' . $friend->profile_picture) 
                                              : null,
-                        'last_message'    => $conversation->last_message ?? '',
-                        'updated_at'      => $conversation->updated_at,
+                        'last_message'    => $conversation->latestMessage ? $conversation->latestMessage->message : '',
+                        'updated_at'      => $conversation->updated_at
                     ];
                 }
             }

@@ -60,14 +60,19 @@ class MessageSent implements ShouldBroadcast
      *
      * @return array<string, mixed>
      */
-    public function broadcastWith(): array
-    {
-        return [
-            'message_id'   => $this->message->id,
-            'sender_id'    => $this->message->sender_id,
-            'receiver_id'  => $this->receiverId,
-            'message_text' => $this->message->message,
-            'created_at'   => $this->message->created_at->toISOString(),
-        ];
-    }
+  public function broadcastWith(): array
+{
+    // تحويل النص لتاريخ باستخدام Carbon
+    $createdAt = $this->message->created_at instanceof \Carbon\Carbon 
+                 ? $this->message->created_at 
+                 : \Carbon\Carbon::parse($this->message->created_at);
+
+    return [
+        'message_id'   => $this->message->id,
+        'sender_id'    => $this->message->sender_id,
+        'receiver_id'  => $this->receiverId,
+        'message_text' => $this->message->message,
+        'created_at'   => $createdAt->format('Y-m-d\TH:i:s.u\Z'),
+    ];
+}
 }

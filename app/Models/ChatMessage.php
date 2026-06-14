@@ -12,7 +12,10 @@ class ChatMessage extends Model
         'conversation_id', 'sender_id', 'message', 
         'image_url', 'voice_url', 'video_url', 'is_read'
     ];
-
+protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
     public function conversation(): BelongsTo
     {
         return $this->belongsTo(Conversation::class);
