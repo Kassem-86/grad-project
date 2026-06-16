@@ -29,7 +29,11 @@ class Glucose extends Model
 
     protected $casts = [
         'glucose_level' => 'float',
+            'created_at' => 'datetime',
+            'updated_at' => 'datetime',
     ];
+
+    // في ملف App\Models\GlucoseLog.php
 
     /**
      * Get the log associated with this glucose reading.

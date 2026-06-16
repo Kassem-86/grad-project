@@ -132,4 +132,75 @@ $logTime = Carbon::parse($reading->log_logged_at, 'UTC')->setTimezone('Africa/Ca
 
         return $pdf->download('seen_report_' . $startDate . '.pdf');
     }
+public function getGlucoseReportGraph(Request $request): JsonResponse
+{
+    $user = $request->user();
+
+    // 1. التحقق من التواريخ
+    $request->validate([
+        'start_date' => 'required|date|date_format:Y-m-d',
+        'end_date'   => 'required|date|date_format:Y-m-d|after_or_equal:start_date',
+    ]);
+
+    $startDate = Carbon::parse($request->query('start_date'), 'Africa/Cairo')->startOfDay();
+    $endDate   = Carbon::parse($request->query('end_date'), 'Africa/Cairo')->endOfDay();
+
+    // 2. جلب البيانات بناءً على التواريخ
+    $readings = \App\Models\Glucose::where('record_glucose.user_id', $user->id)
+        ->join('logs', 'record_glucose.log_id', '=', 'logs.log_id')
+        ->whereBetween('logs.logged_at', [$startDate, $endDate])
+        ->orderBy('logs.logged_at', 'desc')
+        ->select('record_glucose.*', 'logs.logged_at as log_logged_at')
+        ->get();
+
+    // إذا لم توجد بيانات في هذه الفترة
+    if ($readings->isEmpty()) {
+        return response()->json(['message' => 'No data found for this period.'], 404);
+    }
+
+    // 3. حساب الإحصائيات (على البيانات المفلترة فقط)
+    $count = $readings->count();
+    $avgGlucose = round($readings->avg('glucose_level'));
+    
+    $lowest = $readings->sortBy('glucose_level')->first();
+    $highest = $readings->sortByDesc('glucose_level')->first();
+
+    // 4. تنسيق القراءات
+    $formattedReadings = $readings->map(function($r) {
+        $logTime = Carbon::parse($r->log_logged_at, 'UTC')->setTimezone('Africa/Cairo');
+        return [
+            'logId'        => $r->log_id,
+            'glucoseValue' => (int) $r->glucose_level,
+            'readingType'  => $r->reading_type,
+            'loggedAt'     => $logTime->format('Y-m-d h:i A'),
+        ];
+    });
+
+    return response()->json([
+        'reportStatistics' => [
+            'logsCount'      => $count,
+            'averageGlucose' => $avgGlucose,
+            'estimatedA1C'   => round(($avgGlucose + 46.7) / 28.7, 1),
+            'lowestLog'      => [
+                'logId'        => $lowest->log_id,
+                'glucoseValue' => (int) $lowest->glucose_level,
+                'readingType'  => $lowest->reading_type,
+                'loggedAt'     => Carbon::parse($lowest->log_logged_at)->setTimezone('Africa/Cairo')->format('Y-m-d h:i A'),
+            ],
+            'highestLog'     => [
+                'logId'        => $highest->log_id,
+                'glucoseValue' => (int) $highest->glucose_level,
+                'readingType'  => $highest->reading_type,
+                'loggedAt'     => Carbon::parse($highest->log_logged_at)->setTimezone('Africa/Cairo')->format('Y-m-d h:i A'),
+            ]
+        ],
+        'glucoseReadings' => [
+            'all'       => $formattedReadings,
+            'fasting'   => $formattedReadings->filter(fn($r) => $r['readingType'] == 'Fasting')->values(),
+            'pre_meal'  => $formattedReadings->filter(fn($r) => in_array($r['readingType'], ['Before Meal', 'Pre Meal']))->values(),
+            'post_meal' => $formattedReadings->filter(fn($r) => in_array($r['readingType'], ['After Meal', 'Post Meal']))->values(),
+            'random'    => $formattedReadings->filter(fn($r) => $r['readingType'] == 'Random')->values(),
+        ]
+    ], 200);
+}
 }

@@ -89,7 +89,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // --- Community: Comments ---
     Route::post('/posts/{post}/comments', [CommentController::class, 'store']);
-    Route::put('/comments/{comment}', [CommentController::class, 'update']); // ✅ مكانها الصح
+    Route::put('/comments/{comment}', [CommentController::class, 'update']); 
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy']);
 
     // --- Community: Likes (Polymorphic) ---
@@ -107,7 +107,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/friends/{id}/block', [BlockController::class, 'block']);
     Route::delete('/friends/{id}/unblock', [BlockController::class, 'unblock']);
     Route::get('/friends/blocks', [BlockController::class, 'index']);
-    Route::get('/friends', [FriendshipController::class, 'getFriends']);    // الـ Route الجديد لجلب قائمة الأصحاب
+    Route::get('/friends', [FriendshipController::class, 'getFriends']); 
+    Route::get('/friends/profile', [FriendshipController::class, 'getFriendsprofile']);
+    // الـ Route الجديد لجلب قائمة الأصحاب
 
 
     // --- Conversations / Chat Search ---
@@ -167,6 +169,7 @@ Route::post('/sync/medication', [SelectedMedicationController::class, 'sync']);
     Route::patch('/notifications/read-all', [\App\Http\Controllers\Api\NotificationController::class, 'markAllAsRead']);
     Route::patch('/notifications/{id}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markAsRead']);
     Route::delete('/notifications/{id}', [\App\Http\Controllers\Api\NotificationController::class, 'destroy']);
+    Route::post('/glucose-analysis', [ReportController::class, 'getGlucoseReportGraph']);
     Route::get('/reports/glucose/pdf', [ReportController::class, 'exportGlucosePdf']);
 
     Route::post('/user/save-device-token', function (Request $request) {
@@ -188,6 +191,7 @@ Route::post('/sync/medication', [SelectedMedicationController::class, 'sync']);
     
   
 });
+
 /*
 |--------------------------------------------------------------------------
 | Broadcasting Routes (Reverb)
@@ -196,5 +200,5 @@ Route::post('/sync/medication', [SelectedMedicationController::class, 'sync']);
 
 
 
-*/
+*/                                                                
 Broadcast::routes(['middleware' => ['auth:sanctum']]);

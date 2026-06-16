@@ -42,6 +42,7 @@ class CombinedLogController extends Controller
         'record_medication.medications.*' => 'string',       // كل عنصر عبارة عن نص
         'record_medication.notes' => 'nullable|string',
     ]);
+    
 
     try {
         // 2. Database Transaction (بترجع الـ ID بس)
