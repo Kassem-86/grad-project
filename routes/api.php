@@ -46,10 +46,6 @@ Route::get('/test-email', function () {
     }
 });
 
-// // Google Socialite Auth
-// Route::get('/auth/google', [\App\Http\Controllers\GoogleAuthController::class, 'redirectToGoogle'])->name('google.login');
-// Route::get('/auth/google/callback', [\App\Http\Controllers\GoogleAuthController::class, 'handleGoogleCallback'])->name('google.callback');
-
 // المشاهدة فقط (Posts & Comments)
 Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{post}', [PostController::class, 'show']);
