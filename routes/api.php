@@ -34,8 +34,7 @@ Route::post('/check-email', [AuthController::class, 'checkEmail']);
 Route::post('/forgot-password/send-otp', [AuthController::class, 'sendOtp']);
 Route::post('/forgot-password/verify-otp', [AuthController::class, 'verifyOtp']);
 Route::post('/forgot-password/reset', [AuthController::class, 'resetPassword']);
-Route::post('/password/verify', [AuthController::class, 'verifyCurrentPassword']);
-Route::post('/password/update', [AuthController::class, 'updateNewPassword']);
+
 Route::get('/test-email', function () {
     try {
         \Illuminate\Support\Facades\Mail::raw('Testing Email!', function ($message) {
@@ -76,6 +75,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/profile/{id}', [UserController::class, 'showProfile']);
     Route::post('/chatbot/ask', [App\Http\Controllers\ChatbotController::class, 'askChatbot']);// Route عشان تسأل الشات بوت (ممكن تحطه في مكان تاني لو حابب)
     Route::get('/chatbot/history', [ChatbotController::class, 'getChatHistory']);
+Route::post('/password/verify', [AuthController::class, 'verifyCurrentPassword']);
+Route::post('/password/update', [AuthController::class, 'updateNewPassword']);
     // Preferred standardized endpoint for retrieving the authenticated user
     Route::get('/me', [AuthController::class, 'me']);
     Route::delete('/delete-me', [AuthController::class, 'deleteUser']);
