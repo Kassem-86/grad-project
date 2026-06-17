@@ -7,7 +7,7 @@ use App\Mail\OtpMail;
 use App\Models\User;
 use App\Models\Conversation;
 use App\Models\ChatMessage;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache; // ضيف دي فوقuse Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -351,37 +351,45 @@ Mail::to($request->email)->send(new OtpMail($otp, $user->last_name));
 /**
  * Change the authenticated user's password.
  */
-public function changePassword(Request $request)
+public function verifyCurrentPassword(Request $request)
 {
-    // 1. التحقق من البيانات
     $request->validate([
         'current_password' => 'required',
-        'new_password' => 'required|min:8|confirmed', // بيفترض إنك بتبعت حقل اسمه new_password_confirmation
     ]);
 
     $user = $request->user();
 
-    // 2. التأكد إن كلمة السر القديمة صحيحة
     if (!Hash::check($request->current_password, $user->password)) {
-        return response()->json([
-            'message' => 'The current password does not match our records.'
-        ], 400);
+        return response()->json(['message' => 'Incorrect current password'], 400);
     }
 
-    // 3. التأكد إن الباسورد الجديد مش هو القديم
-    if (Hash::check($request->new_password, $user->password)) {
-        return response()->json([
-            'message' => 'New password cannot be the same as the old password.'
-        ], 400);
+    // هنخزن "تصريح" لمدة 5 دقائق إن اليوزر ده عمل verify للباسورد القديم
+    Cache::put('password_verified_' . $user->id, true, now()->addMinutes(5));
+
+    return response()->json(['message' => 'Verified, you can proceed to change password'], 200);
+}
+
+// 2. Function لتغيير الباسورد فعلياً
+public function updateNewPassword(Request $request)
+{
+    $request->validate([
+        'new_password' => 'required|min:8|confirmed',
+    ]);
+
+    $user = $request->user();
+
+    // التأكد إنه عمل verify في الـ 5 دقايق اللي فاتوا
+    if (!Cache::get('password_verified_' . $user->id)) {
+        return response()->json(['message' => 'Session expired or not verified'], 403);
     }
 
-    // 4. تحديث كلمة السر
+    // تحديث الباسورد
     $user->update([
         'password' => Hash::make($request->new_password)
     ]);
 
-    return response()->json([
-        'message' => 'Password changed successfully.'
-    ], 200);
-}
-}  
+    // مسح الـ cache بعد ما غير الباسورد
+    Cache::forget('password_verified_' . $user->id);
+
+    return response()->json(['message' => 'Password updated successfully'], 200);
+}}
