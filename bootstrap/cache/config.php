@@ -182,7 +182,7 @@
         'options' => 
         array (
           'host' => '127.0.0.1',
-          'port' => 443,
+          'port' => 8080,
           'scheme' => 'http',
           'useTLS' => false,
         ),
@@ -816,7 +816,7 @@
     array (
       'reverb' => 
       array (
-        'host' => '0.0.0.0',
+        'host' => '127.0.0.1',
         'port' => '8080',
         'path' => '',
         'hostname' => '127.0.0.1',

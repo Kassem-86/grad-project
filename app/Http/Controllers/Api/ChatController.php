@@ -112,11 +112,7 @@ class ChatController extends Controller
         if ($request->hasFile('image')) {
             $imageUrl = $request->file('image')->store('chats/images', 'public');
         }
-// PS C:\xampp\htdocs\grad-project> ngrok start seen-api  
-// PS C:\xampp\htdocs\grad-project> ngrok config edit              
-PS C:\xampp\htdocs\grad-project> cd nginx-1.30.0              
-PS C:\xampp\htdocs\grad-project> nginx -t     
-PS C:\xampp\htdocs\grad-project> cd nginx.exe                                                                                                                                                                                                                                                                                                                                                            
+                                                                                                                                                                                                                                                                                                                                                       
 
         $voiceUrl = null;
         if ($request->hasFile('voice')) {

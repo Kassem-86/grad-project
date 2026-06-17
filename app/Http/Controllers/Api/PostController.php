@@ -46,8 +46,10 @@ class PostController extends Controller
             $query->selectRaw('posts.*, false as is_liked');
         }
 
-        $posts = $query->latest()->paginate(10);
-
+// بدلاً من ->latest()
+$posts = $query->orderBy('created_at', 'desc')
+               ->orderBy('id', 'desc') // إضافة الترتيب بالـ ID لضمان عدم التكرار
+               ->paginate(10);
         // Build the response with category metadata
         $resourceCollection = PostResource::collection($posts)->response()->getData(true);
         
