@@ -347,4 +347,41 @@ Mail::to($request->email)->send(new OtpMail($otp, $user->last_name));
 
     return response()->json(['message' => 'Password updated successfully']);
 }
+
+/**
+ * Change the authenticated user's password.
+ */
+public function changePassword(Request $request)
+{
+    // 1. التحقق من البيانات
+    $request->validate([
+        'current_password' => 'required',
+        'new_password' => 'required|min:8|confirmed', // بيفترض إنك بتبعت حقل اسمه new_password_confirmation
+    ]);
+
+    $user = $request->user();
+
+    // 2. التأكد إن كلمة السر القديمة صحيحة
+    if (!Hash::check($request->current_password, $user->password)) {
+        return response()->json([
+            'message' => 'The current password does not match our records.'
+        ], 400);
+    }
+
+    // 3. التأكد إن الباسورد الجديد مش هو القديم
+    if (Hash::check($request->new_password, $user->password)) {
+        return response()->json([
+            'message' => 'New password cannot be the same as the old password.'
+        ], 400);
+    }
+
+    // 4. تحديث كلمة السر
+    $user->update([
+        'password' => Hash::make($request->new_password)
+    ]);
+
+    return response()->json([
+        'message' => 'Password changed successfully.'
+    ], 200);
+}
 }  

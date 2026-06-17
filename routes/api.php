@@ -34,6 +34,7 @@ Route::post('/check-email', [AuthController::class, 'checkEmail']);
 Route::post('/forgot-password/send-otp', [AuthController::class, 'sendOtp']);
 Route::post('/forgot-password/verify-otp', [AuthController::class, 'verifyOtp']);
 Route::post('/forgot-password/reset', [AuthController::class, 'resetPassword']);
+Route::post('/change-password', [AuthController::class, 'changePassword']);
 Route::get('/test-email', function () {
     try {
         \Illuminate\Support\Facades\Mail::raw('Testing Email!', function ($message) {
