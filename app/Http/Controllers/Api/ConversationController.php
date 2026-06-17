@@ -92,9 +92,7 @@ class ConversationController extends Controller
                 'id'              => $user->id,
                 'first_name'      => $user->first_name,
                 'last_name'       => $user->last_name,
-'profile_picture' => $user->profile_picture 
-    ? asset('storage/' . str_replace('storage/', '', $user->profile_picture)) 
-    : null,
+                 'profile_picture' => $user->profile_picture ,
                     'diabetes_type'   => $user->diabetes_type,
             ];
         });
