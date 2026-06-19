@@ -131,31 +131,33 @@ $logTime = Carbon::parse($reading->log_logged_at, 'UTC')->setTimezone('Africa/Ca
                   ]);
 
         return $pdf->download('seen_report_' . $startDate . '.pdf');
-    }
-public function getGlucoseReportGraph(Request $request): JsonResponse
+    }public function getGlucoseReportGraph(Request $request): JsonResponse
 {
     $user = $request->user();
 
-    // 1. التحقق من التواريخ
+    // 1. التحقق من التواريخ (استخدام input لضمان القراءة من الـ Body)
     $request->validate([
         'start_date' => 'required|date|date_format:Y-m-d',
         'end_date'   => 'required|date|date_format:Y-m-d|after_or_equal:start_date',
     ]);
 
-    $startDate = Carbon::parse($request->query('start_date'), 'Africa/Cairo')->startOfDay();
-    $endDate   = Carbon::parse($request->query('end_date'), 'Africa/Cairo')->endOfDay();
+    // تحويل التواريخ مع مراعاة الـ Timezone ثم التحويل لـ UTC للبحث في قاعدة البيانات
+    $startDate = Carbon::parse($request->input('start_date'), 'Africa/Cairo')->startOfDay()->utc();
+    $endDate   = Carbon::parse($request->input('end_date'), 'Africa/Cairo')->endOfDay()->utc();
 
-    // 2. جلب البيانات بناءً على التواريخ
-    $readings = \App\Models\Glucose::where('record_glucose.user_id', $user->id)
+    // 2. جلب البيانات (استخدام Query Builder المباشر لضمان الكفاءة)
+    $readings = \App\Models\Glucose::query()
         ->join('logs', 'record_glucose.log_id', '=', 'logs.log_id')
+        ->where('record_glucose.user_id', $user->id)
         ->whereBetween('logs.logged_at', [$startDate, $endDate])
         ->orderBy('logs.logged_at', 'desc')
         ->select('record_glucose.*', 'logs.logged_at as log_logged_at')
         ->get();
 
-    // إذا لم توجد بيانات في هذه الفترة
+    // Debugging (مهم جداً عشان تتأكد إن البيانات موجودة في الفترة دي)
     if ($readings->isEmpty()) {
-        return response()->json(['message' => 'No data found for this period.'], 404);
+        \Log::info("No data found for user {$user->id} between {$startDate} and {$endDate}");
+        return response()->json(['message' => 'No data found for this period.', 'debug' => ['start' => $startDate, 'end' => $endDate]], 404);
     }
 
     // 3. حساب الإحصائيات (على البيانات المفلترة فقط)
@@ -167,6 +169,7 @@ public function getGlucoseReportGraph(Request $request): JsonResponse
 
     // 4. تنسيق القراءات
     $formattedReadings = $readings->map(function($r) {
+        // التحويل من UTC إلى توقيت القاهرة للعرض
         $logTime = Carbon::parse($r->log_logged_at, 'UTC')->setTimezone('Africa/Cairo');
         return [
             'logId'        => $r->log_id,
@@ -185,13 +188,13 @@ public function getGlucoseReportGraph(Request $request): JsonResponse
                 'logId'        => $lowest->log_id,
                 'glucoseValue' => (int) $lowest->glucose_level,
                 'readingType'  => $lowest->reading_type,
-                'loggedAt'     => Carbon::parse($lowest->log_logged_at)->setTimezone('Africa/Cairo')->format('Y-m-d h:i A'),
+                'loggedAt'     => Carbon::parse($lowest->log_logged_at, 'UTC')->setTimezone('Africa/Cairo')->format('Y-m-d h:i A'),
             ],
             'highestLog'     => [
                 'logId'        => $highest->log_id,
                 'glucoseValue' => (int) $highest->glucose_level,
                 'readingType'  => $highest->reading_type,
-                'loggedAt'     => Carbon::parse($highest->log_logged_at)->setTimezone('Africa/Cairo')->format('Y-m-d h:i A'),
+                'loggedAt'     => Carbon::parse($highest->log_logged_at, 'UTC')->setTimezone('Africa/Cairo')->format('Y-m-d h:i A'),
             ]
         ],
         'glucoseReadings' => [
@@ -202,5 +205,4 @@ public function getGlucoseReportGraph(Request $request): JsonResponse
             'random'    => $formattedReadings->filter(fn($r) => $r['readingType'] == 'Random')->values(),
         ]
     ], 200);
-}
-}
+}}
