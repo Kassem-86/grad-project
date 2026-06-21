@@ -19,8 +19,10 @@ return [
 'allowed_origins' => [
     'http://localhost:5173', 
     'http://localhost:3000', 
+    'http://localhost:5174', 
     'https://seen-lime.vercel.app',
     'https://inquisitorial-elba-undistractedly.ngrok-free.dev',
+    
 ],
 
 'allowed_origins_patterns' => [

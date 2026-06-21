@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
@@ -12,8 +10,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // استخدام Raw Query هو الأضمن والأسرع لتعديل الـ Enum من غير مشاكل Doctrine DBAL
-        DB::statement("ALTER TABLE notifications MODIFY COLUMN type ENUM('reminder', 'community', 'chat', 'friend_request') NOT NULL");
+        // إضافة النوع الجديد accepted للـ Enum
+        DB::statement("ALTER TABLE notifications MODIFY COLUMN type ENUM('reminder', 'community', 'chat', 'friend_request', 'accepted', 'rejected') NOT NULL");
     }
 
     /**
@@ -21,7 +19,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // في حالة الـ Rollback بنرجع الـ Enum القديم زي ما كان
-        DB::statement("ALTER TABLE notifications MODIFY COLUMN type ENUM('reminder', 'community', 'chat') NOT NULL");
+        // دي عشان لو عملت rollback يرجع النوع القديم
+        DB::statement("ALTER TABLE notifications MODIFY COLUMN type ENUM('reminder', 'community', 'chat', 'friend_request') NOT NULL");
     }
 };

@@ -102,6 +102,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/friends/{id}/request', [FriendshipController::class, 'sendRequest']);
     Route::post('/friends/{id}/accept', [FriendshipController::class, 'acceptRequest']);
+    Route::post('/friends/{id}/reject', [FriendshipController::class, 'rejectRequest']);
     Route::delete('/friends/{id}/cancel', [FriendshipController::class, 'cancelRequest']);
     Route::delete('/friends/{id}', [FriendshipController::class, 'removeFriend']);
     Route::post('/friends/{id}/block', [BlockController::class, 'block']);
@@ -140,8 +141,7 @@ Route::post('/sync/medication', [SelectedMedicationController::class, 'sync']);
     // --- Real-time Chat (Reverb) ---
     Route::prefix('conversations')->group(function () {
         Route::get('/', [ConversationController::class, 'index']);
-                    Route::get('/search', [ConversationController::class, 'searchChatFriends']);    // الـ Route الجديد للبحث عن شات معين باسم الصاحب
-
+         Route::get('/search', [ConversationController::class, 'searchChatFriends']);    // الـ Route الجديد للبحث عن شات معين باسم الصاحب
         Route::get('/{conversation_id}', [ConversationController::class, 'show']);
 
     });

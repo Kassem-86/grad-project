@@ -182,12 +182,8 @@
         'options' => 
         array (
           'host' => '127.0.0.1',
-          'port' => 8080,
+          'port' => '8080',
           'scheme' => 'http',
-          'useTLS' => false,
-        ),
-        'client_options' => 
-        array (
         ),
       ),
       'pusher' => 
@@ -321,8 +317,9 @@
     array (
       0 => 'http://localhost:5173',
       1 => 'http://localhost:3000',
-      2 => 'https://seen-lime.vercel.app',
-      3 => 'https://inquisitorial-elba-undistractedly.ngrok-free.dev',
+      2 => 'http://localhost:5174',
+      3 => 'https://seen-lime.vercel.app',
+      4 => 'https://inquisitorial-elba-undistractedly.ngrok-free.dev',
     ),
     'allowed_origins_patterns' => 
     array (

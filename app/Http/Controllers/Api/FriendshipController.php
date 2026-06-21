@@ -86,7 +86,7 @@ class FriendshipController extends Controller
                 'user_id' => $senderId,
                 'title' => 'تم قبول طلب الصداقة ✨',
                 'message' => $receiver->first_name . ' وافق على طلب الصداقة الخاص بك.',
-                'type' => 'friend_request',
+                'type' => 'accepted',
                 'reference_id' => $receiver->id,
             ]);
         });
@@ -94,6 +94,29 @@ class FriendshipController extends Controller
         return response()->json(['message' => 'Friend request accepted.']);
     }
 
+public function rejectRequest(Request $request, int $senderId): JsonResponse{
+
+
+        $receiver = $request->user();
+
+        $friendship = Friendship::where('user_id', $senderId)
+            ->where('friend_id', $receiver->id)
+            ->where('status', 'pending')
+            ->first();
+
+        if (!$friendship) {
+            return response()->json(['message' => 'Pending friend request not found.'], 404);
+        }
+
+        DB::transaction(function () use ($friendship, $receiver, $senderId) {
+            $friendship->update(['status' => 'declined']);
+
+
+        });
+
+        return response()->json(['message' => 'Friend request rejected.']);
+    
+}
     public function removeFriend(Request $request, int $id): JsonResponse
     {
         $userId = $request->user()->id;

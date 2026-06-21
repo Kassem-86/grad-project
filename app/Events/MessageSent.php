@@ -3,11 +3,8 @@
 namespace App\Events;
 
 use App\Models\ChatMessage;
-use App\Http\Resources\MessageResource;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -22,9 +19,15 @@ class MessageSent implements ShouldBroadcast
     /**
      * Create a new event instance.
      */
-    function __construct(ChatMessage $message)
+    public function __construct(ChatMessage $message)
     {
         $this->message = $message;
+        
+        // تحديد الـ receiverId لاستخدامه داخل البيانات (اختياري)
+        $conversation = $this->message->conversation;
+        $this->receiverId = $conversation 
+            ? ($conversation->user1_id === $this->message->sender_id ? $conversation->user2_id : $conversation->user1_id)
+            : null;
     }
 
     /**
@@ -34,16 +37,9 @@ class MessageSent implements ShouldBroadcast
      */
     public function broadcastOn(): array
     {
-        // determine the receiving user id from conversation
-        $conversation = $this->message->conversation ?? null;
-        $receiverId = null;
-        if ($conversation) {
-            $receiverId = $conversation->user1_id === $this->message->sender_id ? $conversation->user2_id : $conversation->user1_id;
-        }
-        $this->receiverId = $receiverId;
-
+        // القناة أصبحت تعتمد على الـ conversation_id
         return [
-            new PrivateChannel('chat.' . $receiverId),
+            new Channel('chat.' . $this->message->conversation_id),
         ];
     }
 
@@ -60,19 +56,19 @@ class MessageSent implements ShouldBroadcast
      *
      * @return array<string, mixed>
      */
-  public function broadcastWith(): array
-{
-    // تحويل النص لتاريخ باستخدام Carbon
-    $createdAt = $this->message->created_at instanceof \Carbon\Carbon 
-                 ? $this->message->created_at 
-                 : \Carbon\Carbon::parse($this->message->created_at);
+    public function broadcastWith(): array
+    {
+        $createdAt = $this->message->created_at instanceof \Carbon\Carbon 
+                     ? $this->message->created_at 
+                     : \Carbon\Carbon::parse($this->message->created_at);
 
-    return [
-        'message_id'   => $this->message->id,
-        'sender_id'    => $this->message->sender_id,
-        'receiver_id'  => $this->receiverId,
-        'message_text' => $this->message->message,
-        'created_at'   => $createdAt->format('Y-m-d\TH:i:s.u\Z'),
-    ];
-}
+        return [
+            'message_id'      => $this->message->id,
+            'conversation_id' => $this->message->conversation_id, // أصبح متاحاً للـ Frontend
+            'sender_id'       => $this->message->sender_id,
+            'receiver_id'     => $this->receiverId,
+            'message_text'    => $this->message->message,
+            'created_at'      => $createdAt->format('Y-m-d\TH:i:s.u\Z'),
+        ];
+    }
 }
