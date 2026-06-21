@@ -182,7 +182,7 @@
         'options' => 
         array (
           'host' => '127.0.0.1',
-          'port' => '8080',
+          'port' => '9000',
           'scheme' => 'http',
         ),
       ),
@@ -195,11 +195,11 @@
         'options' => 
         array (
           'cluster' => NULL,
-          'host' => 'api-mt1.pusher.com',
-          'port' => 443,
-          'scheme' => 'https',
+          'host' => '127.0.0.1',
+          'port' => '9000',
+          'scheme' => 'http',
           'encrypted' => true,
-          'useTLS' => true,
+          'useTLS' => false,
         ),
         'client_options' => 
         array (
@@ -814,7 +814,7 @@
       'reverb' => 
       array (
         'host' => '127.0.0.1',
-        'port' => '8080',
+        'port' => '9000',
         'path' => '',
         'hostname' => '127.0.0.1',
         'options' => 
@@ -856,7 +856,7 @@
           'options' => 
           array (
             'host' => '127.0.0.1',
-            'port' => 443,
+            'port' => '9000',
             'scheme' => 'http',
             'useTLS' => false,
           ),
