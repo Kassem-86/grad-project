@@ -166,6 +166,7 @@ Route::post('/sync/medication', [SelectedMedicationController::class, 'sync']);
 
     // --- Notifications ---
     Route::get('/notifications', [\App\Http\Controllers\Api\NotificationController::class, 'index']);
+    Route::delete('/notifications/delete-all', [\App\Http\Controllers\Api\NotificationController::class, 'deleteAllNotifications']);
     Route::patch('/notifications/read-all', [\App\Http\Controllers\Api\NotificationController::class, 'markAllAsRead']);
     Route::patch('/notifications/{id}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markAsRead']);
     Route::delete('/notifications/{id}', [\App\Http\Controllers\Api\NotificationController::class, 'destroy']);

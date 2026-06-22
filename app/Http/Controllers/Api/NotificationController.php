@@ -118,4 +118,15 @@ class NotificationController extends Controller
             'message' => 'Notification deleted successfully'
         ]);
     }
+    public function deleteAllNotifications()
+    {
+        $user = auth('sanctum')->user();
+
+        Notification::where('user_id', $user->id)->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'All notifications deleted successfully'
+        ]);
+    }
 }
