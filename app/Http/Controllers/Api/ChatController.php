@@ -193,7 +193,7 @@ class ChatController extends Controller
             return response()->json(['message' => 'Unauthorized.'], 403);
         }
 
-        if ($message->created_at->diffInMinutes(now()) > 10) {
+        if (Carbon::parse($message->created_at)->diffInMinutes(now()) > 10) {
             return response()->json(['message' => 'You can only edit a message within 10 minutes of sending.'], 403);
         }
 
@@ -220,7 +220,7 @@ class ChatController extends Controller
             return response()->json(['message' => 'Unauthorized.'], 403);
         }
 
-        if ($message->created_at->diffInMinutes(now()) > 10) {
+        if (Carbon::parse($message->created_at)->diffInMinutes(now()) > 10) {
             return response()->json(['message' => 'You can only delete a message within 10 minutes of sending.'], 403);
         }
 

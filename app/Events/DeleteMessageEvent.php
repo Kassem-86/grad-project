@@ -2,9 +2,7 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
@@ -15,29 +13,25 @@ class DeleteMessageEvent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $messageId;
-    public $receiverId;
-    public $senderId;
+    public $conversationId;
 
     /**
      * Create a new event instance.
      */
-    public function __construct(int $messageId, int $senderId, int $receiverId)
+    public function __construct(int $messageId, int $conversationId)
     {
         $this->messageId = $messageId;
-        $this->senderId = $senderId;
-        $this->receiverId = $receiverId;
+        $this->conversationId = $conversationId;
     }
 
     /**
      * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
      */
     public function broadcastOn(): array
     {
+        // التعديل هنا: البث على قناة المحادثة الواحدة
         return [
-            new PrivateChannel('chat.' . $this->receiverId),
-            new PrivateChannel('chat.' . $this->senderId),
+            new PrivateChannel('chat.' . $this->conversationId),
         ];
     }
 
@@ -51,13 +45,12 @@ class DeleteMessageEvent implements ShouldBroadcast
 
     /**
      * Get the data to broadcast.
-     *
-     * @return array<string, mixed>
      */
     public function broadcastWith(): array
     {
         return [
             'message_id' => $this->messageId,
+            'conversation_id' => $this->conversationId,
         ];
     }
 }

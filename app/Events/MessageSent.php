@@ -3,8 +3,8 @@
 namespace App\Events;
 
 use App\Models\ChatMessage;
-use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
@@ -39,7 +39,7 @@ class MessageSent implements ShouldBroadcast
     {
         // القناة أصبحت تعتمد على الـ conversation_id
         return [
-            new Channel('chat.' . $this->message->conversation_id),
+            new PrivateChannel('chat.' . $this->message->conversation_id),
         ];
     }
 
