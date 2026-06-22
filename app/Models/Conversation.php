@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Conversation extends Model
 {
     use FormatsDates;
-    protected $fillable = ['user1_id', 'user2_id', 'last_updated'];
+    protected $fillable = ['user1_id', 'user2_id', 'last_updated', 'profile_picture'];
 
     protected $casts = [
         'last_updated' => 'datetime',

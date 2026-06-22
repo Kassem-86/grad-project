@@ -18,10 +18,13 @@ class ConversationController extends Controller
         $user = Auth::user();
 
         $conversations = $user->conversations() 
-            ->with(['user1:id,first_name,last_name', 'user2:id,first_name,last_name'])
-            ->with('latestMessage')
-            ->orderByDesc('last_updated')
-            ->paginate(15);
+    ->with([
+        'user1:id,first_name,last_name,profile_picture,diabetes_type', 
+        'user2:id,first_name,last_name,profile_picture,diabetes_type' 
+    ])
+    ->with('latestMessage')
+    ->orderByDesc('last_updated')
+    ->paginate(15);
 
         return response()->json([
             'data' => $conversations
